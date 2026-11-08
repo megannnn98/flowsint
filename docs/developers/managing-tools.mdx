@@ -1,7 +1,7 @@
 ---
-title: "Managing tools"
-description: "This guide explains how to create a new tool in the Flowsint ecosystem. Tools are low-level wrappers around external utilities, Docker containers, and APIs that enrichers use to gather intelligence. Understanding the tool architecture will help you extend Flowsint's capabilities with new data sources and reconnaissance utilities."
-category: "Developers"
+title: "Управление инструментами"
+description: "Это руководство объясняет, как создать новый инструмент в экосистеме Flowsint. Инструменты — это низкоуровневые обёртки над внешними утилитами, Docker-контейнерами и API, которые обогатители используют для сбора информации. Понимание архитектуры инструментов поможет расширять возможности Flowsint новыми источниками данных и утилитами разведки."
+category: "Разработчикам"
 order: 9
 author: "Flowsint Team"
 tags: ["tutorial", "developers", "creating-a-new-tool"]
@@ -9,21 +9,21 @@ version: "1.2.8"
 last_updated_at: "2026-05-15"
 ---
 
-## Understanding tools
+## Что такое инструменты
 
-Tools in Flowsint serve as abstraction layers between enrichers and external systems. They provide a consistent interface for executing Docker containers, calling APIs, or running python libraries. While enrichers handle high-level orchestration and graph database operations, tools focus exclusively on executing external commands and returning raw results.
+Инструменты во Flowsint — это слои абстракции между обогатителями и внешними системами. Они предоставляют единый интерфейс для запуска Docker-контейнеров, вызова API и работы с Python-библиотеками. Если обогатители отвечают за высокоуровневую оркестрацию и операции с графовой базой данных, то инструменты занимаются исключительно выполнением внешних команд и возвратом необработанных результатов.
 
-Every tool implements a basic interface with methods for naming, categorization, and execution. Tools don't know anything about Pydantic types, Neo4j graphs, or the broader Flowsint architecture. They just wrap external functionality and return data.
+Каждый инструмент реализует базовый интерфейс с методами для именования, категоризации и выполнения. Инструменты ничего не знают о типах Pydantic, графах Neo4j и общей архитектуре Flowsint. Они лишь оборачивают внешнюю функциональность и возвращают данные.
 
-Flowsint currently includes tools for subdomain enumeration, port scanning, DNS queries, WHOIS lookups, web crawling, and business intelligence.
+Сейчас во Flowsint есть инструменты для перебора поддоменов, сканирования портов, DNS-запросов, WHOIS-запросов, обхода сайтов и бизнес-аналитики.
 
-## Tool architecture
+## Архитектура инструментов
 
-The tool system has a two-tier inheritance structure. At the base level, you have the abstract `Tool` class that defines the interface every tool must implement. For tools that run in Docker containers, there's an intermediate `DockerTool` class that handles all the container lifecycle management.
+Система инструментов имеет двухуровневую иерархию наследования. На базовом уровне находится абстрактный класс `Tool`, определяющий интерфейс, который обязан реализовать каждый инструмент. Для инструментов, работающих в Docker-контейнерах, есть промежуточный класс `DockerTool`, который берёт на себя весь жизненный цикл контейнера.
 
-### The Tool base class
+### Базовый класс Tool
 
-Every tool inherits from the abstract `Tool` class, which lives at `flowsint-enrichers/src/tools/base.py`. Here's what it looks like:
+Каждый инструмент наследуется от абстрактного класса `Tool`, который находится в `flowsint-enrichers/src/tools/base.py`. Вот как он выглядит:
 
 ```python
 from abc import ABC, abstractmethod
@@ -62,15 +62,15 @@ class Tool(ABC):
         pass
 ```
 
-Any tool you create must implement these five methods. The first four are class methods that provide metadata about the tool. The `launch` method is where the actual work happens.
+Любой создаваемый вами инструмент должен реализовать эти пять методов. Первые четыре — методы класса, предоставляющие метаданные об инструменте. Метод `launch` — это то место, где выполняется настоящая работа.
 
-### The DockerTool class
+### Класс DockerTool
 
-Most security and reconnaissance tools run in Docker containers for isolation and portability. The `DockerTool` class at `flowsint-enrichers/src/tools/dockertool.py` provides all the infrastructure for running containerized tools.
+Большинство инструментов безопасности и разведки запускаются в Docker-контейнерах ради изоляции и переносимости. Класс `DockerTool` в `flowsint-enrichers/src/tools/dockertool.py` предоставляет всю инфраструктуру для запуска контейнеризованных инструментов.
 
-When you inherit from `DockerTool`, you get automatic image management, container execution, volume mounting, environment variable handling, and cleanup. You just specify the Docker image name and implement how to construct the command.
+Наследуясь от `DockerTool`, вы автоматически получаете управление образами, запуск контейнеров, монтирование томов, обработку переменных окружения и очистку. Вам остаётся указать имя Docker-образа и реализовать построение команды.
 
-Here's a simplified view of what `DockerTool` provides:
+Вот упрощённый обзор того, что предоставляет `DockerTool`:
 
 ```python
 class DockerTool(Tool):
@@ -99,26 +99,26 @@ class DockerTool(Tool):
         pass
 ```
 
-The `launch` method in `DockerTool` handles container execution. It sets up the environment, mounts volumes if needed, runs the container, captures output, and cleans up afterward.
+Метод `launch` в `DockerTool` отвечает за запуск контейнера. Он настраивает окружение, при необходимости монтирует тома, запускает контейнер, перехватывает вывод и затем выполняет очистку.
 
-## Creating a simple API-based tool
+## Создание простого инструмента на основе API
 
-Let's start with the simpler case of creating a tool that calls an external API. We'll create a hypothetical tool for querying a threat intelligence service.
+Начнём с более простого случая — инструмента, который обращается к внешнему API. Создадим гипотетический инструмент для запросов к сервису threat intelligence.
 
-### File structure
+### Структура файлов
 
-Create a new python file in the appropriate category directory under `flowsint-enrichers/src/tools/`. For a security-related tool, you might use `tools/security/`:
+Создайте новый Python-файл в подходящем каталоге категории внутри `flowsint-enrichers/src/tools/`. Для инструмента, связанного с безопасностью, можно использовать `tools/security/`:
 
 ```bash
 cd flowsint-enrichers/src/tools/security/
 touch threat_intel.py
 ```
 
-If the category directory doesn't exist, create it first and add an `__init__.py` file to make it a python package.
+Если каталога категории нет, сначала создайте его и добавьте файл `__init__.py`, чтобы сделать его Python-пакетом.
 
-### Basic implementation
+### Базовая реализация
 
-Here's a complete example of an API-based tool:
+Вот полный пример инструмента на основе API:
 
 ```python
 from tools.base import Tool
@@ -195,17 +195,17 @@ class ThreatIntelTool(Tool):
             return []
 ```
 
-This tool follows a straightforward pattern. The class methods provide metadata that enrichers and the registry use. The `launch` method implements the actual API interaction, handling authentication, making the request, and returning structured data.
+Этот инструмент следует простому шаблону. Методы класса предоставляют метаданные, которые используют обогатители и реестр. Метод `launch` реализует само взаимодействие с API: обрабатывает аутентификацию, выполняет запрос и возвращает структурированные данные.
 
-Notice how the tool returns simple python data structures like lists and dictionaries. Tools don't know about Pydantic types or Flowsint models. That's the enricher's job.
+Обратите внимание, что инструмент возвращает простые структуры данных Python — списки и словари. Инструменты не знают о типах Pydantic и моделях Flowsint. Это задача обогатителя.
 
-## Creating a docker-based tool
+## Создание инструмента на основе Docker
 
-Docker-based tools are more common in Flowsint because most reconnaissance utilities need specific dependencies and isolated environments. Let's walk through creating a tool that wraps a hypothetical Docker-based subdomain scanner.
+Инструменты на основе Docker встречаются во Flowsint чаще, потому что большинству утилит разведки нужны определённые зависимости и изолированное окружение. Разберём создание инструмента, который оборачивает гипотетический сканер поддоменов в Docker.
 
-### Setting up the class
+### Настройка класса
 
-Start by inheriting from `DockerTool` and providing the Docker image information:
+Начните с наследования от `DockerTool` и укажите информацию о Docker-образе:
 
 ```python
 from tools.dockertool import DockerTool
@@ -222,11 +222,11 @@ class MySubdomainTool(DockerTool):
         super().__init__(self.image, self.default_tag)
 ```
 
-The `image` and `default_tag` class attributes tell `DockerTool` which Docker image to use. When you instantiate the tool, it will automatically connect to the Docker daemon.
+Атрибуты класса `image` и `default_tag` сообщают `DockerTool`, какой Docker-образ использовать. При создании экземпляра инструмента он автоматически подключится к демону Docker.
 
-### Implementing the launch method
+### Реализация метода launch
 
-The `launch` method needs to construct the command that runs inside the container and handle the results:
+Метод `launch` должен построить команду, которая выполняется внутри контейнера, и обработать результаты:
 
 ```python
     def launch(
@@ -292,11 +292,11 @@ The `launch` method needs to construct the command that runs inside the containe
         return list(set(subdomains))  # Remove duplicates
 ```
 
-This implementation shows several important patterns. First, it checks if the Docker image is installed and pulls it if necessary. Second, it constructs the command string that will run inside the container. Third, it calls the parent class's `launch` method to handle the actual container execution. Finally, it parses the output into a clean python data structure.
+Эта реализация демонстрирует несколько важных приёмов. Во-первых, она проверяет, установлен ли Docker-образ, и при необходимости скачивает его. Во-вторых, формирует строку команды, которая будет выполнена в контейнере. В-третьих, вызывает метод `launch` родительского класса, чтобы выполнить сам запуск контейнера. Наконец, разбирает вывод и преобразует его в чистую структуру данных Python.
 
-### Handling volumes
+### Работа с томами
 
-Some tools need access to files on the host system. You can mount volumes when calling the parent's `launch` method:
+Некоторым инструментам нужен доступ к файлам хост-системы. Тома можно монтировать при вызове родительского метода `launch`:
 
 ```python
     def launch(self, domain: str, wordlist_path: str = None) -> List[str]:
@@ -323,11 +323,11 @@ Some tools need access to files on the host system. You can mount volumes when c
         return self._parse_output(result)
 ```
 
-The volumes dictionary maps host paths to container paths. You can specify the mount mode as 'ro' for read-only or 'rw' for read-write.
+Словарь томов сопоставляет пути на хосте с путями в контейнере. Режим монтирования можно задать как 'ro' (только чтение) или 'rw' (чтение и запись).
 
-### Using environment variables
+### Использование переменных окружения
 
-For tools that need API keys or configuration through environment variables:
+Для инструментов, которым нужны API-ключи или конфигурация через переменные окружения:
 
 ```python
     def launch(self, domain: str, api_key: Optional[str] = None) -> List[str]:
@@ -347,9 +347,9 @@ For tools that need API keys or configuration through environment variables:
         return self._parse_output(result)
 ```
 
-## Testing your tool
+## Тестирование инструмента
 
-Creating tests for your tool helps ensure it works correctly and makes it easier to catch regressions. Create a test file in `flowsint-enrichers/tests/tools/` that mirrors your tool's location:
+Тесты инструмента помогают убедиться, что он работает правильно, и облегчают обнаружение регрессий. Создайте тестовый файл в `flowsint-enrichers/tests/tools/`, повторяющий расположение вашего инструмента:
 
 ```python
 # tests/tools/security/test_threat_intel.py
@@ -388,7 +388,7 @@ def test_tool_launch_with_api_key(monkeypatch):
     assert results[0]["indicator"] == "192.0.2.1"
 ```
 
-For docker-based tools, your tests need Docker to be running:
+Для инструментов на основе Docker тесты требуют запущенного Docker:
 
 ```python
 # tests/tools/network/test_my_subdomain_tool.py
@@ -410,25 +410,25 @@ def test_tool_launch():
     assert isinstance(results, list)
 ```
 
-The `@pytest.mark.docker` decorator helps you separate tests that require Docker from those that don't.
+Декоратор `@pytest.mark.docker` помогает отделить тесты, которым нужен Docker, от остальных.
 
-## Best practices
+## Лучшие практики
 
-When creating tools, focus on simplicity and single responsibility. Each tool should wrap exactly one external utility or API. Don't try to combine multiple data sources in a single tool. That's what enrichers are for.
+При создании инструментов стремитесь к простоте и единственной ответственности. Каждый инструмент должен оборачивать ровно одну внешнюю утилиту или один API. Не пытайтесь объединять несколько источников данных в одном инструменте — для этого есть обогатители.
 
-Always handle errors gracefully. Network requests fail, Docker containers crash, and APIs return unexpected data. Your tool should catch these errors, log them appropriately, and return empty results or raise clear exceptions rather than crashing.
+Всегда корректно обрабатывайте ошибки. Сетевые запросы падают, Docker-контейнеры аварийно завершаются, а API возвращают неожиданные данные. Ваш инструмент должен перехватывать такие ошибки, адекватно их логировать и возвращать пустые результаты или выбрасывать понятные исключения, а не падать.
 
-Return simple data structures from the `launch` method. Use lists, dictionaries, strings, and numbers. Don't return Pydantic models or other complex objects. Remember that tools are low-level utilities that enrichers build upon.
+Возвращайте из метода `launch` простые структуры данных: списки, словари, строки и числа. Не возвращайте модели Pydantic и другие сложные объекты. Помните, что инструменты — это низкоуровневые утилиты, на которых строятся обогатители.
 
-For Docker tools, always check if the image is installed before running it. The pattern of checking `is_installed()` and calling `install()` if necessary ensures the tool works even on fresh installations.
+Для Docker-инструментов всегда проверяйте, установлен ли образ, прежде чем его запускать. Шаблон «проверить `is_installed()` и при необходимости вызвать `install()`» гарантирует работу инструмента даже при чистой установке.
 
-When parsing tool output, be defensive. External tools can return unexpected formats, partial results, or garbage data. Validate and clean the output before returning it. Use try-except blocks around parsing logic.
+При разборе вывода инструмента будьте осторожны. Внешние инструменты могут возвращать неожиданные форматы, частичные результаты или мусор. Проверяйте и очищайте вывод перед возвратом. Оборачивайте логику разбора в блоки try-except.
 
-Document your tool thoroughly. The docstrings and parameter descriptions help other developers understand how to use your tool. Future enrichers will rely on this documentation.
+Подробно документируйте инструмент. Docstring'и и описания параметров помогают другим разработчикам понять, как им пользоваться. Будущие обогатители будут опираться на эту документацию.
 
-## Integrating your tool
+## Интеграция инструмента
 
-Unlike types, tools don't need to be explicitly registered in a central registry. Enrichers import and use them directly. When you create an enricher that uses your new tool, you simply import it:
+В отличие от типов, инструменты не нужно явно регистрировать в центральном реестре. Обогатители импортируют и используют их напрямую. Когда вы создаёте обогатитель, использующий новый инструмент, достаточно его импортировать:
 
 ```python
 # In an enricher file
@@ -450,15 +450,15 @@ class IpToThreatIntelEnricher(Enricher):
         return results
 ```
 
-The enricher instantiates your tool, calls its `launch` method with appropriate parameters, and processes the results into Flowsint types.
+Обогатитель создаёт экземпляр вашего инструмента, вызывает его метод `launch` с нужными параметрами и преобразует результаты в типы Flowsint.
 
-## Common patterns
+## Типовые шаблоны
 
-Several patterns appear frequently in Flowsint tools. Understanding these will help you write tools that fit naturally into the ecosystem.
+Несколько шаблонов часто встречаются в инструментах Flowsint. Их понимание поможет писать инструменты, естественно вписывающиеся в экосистему.
 
-### The install-check pattern
+### Шаблон «проверка установки»
 
-Most Docker tools follow this pattern at the start of `launch`:
+Большинство Docker-инструментов начинают `launch` по такому шаблону:
 
 ```python
 def launch(self, ...):
@@ -468,11 +468,11 @@ def launch(self, ...):
     # Continue with execution
 ```
 
-This ensures the docker image is available before trying to run it.
+Это гарантирует, что Docker-образ доступен, прежде чем его запускать.
 
-### The command builder pattern
+### Шаблон «построитель команды»
 
-Complex tools often build commands incrementally based on parameters:
+Сложные инструменты часто строят команду постепенно, в зависимости от параметров:
 
 ```python
 def launch(self, target: str, mode: str = "fast", verbose: bool = False):
@@ -487,9 +487,9 @@ def launch(self, target: str, mode: str = "fast", verbose: bool = False):
     result = super().launch(command)
 ```
 
-### The output parser pattern
+### Шаблон «парсер вывода»
 
-Many tools separate execution from parsing:
+Многие инструменты разделяют выполнение и разбор:
 
 ```python
 def launch(self, ...):
@@ -501,12 +501,12 @@ def _parse_output(self, output: str) -> List[Dict]:
     # Parsing logic here
 ```
 
-This separation makes the code easier to test and maintain.
+Такое разделение упрощает тестирование и сопровождение кода.
 
-## Next steps
+## Дальнейшие шаги
 
-Once you've created your tool and tested it, you can build enrichers that use it. Enrichers orchestrate one or more tools to gather intelligence, validate the results, convert them to Flowsint types, and create graph database nodes and relationships.
+Когда вы создали инструмент и протестировали его, можно строить обогатители, которые его используют. Обогатители оркеструют один или несколько инструментов для сбора информации, проверяют результаты, преобразуют их в типы Flowsint и создают узлы и связи в графовой базе данных.
 
-If your tool requires API keys or other secrets, enrichers can access them through the vault system. When you implement an enricher that uses your tool, you can define parameters of type `vaultSecret` that pull credentials from the user's encrypted vault.
+Если вашему инструменту нужны API-ключи или другие секреты, обогатители могут получать их через систему хранилища (vault). Реализуя обогатитель с вашим инструментом, можно определить параметры типа `vaultSecret`, которые берут учётные данные из зашифрованного хранилища пользователя.
 
-Remember that tools are just one layer in the Flowsint architecture. They provide the raw capabilities, but enrichers provide the intelligence and graph-building logic that makes the platform powerful.
+Помните, что инструменты — лишь один слой архитектуры Flowsint. Они предоставляют сырые возможности, а обогатители добавляют аналитику и логику построения графа, которые делают платформу мощной.
