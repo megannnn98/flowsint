@@ -1,7 +1,7 @@
 ---
-title: "Enrichers"
-description: "Quick start guide to using Enrichers for your OSINT investigations."
-category: "Getting started"
+title: "Обогатители"
+description: "Краткое руководство по использованию обогатителей (Enrichers) в OSINT-расследованиях."
+category: "Начало работы"
 order: 4
 author: "Flowsint Team"
 tags: ["tutorial", "getting-started", "enrichers"]
@@ -9,45 +9,45 @@ version: "1.2.8"
 last_updated_at: "2026-05-15"
 ---
 
-### What is an Enricher?
+### Что такое обогатитель?
 
-An enricher is an operation that, starting from an input element A (source entity), produces one or more elements B (target entities) by applying a search or correlation method called a pivot.
+Обогатитель (Enricher) — это операция, которая по входному элементу A (исходной сущности) создаёт один или несколько элементов B (целевых сущностей), применяя метод поиска или сопоставления, называемый пивотом (pivot).
 
-Example:
-
-```bash
-A = my.domain.com (domain name)
-    ↓
-p = “DNS resolution” (pivot)
-    ↓
-B = 12.23.34.45 (IP address)
-```
-
-That said, a pivot is the method or technical process used to derive B from A. The pivot defines how the transformation obtains its result (e.g., DNS resolution, WHOIS lookup, API query, etc.).
-
-Example:
+Пример:
 
 ```bash
-DNS Resolution → domain → IP
+A = my.domain.com (доменное имя)
     ↓
-WHOIS Lookup → IP → owner
+p = «DNS-разрешение» (пивот)
     ↓
-Reverse Image Search → image → web pages containing that image
+B = 12.23.34.45 (IP-адрес)
 ```
 
-Flowsint comes with a bunch of prebuilt enrichers, divided into multiple categories. Those enrichers can use standard pivots that your machine can support by default (DNS resolution, WHOIS request, etc.) and some other that depend on external tools. 
+Иначе говоря, пивот — это метод или технический процесс, с помощью которого из A получают B. Пивот определяет, как преобразование получает результат (например, DNS-разрешение, WHOIS-запрос, запрос к API и т. д.).
 
-Those can be : 
+Пример:
 
-- Native : DNS resolutions, Whois, etc.
-- Docker tools: [subfinder](https://github.com/projectdiscovery/subfinder), [asnmap](https://github.com/projectdiscovery/asnmap), etc.
-- Python tools: [sherlock](https://github.com/sherlock-project/sherlock), [maigret](https://github.com/soxoj/maigret), [reconurge/recontrack](https://github.com/reconurge/recontrack), [reconurge/reconcrawl](https://github.com/reconurge/reconcrawl), [reconurge/reconspread](https://github.com/reconurge/reconspread), etc. 
-- External services (paid or free): [shodan](https://www.shodan.io/), [whoxy](https://www.whoxy.com/), [whoisxmlapi](https://www.whoisxmlapi.com), etc.
+```bash
+DNS Resolution → домен → IP
+    ↓
+WHOIS Lookup → IP → владелец
+    ↓
+Reverse Image Search → изображение → веб-страницы, содержащие это изображение
+```
 
-### Making your own enrichers
+Flowsint поставляется с набором готовых обогатителей, разделённых на несколько категорий. Эти обогатители могут использовать стандартные пивоты, которые ваша машина поддерживает по умолчанию (DNS-разрешение, WHOIS-запрос и т. д.), и другие, зависящие от внешних инструментов.
 
-Creating your own enrichers invloves multiple steps, but is not that trivial.
+Это могут быть:
 
-If you plan on writting your own enrichers and think they could help the community, please contribute by making a pull request !
+- Нативные: DNS-разрешение, Whois и т. д.
+- Docker-инструменты: [subfinder](https://github.com/projectdiscovery/subfinder), [asnmap](https://github.com/projectdiscovery/asnmap) и т. д.
+- Python-инструменты: [sherlock](https://github.com/sherlock-project/sherlock), [maigret](https://github.com/soxoj/maigret), [reconurge/recontrack](https://github.com/reconurge/recontrack), [reconurge/reconcrawl](https://github.com/reconurge/reconcrawl), [reconurge/reconspread](https://github.com/reconurge/reconspread) и т. д.
+- Внешние сервисы (платные и бесплатные): [shodan](https://www.shodan.io/), [whoxy](https://www.whoxy.com/), [whoisxmlapi](https://www.whoisxmlapi.com) и т. д.
 
-Please refer to [this section](/docs/developers/managing-enrichers) to start building your own enrichers.
+### Создание собственных обогатителей
+
+Создание собственных обогатителей включает несколько шагов и не такое уж простое.
+
+Если вы планируете писать собственные обогатители и думаете, что они могут пригодиться сообществу, пожалуйста, внесите вклад — отправьте pull request!
+
+Чтобы начать создавать собственные обогатители, обратитесь к [этому разделу](/docs/developers/managing-enrichers).
