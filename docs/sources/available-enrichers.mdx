@@ -1,7 +1,7 @@
 ---
-title: "Enrichers catalog"
-description: "Quick start guide to using Enrichers for your OSINT investigations."
-category: "Sources"
+title: "Каталог обогатителей"
+description: "Краткое руководство по использованию обогатителей (Enrichers) в OSINT-расследованиях."
+category: "Источники"
 order: 11
 author: "Flowsint Team"
 tags: ["tutorial", "getting-started", "enrichers"]
@@ -10,154 +10,154 @@ last_updated_at: "2026-05-15"
 ---
 
 ### ASN
-**asn_to_cidrs**: Given an ASN, enumerate its announced CIDR ranges.
-Tools/Pivots: [asnmap](https://github.com/projectdiscovery/asnmap) (CLI), [jq](https://jqlang.github.io/jq/) (CLI)
+**asn_to_cidrs**: по ASN перечисляет объявленные им диапазоны CIDR.
+Инструменты/пивоты: [asnmap](https://github.com/projectdiscovery/asnmap) (CLI), [jq](https://jqlang.github.io/jq/) (CLI)
 
 ### CIDR
-**cidr_to_ips**: Expand a CIDR to IPs by PTR enumeration heuristics.
-Tools/Pivots: [dnsx](https://github.com/projectdiscovery/dnsx) (CLI)
+**cidr_to_ips**: разворачивает CIDR в IP-адреса эвристиками перебора PTR.
+Инструменты/пивоты: [dnsx](https://github.com/projectdiscovery/dnsx) (CLI)
 
 ### Crypto
-**cryptowallet_to_transactions**: Fetch ETH wallet transactions and map wallet-to-wallet relationships.
-Tools/APIs: [Etherscan API](https://docs.etherscan.io/)
+**cryptowallet_to_transactions**: получает транзакции ETH-кошелька и строит связи «кошелёк — кошелёк».
+Инструменты/API: [Etherscan API](https://docs.etherscan.io/)
 
-**cryptowallet_to_nfts**: Fetch ERC-721/1155 NFT transfers for a wallet.
-Tools/APIs: [Etherscan API](https://docs.etherscan.io/)
+**cryptowallet_to_nfts**: получает переводы NFT стандартов ERC-721/1155 для кошелька.
+Инструменты/API: [Etherscan API](https://docs.etherscan.io/)
 
 ### Domain
-**domain_to_ip**: Resolve domains to IPv4 addresses.
-Tools/Pivots: DNS resolution (socket)
+**domain_to_ip**: определяет IPv4-адреса доменов.
+Инструменты/пивоты: DNS-разрешение (socket)
 
-**domain_to_subdomains**: Discover subdomains for a domain.
-Tools/APIs: [subfinder](https://github.com/projectdiscovery/subfinder) (CLI), fallback to [crt.sh JSON API](https://crt.sh/?output=json)
+**domain_to_subdomains**: находит поддомены домена.
+Инструменты/API: [subfinder](https://github.com/projectdiscovery/subfinder) (CLI), запасной вариант — [crt.sh JSON API](https://crt.sh/?output=json)
 
-**domain_to_whois**: Retrieve WHOIS registration data for a domain.
-Tools/APIs: [python-whois](https://pypi.org/project/python-whois/)
+**domain_to_whois**: получает регистрационные данные WHOIS для домена.
+Инструменты/API: [python-whois](https://pypi.org/project/python-whois/)
 
-**domain_to_asn**: Map a domain to its ASN by resolving and querying ASN data.
-Tools/Pivots: system DNS, [asnmap](https://github.com/projectdiscovery/asnmap) (CLI)
+**domain_to_asn**: сопоставляет домен с его ASN: разрешает имя и запрашивает данные ASN.
+Инструменты/пивоты: системный DNS, [asnmap](https://github.com/projectdiscovery/asnmap) (CLI)
 
-**domain_to_root_domain**: Convert a subdomain to its registrable root.
-Tools/Pivots: internal domain utils
+**domain_to_root_domain**: преобразует поддомен в регистрируемый корневой домен.
+Инструменты/пивоты: внутренние утилиты для доменов
 
-**domain_to_history**: Retrieve historical WHOIS records and extract related entities (individuals, organizations, emails, phones, locations).
-Tools/APIs: [Whoxy API](https://www.whoxy.com/api/)
+**domain_to_history**: получает исторические записи WHOIS и извлекает связанные сущности (лица, организации, email, телефоны, местоположения).
+Инструменты/API: [Whoxy API](https://www.whoxy.com/api/)
 
-**domain_to_website**: Convert a domain to a reachable website URL (HTTP/HTTPS), following redirects.
-Tools/Pivots: HTTP HEAD requests
+**domain_to_website**: преобразует домен в доступный URL сайта (HTTP/HTTPS) с учётом перенаправлений.
+Инструменты/пивоты: HTTP HEAD-запросы
 
-**domain_to_tls**: Retrieve TLS/SSL certificate information for a domain.
-Tools/Pivots: [httpx](https://github.com/projectdiscovery/httpx) (CLI)
+**domain_to_tls**: получает сведения о TLS/SSL-сертификате домена.
+Инструменты/пивоты: [httpx](https://github.com/projectdiscovery/httpx) (CLI)
 
-**domain_to_whois_history**: Retrieve historical WHOIS records for a domain and extract related entities (individuals, organizations, emails, locations).
-Tools/APIs: [WhoisXML API](https://whois.whoisxmlapi.com/)
+**domain_to_whois_history**: получает историю записей WHOIS для домена и извлекает связанные сущности (лица, организации, email, местоположения).
+Инструменты/API: [WhoisXML API](https://whois.whoisxmlapi.com/)
 
-**domain_to_dehashed**: Get breach intelligence (credentials, related individuals) associated with a domain.
-Tools/APIs: [DeHashed API](https://www.dehashed.com/docs)
+**domain_to_dehashed**: получает данные об утечках (учётные данные, связанные лица), связанные с доменом.
+Инструменты/API: [DeHashed API](https://www.dehashed.com/docs)
 
 ### Email
-**email_to_breaches**: Check whether an email appears in known breaches.
-Tools/APIs: [Have I Been Pwned API](https://haveibeenpwned.com/API/v3)
+**email_to_breaches**: проверяет, встречается ли email в известных утечках.
+Инструменты/API: [Have I Been Pwned API](https://haveibeenpwned.com/API/v3)
 
-**email_to_gravatar**: Check Gravatar existence and profile for an email (via MD5 hash).
-Tools/APIs: [Gravatar endpoints](https://en.gravatar.com/site/implement/images/)
+**email_to_gravatar**: проверяет наличие Gravatar и профиль для email (по MD5-хешу).
+Инструменты/API: [Gravatar endpoints](https://en.gravatar.com/site/implement/images/)
 
-**email_to_domain**: Extract the domain part of an email address.
-Tools/Pivots: internal email parser
+**email_to_domain**: извлекает доменную часть email-адреса.
+Инструменты/пивоты: внутренний парсер email
 
-**email_to_domains**: Find domains registered by a given email address; extract related contacts and entities.
-Tools/APIs: [Whoxy API](https://www.whoxy.com/api/)
+**email_to_domains**: находит домены, зарегистрированные на данный email; извлекает связанные контакты и сущности.
+Инструменты/API: [Whoxy API](https://www.whoxy.com/api/)
 
-**email_to_username**: Extract the local-part of an email as a Username entity.
-Tools/Pivots: internal email parser
+**email_to_username**: извлекает локальную часть email как сущность Username.
+Инструменты/пивоты: внутренний парсер email
 
-**email_to_intelligence**: Get breach intelligence (credentials, related individuals) associated with an email.
-Tools/APIs: [DeHashed API](https://www.dehashed.com/docs)
+**email_to_intelligence**: получает данные об утечках (учётные данные, связанные лица), связанные с email.
+Инструменты/API: [DeHashed API](https://www.dehashed.com/docs)
 
-**email_to_device_hudsonrock**: Look up devices compromised by infostealers and associated with an email.
-Tools/APIs: [HudsonRock API](https://www.hudsonrock.com/)
+**email_to_device_hudsonrock**: ищет устройства, скомпрометированные инфостилерами и связанные с email.
+Инструменты/API: [HudsonRock API](https://www.hudsonrock.com/)
 
 ### Individual
-**individual_to_domains**: Find domains registered by a specific person; extract related contacts and attributes.
-Tools/APIs: [Whoxy API](https://www.whoxy.com/api/)
+**individual_to_domains**: находит домены, зарегистрированные на конкретного человека; извлекает связанные контакты и атрибуты.
+Инструменты/API: [Whoxy API](https://www.whoxy.com/api/)
 
-**individual_to_organization**: Find organizations related to a person in French registries.
-Tools/APIs: SIRENE (via internal SireneTool) — see [INSEE Sirene API](https://api.insee.fr/catalogue/#/datasets/sirene)
+**individual_to_organization**: находит организации, связанные с человеком, во французских реестрах.
+Инструменты/API: SIRENE (через внутренний SireneTool) — см. [INSEE Sirene API](https://api.insee.fr/catalogue/#/datasets/sirene)
 
 ### IP
-**ip_to_domain**: Reverse-resolve IPs to domains via PTR and Certificate Transparency pivots.
-Tools/APIs: DNS PTR (socket), [crt.sh JSON API](https://crt.sh/?output=json)
+**ip_to_domain**: обратное разрешение IP в домены через PTR и Certificate Transparency.
+Инструменты/API: DNS PTR (socket), [crt.sh JSON API](https://crt.sh/?output=json)
 
-**ip_to_infos**: Enrich IPs with geolocation and ISP data.
-Tools/APIs: [ip-api.com](https://ip-api.com/)
+**ip_to_infos**: дополняет IP данными о геолокации и провайдере.
+Инструменты/API: [ip-api.com](https://ip-api.com/)
 
-**ip_to_asn**: Map IPs to their ASN.
-Tools/Pivots: AsnmapTool ([asnmap](https://github.com/projectdiscovery/asnmap))
+**ip_to_asn**: сопоставляет IP с его ASN.
+Инструменты/пивоты: AsnmapTool ([asnmap](https://github.com/projectdiscovery/asnmap))
 
-**ip_to_ports**: Scan an IP for open ports and services.
-Tools/Pivots: [naabu](https://github.com/projectdiscovery/naabu) (CLI)
+**ip_to_ports**: сканирует IP на открытые порты и сервисы.
+Инструменты/пивоты: [naabu](https://github.com/projectdiscovery/naabu) (CLI)
 
-**ip_to_fraudscore**: Compute a fraud risk score for an IP address.
-Tools/APIs: [Scamalytics API](https://scamalytics.com/ip-api)
+**ip_to_fraudscore**: вычисляет оценку риска мошенничества для IP-адреса.
+Инструменты/API: [Scamalytics API](https://scamalytics.com/ip-api)
 
-**ip_to_intelligence**: Get breach intelligence (credentials, related individuals) associated with an IP.
-Tools/APIs: [DeHashed API](https://www.dehashed.com/docs)
+**ip_to_intelligence**: получает данные об утечках (учётные данные, связанные лица), связанные с IP.
+Инструменты/API: [DeHashed API](https://www.dehashed.com/docs)
 
 ### Organization
-**org_to_domains**: Find domains registered by an organization; extract contacts and related entities.
-Tools/APIs: [Whoxy API](https://www.whoxy.com/api/)
+**org_to_domains**: находит домены, зарегистрированные на организацию; извлекает контакты и связанные сущности.
+Инструменты/API: [Whoxy API](https://www.whoxy.com/api/)
 
-**org_to_infos**: Enrich organizations with French registry data and leaders.
-Tools/APIs: SIRENE (SireneTool) — see [INSEE Sirene API](https://api.insee.fr/catalogue/#/datasets/sirene)
+**org_to_infos**: дополняет организации данными французского реестра и сведениями о руководителях.
+Инструменты/API: SIRENE (SireneTool) — см. [INSEE Sirene API](https://api.insee.fr/catalogue/#/datasets/sirene)
 
-**org_to_asn**: Find ASNs associated with an organization name.
-Tools/Pivots: [asnmap](https://github.com/projectdiscovery/asnmap) (CLI), [jq](https://jqlang.github.io/jq/) (CLI)
+**org_to_asn**: находит ASN, связанные с названием организации.
+Инструменты/пивоты: [asnmap](https://github.com/projectdiscovery/asnmap) (CLI), [jq](https://jqlang.github.io/jq/) (CLI)
 
 ### Phone
-**phone_to_infos**: Probe phone footprint across services (demo modules) and normalize number.
-Tools/APIs: ignorant modules (Amazon, Snapchat, Instagram), [httpx](https://github.com/projectdiscovery/httpx)
+**phone_to_infos**: проверяет следы номера телефона в сервисах (демонстрационные модули) и нормализует номер.
+Инструменты/API: модули ignorant (Amazon, Snapchat, Instagram), [httpx](https://github.com/projectdiscovery/httpx)
 
-**phone_to_carrier**: Look up carrier, country, and validity metadata for a phone number.
-Tools/APIs: [Veriphone API](https://veriphone.io/)
+**phone_to_carrier**: определяет оператора, страну и признаки валидности номера телефона.
+Инструменты/API: [Veriphone API](https://veriphone.io/)
 
-**phone_to_device_hudsonrock**: Look up devices compromised by infostealers and associated with a phone number.
-Tools/APIs: [HudsonRock API](https://www.hudsonrock.com/)
+**phone_to_device_hudsonrock**: ищет устройства, скомпрометированные инфостилерами и связанные с номером телефона.
+Инструменты/API: [HudsonRock API](https://www.hudsonrock.com/)
 
 ### Social
-**username_to_socials_sherlock**: Enumerate social accounts for a username using Sherlock.
-Tools/Pivots: [sherlock](https://github.com/sherlock-project/sherlock) (CLI)
+**username_to_socials_sherlock**: перечисляет аккаунты в соцсетях по имени пользователя с помощью Sherlock.
+Инструменты/пивоты: [sherlock](https://github.com/sherlock-project/sherlock) (CLI)
 
-**username_to_socials_maigret**: Enumerate social accounts for a username using Maigret and parse rich metadata.
-Tools/Pivots: [maigret](https://github.com/soxoj/maigret) (CLI)
+**username_to_socials_maigret**: перечисляет аккаунты в соцсетях по имени пользователя с помощью Maigret и разбирает расширенные метаданные.
+Инструменты/пивоты: [maigret](https://github.com/soxoj/maigret) (CLI)
 
-**username_to_dehashed**: Get breach intelligence (credentials, related individuals) associated with a username.
-Tools/APIs: [DeHashed API](https://www.dehashed.com/docs)
+**username_to_dehashed**: получает данные об утечках (учётные данные, связанные лица), связанные с именем пользователя.
+Инструменты/API: [DeHashed API](https://www.dehashed.com/docs)
 
-**username_to_device_hudsonrock**: Look up devices compromised by infostealers and associated with a username.
-Tools/APIs: [HudsonRock API](https://www.hudsonrock.com/)
+**username_to_device_hudsonrock**: ищет устройства, скомпрометированные инфостилерами и связанные с именем пользователя.
+Инструменты/API: [HudsonRock API](https://www.hudsonrock.com/)
 
 ### Website
-**website_to_crawler**: Crawl a website to extract emails and phone numbers.
-Tools/APIs: ReconCrawlTool (`reconcrawl`)
+**website_to_crawler**: обходит сайт и извлекает email и номера телефонов.
+Инструменты/API: ReconCrawlTool (`reconcrawl`)
 
-**website_to_domain**: Extract the domain name from a website URL.
-Tools/Pivots: internal URL parser
+**website_to_domain**: извлекает доменное имя из URL сайта.
+Инструменты/пивоты: внутренний парсер URL
 
-**website_to_subdomains**: Find subdomains of a website's domain via external scan.
-Tools/APIs: [c99.nl API](https://api.c99.nl/)
+**website_to_subdomains**: находит поддомены домена сайта внешним сканированием.
+Инструменты/API: [c99.nl API](https://api.c99.nl/)
 
-**website_to_links**: Crawl a website and collect internal/external links and domains.
-Tools/APIs: reconspread Crawler
+**website_to_links**: обходит сайт и собирает внутренние/внешние ссылки и домены.
+Инструменты/API: краулер reconspread
 
-**website_to_text**: Fetch and extract visible text from a webpage.
-Tools/APIs: HTTP GET, [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
+**website_to_text**: загружает веб-страницу и извлекает видимый текст.
+Инструменты/API: HTTP GET, [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
 
-**website_to_webtrackers**: Extract analytics/ads tracking codes from a website.
-Tools/APIs: recontrack TrackingCodeExtractor
+**website_to_webtrackers**: извлекает коды аналитики и рекламного отслеживания с сайта.
+Инструменты/API: recontrack TrackingCodeExtractor
 
 ---
 
-Notes
-- Some enrichers optionally depend on docker binaries: `subfinder`, `asnmap`, `dnsx`, `naabu`, `httpx`, and `jq` which are installed in the docker container.
-- API-keyed enrichers read keys from params or environment (e.g., `HIBP_API_KEY`, `ETHERSCAN_API_KEY`, `WHOXY_API_KEY`, `WHOISXML_API_KEY`, `DEHASHED_API_KEY`, `SCAMALYTICS_API_KEY`, `VERIPHONE_API_KEY`, `C99_API_KEY`).
-- Internal/test enrichers (`domain_to_dummy`, `ip_to_dummy_domains`, `n8n_connector`) are not listed here — they exist in the codebase but are not part of the public catalog.
+Примечания
+- Некоторые обогатители опционально зависят от бинарных файлов Docker: `subfinder`, `asnmap`, `dnsx`, `naabu`, `httpx` и `jq`, которые установлены в Docker-контейнере.
+- Обогатители, требующие API-ключей, читают ключи из параметров или переменных окружения (например, `HIBP_API_KEY`, `ETHERSCAN_API_KEY`, `WHOXY_API_KEY`, `WHOISXML_API_KEY`, `DEHASHED_API_KEY`, `SCAMALYTICS_API_KEY`, `VERIPHONE_API_KEY`, `C99_API_KEY`).
+- Внутренние и тестовые обогатители (`domain_to_dummy`, `ip_to_dummy_domains`, `n8n_connector`) здесь не перечислены — они есть в кодовой базе, но не входят в публичный каталог.
