@@ -141,8 +141,8 @@ const FlowSheet = () => {
                 {filteredEnrichers.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     {searchTerm.trim()
-                      ? 'No enrichers found matching your search.'
-                      : 'No enrichers available for this node type.'}
+                      ? t('No enrichers found matching your search.')
+                      : t('No enrichers available for this node type.')}
                   </div>
                 ) : (
                   filteredEnrichers.map((enricher: Enricher) => (

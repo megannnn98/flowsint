@@ -108,7 +108,7 @@ const FlowsList = () => {
         </ul>
       ) : (
         <div className="flex-1 flex items-center justify-center p-4 text-center text-muted-foreground">
-          {searchQuery ? 'No matching flows found' : 'No flows found'}
+          {searchQuery ? t('No matching flows found') : t('No flows found')}
         </div>
       )}
     </div>

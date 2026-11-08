@@ -38,7 +38,10 @@ export function useLaunchFlow(askUser: boolean = false) {
     if (askUser) {
       const confirmed = await confirm({
         title: `${flow_id} scan`,
-        message: `You're about to launch ${flow_id} flow on ${node_ids.length} items.`
+        message: t("You're about to launch {{name}} flow on {{n}} items.", {
+          name: flow_id,
+          n: node_ids.length
+        })
       })
       if (!confirmed) return
     }

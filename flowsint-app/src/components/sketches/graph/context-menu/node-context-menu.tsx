@@ -144,7 +144,7 @@ export default function ContextMenu({
       <div className="px-3 py-1 border-b gap-1 border-border flex items-center justify-between shrink-0">
         <div className="flex text-xs items-center gap-1 truncate">
           <span className="block truncate">{node.nodeLabel}</span> -{' '}
-          <span className="block">{node.nodeType}</span>
+          <span className="block">{t(node.nodeType)}</span>
         </div>
         <div className="flex items-center gap-1">
           <SubActions node={node} handleOpenNodeDetails={handleOpenNodeDetails} />
@@ -252,7 +252,7 @@ export default function ContextMenu({
               ) : (
                 <div className="p-4 text-center">
                   <p className="text-sm text-muted-foreground">
-                    {enrichersSearchQuery ? 'No enrichers found' : 'No enrichers available'}
+                    {enrichersSearchQuery ? t('No enrichers found') : t('No enrichers available')}
                   </p>
                 </div>
               )}
@@ -329,7 +329,7 @@ export default function ContextMenu({
               ) : (
                 <div className="p-4 text-center">
                   <p className="text-sm text-muted-foreground">
-                    {flowsSearchQuery ? 'No flows found' : 'No flows available'}
+                    {flowsSearchQuery ? t('No flows found') : t('No flows available')}
                   </p>
                 </div>
               )}

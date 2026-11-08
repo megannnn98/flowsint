@@ -84,14 +84,14 @@ const toolCategories: ToolCategory = {
     DnsDumpster: {
       name: 'DnsDumpster',
       path: '/tools/dnsdumpster',
-      description: 'DNS reconnaissance and network mapping from a domain.',
+      description: t('DNS reconnaissance and network mapping from a domain.'),
       active: false,
       link: 'https://github.com/PaulSec/API-dnsdumpster.com'
     },
     ASNMap: {
       name: 'ASNMap',
       path: '/tools/asnmap',
-      description: 'ASN mapping and network reconnaissance tool.',
+      description: t('ASN mapping and network reconnaissance tool.'),
       active: true,
       link: 'https://github.com/projectdiscovery/asnmap',
       avatar: 'https://avatars.githubusercontent.com/u/50994705?s=280&v=4'

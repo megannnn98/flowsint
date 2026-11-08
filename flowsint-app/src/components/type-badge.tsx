@@ -1,3 +1,4 @@
+import { t } from '@/i18n'
 import { Badge } from '@/components/ui/badge'
 import { cn, hexToRgba } from '@/lib/utils'
 import { useNodesDisplaySettings } from '@/stores/node-display-settings'
@@ -20,7 +21,7 @@ function TypeBadgeComponent({ type, children, className }: TypeBadgeProps) {
       style={{ backgroundColor: hexToRgba(color, 0.5) }}
       className={cn('font-medium rounded border-transparent', className)}
     >
-      {children ?? type}
+      {children ?? t(type)}
     </Badge>
   )
 }

@@ -309,8 +309,8 @@ export const AnalysisEditor = ({
                             </span>
                             <span className="text-xs text-muted-foreground">
                               {analysisItem.id === currentAnalysisId
-                                ? 'Current'
-                                : 'Switch to this analysis'}
+                                ? t('Current')
+                                : t('Switch to this analysis')}
                             </span>
                           </div>
                         </Button>
@@ -434,7 +434,7 @@ export const AnalysisEditor = ({
               className="w-full h-full"
               editorContentClassName="p-5 min-h-[300px]"
               output="json"
-              placeholder={canEdit ? 'Enter your analysis...' : ''}
+              placeholder={canEdit ? t('Enter your analysis...') : ''}
               autofocus={canEdit}
               showToolbar={canEdit && showToolbar}
               editorClassName="focus:outline-hidden"

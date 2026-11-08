@@ -82,7 +82,10 @@ export function CaseHeader({ investigation }: CaseOverviewPageProps) {
   const handleDeleteInvestigation = async () => {
     const confirmed = await confirm({
       title: t('Delete Investigation'),
-      message: `Are you sure you want to delete "${investigation.name}"? This will also delete all sketches within it. This action cannot be undone.`
+      message: t(
+        'Are you sure you want to delete "{{name}}"? This will also delete all sketches within it. This action cannot be undone.',
+        { name: investigation.name }
+      )
     })
 
     if (confirmed) {

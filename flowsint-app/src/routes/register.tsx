@@ -64,7 +64,7 @@ function Register() {
               <div className="p-3 mb-4 text-sm bg-red-100 border border-red-400 text-red-700 rounded">
                 {registerMutation.error instanceof Error
                   ? registerMutation.error.message
-                  : 'An error occurred registering.'}
+                  : t('An error occurred registering.')}
               </div>
             )}
 
@@ -108,7 +108,7 @@ function Register() {
                     {t('Registering...')}
                   </span>
                 ) : (
-                  'Register'
+                  t('Register')
                 )}
               </Button>
             </div>

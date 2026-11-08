@@ -246,7 +246,9 @@ export function DynamicForm({
             <Input
               id={field.name}
               type={field.type}
-              placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
+              placeholder={
+                field.placeholder || t('Enter {{field}}', { field: field.label.toLowerCase() })
+              }
               className={errors[field.name] ? 'border-destructive' : ''}
               {...register(field.name)}
             />
@@ -276,7 +278,9 @@ export function DynamicForm({
                 <TagsInput
                   value={Array.isArray(value) ? value : []}
                   onChange={(tags) => onChange(tags)}
-                  placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
+                  placeholder={
+                    field.placeholder || t('Enter {{field}}', { field: field.label.toLowerCase() })
+                  }
                   orientation="vertical"
                   variant="full"
                 />
@@ -300,7 +304,9 @@ export function DynamicForm({
             </div>
             <Textarea
               id={field.name}
-              placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
+              placeholder={
+                field.placeholder || t('Enter {{field}}', { field: field.label.toLowerCase() })
+              }
               className={errors[field.name] ? 'border-destructive' : ''}
               {...register(field.name)}
             />
@@ -432,7 +438,9 @@ export function DynamicForm({
             <Input
               id={field.name}
               type="url"
-              placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
+              placeholder={
+                field.placeholder || t('Enter {{field}}', { field: field.label.toLowerCase() })
+              }
               className={errors[field.name] ? 'border-destructive' : ''}
               {...register(field.name)}
             />
@@ -490,7 +498,7 @@ export function DynamicForm({
               {t('Submitting...')}
             </>
           ) : (
-            `Add ${currentNodeType.label}`
+            t('Add {{name}}', { name: currentNodeType.label })
           )}
         </Button>
       </div>

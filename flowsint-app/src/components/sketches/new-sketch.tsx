@@ -127,7 +127,7 @@ export default function NewSketch({ children }: NewSketchProps) {
           {t('Cancel')}
         </Button>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : 'Save'}
+          {isSubmitting ? t('Saving...') : t('Save')}
         </Button>
       </DialogFooter>
     </form>

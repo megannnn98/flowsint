@@ -327,7 +327,9 @@ export default function IconPicker({ iconType, open, setOpen, onIconChange }: Ic
             ) : filteredIcons.length === 0 ? (
               <div className="flex h-full items-center justify-center">
                 <div className="text-muted-foreground text-sm">
-                  No icons found matching &quot;{search}&quot;
+                  {t('No icons found matching "')}
+                  {search}
+                  {t('"')}
                 </div>
               </div>
             ) : (

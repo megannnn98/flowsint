@@ -192,7 +192,7 @@ export default function AddItemDialog() {
         <div className="flex items-center justify-center h-32">
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
-              {search ? `No types match "${search}"` : 'No action items available'}
+              {search ? `No types match "${search}"` : t('No action items available')}
             </p>
           </div>
         </div>
@@ -227,7 +227,7 @@ export default function AddItemDialog() {
         <DialogContent className="sm:max-w-[800px] h-[80vh] overflow-hidden flex flex-col">
           <DialogTitle className="flex items justify-between">
             <div className="flex items-center">
-              {relatedNodeToAdd ? `Add a relation to ` : 'Select an item to insert'}
+              {relatedNodeToAdd ? t('Add a relation to ') : t('Select an item to insert')}
               {relatedNodeToAdd && (
                 <span className="text-primary truncate max-w-[50%] text-ellipsis font-semibold ml-1">
                   {relatedNodeToAdd.nodeLabel}
@@ -248,8 +248,8 @@ export default function AddItemDialog() {
           </DialogTitle>
           <DialogDescription>
             {relatedNodeToAdd
-              ? 'Choose what type of relation to add to this node.'
-              : 'Choose an item to insert manually, or import data from a file.'}
+              ? t('Choose what type of relation to add to this node.')
+              : t('Choose an item to insert manually, or import data from a file.')}
           </DialogDescription>
 
           <div className="relative">
@@ -286,9 +286,7 @@ export default function AddItemDialog() {
         <DialogContent className="max-h-[95vh] flex flex-col">
           <DialogTitle>
             {currentNodeType && (
-              <>
-                {t('Add')} {currentNodeType.label.toLowerCase()}
-              </>
+              <>{t('Add {{name}}', { name: currentNodeType.label.toLowerCase() })}</>
             )}
           </DialogTitle>
           <DialogDescription>{currentNodeType?.description}</DialogDescription>

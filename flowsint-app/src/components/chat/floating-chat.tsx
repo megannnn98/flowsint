@@ -214,21 +214,20 @@ function FloatingChat() {
                                   </p>
                                   <ul className="space-y-1 text-left opacity-60">
                                     <li>
-                                      • &quot;Analyze the connections between these entities&quot;
+                                      {t('• "Analyze the connections between these entities"')}
                                     </li>
-                                    <li>• &quot;What patterns do you see in this data?&quot;</li>
+                                    <li>{t('• "What patterns do you see in this data?"')}</li>
                                     <li>
-                                      • &quot;Summarize the key findings from this
-                                      investigation&quot;
+                                      {t('• "Summarize the key findings from this investigation"')}
                                     </li>
                                   </ul>
                                 </div>
                                 <div className="text-xs space-y-1">
                                   <p className="font-medium text-left">{t('Investigation Help')}</p>
                                   <ul className="space-y-1 text-left opacity-60">
-                                    <li>• &quot;Suggest next steps for this investigation&quot;</li>
-                                    <li>• &quot;What should I look for next?&quot;</li>
-                                    <li>• &quot;Help me organize this investigation&quot;</li>
+                                    <li>{t('• "Suggest next steps for this investigation"')}</li>
+                                    <li>{t('• "What should I look for next?"')}</li>
+                                    <li>{t('• "Help me organize this investigation"')}</li>
                                   </ul>
                                 </div>
                               </div>

@@ -130,7 +130,7 @@ const NodeItem = memo(function NodeItem({
           <span className="truncate">
             {node.nodeMetadata?.created_at
               ? formatCreatedAt(node.nodeMetadata.created_at as string)
-              : 'Unknown'}
+              : t('Unknown')}
           </span>
         </div>
 
@@ -246,7 +246,7 @@ export default function NodesTable({ nodes }: NodesTableProps) {
           <Link className="mx-auto h-12 w-12 text-muted-foreground" />
           <div>
             <h3 className="text-lg font-semibold">{t('No nodes found')}</h3>
-            <p className="text-muted-foreground">This sketch doesn&apos;t have any nodes yet.</p>
+            <p className="text-muted-foreground">{t("This sketch doesn't have any nodes yet.")}</p>
           </div>
         </div>
       </div>

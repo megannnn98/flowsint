@@ -232,7 +232,7 @@ export const AIChatPanel = forwardRef<AIChatPanelHandle, AIChatPanelProps>(
             </Button>
           </div>
           <p className="text-[10px] text-muted-foreground/50 mt-1.5 px-1">
-            Enter to send &middot; Shift+Enter for new line
+            {t('Enter to send · Shift+Enter for new line')}
           </p>
         </div>
       </div>
@@ -328,7 +328,7 @@ function MessageItem({
             className="h-7 text-xs gap-1.5 rounded-lg"
           >
             {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-            {copied ? 'Copied' : 'Copy'}
+            {copied ? t('Copied') : t('Copy')}
           </Button>
         </div>
       )}

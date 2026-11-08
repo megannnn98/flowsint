@@ -149,7 +149,7 @@ function ProfilePage() {
 
           <div className="pt-2">
             <Button type="submit" disabled={updateMutation.isPending}>
-              {updateMutation.isPending ? 'Saving...' : 'Save changes'}
+              {updateMutation.isPending ? t('Saving...') : t('Save changes')}
             </Button>
           </div>
         </form>

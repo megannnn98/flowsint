@@ -91,7 +91,7 @@ export default function CaseSelector() {
               >
                 <span className="text-ellipsis truncate">
                   {id === 'overview' || !id
-                    ? 'Overview'
+                    ? t('Overview')
                     : investigation?.sketches?.find((s: Sketch) => s.id === id)?.title ||
                       analyses?.find((a: Analysis) => a.id === id)?.title ||
                       'Overview'}

@@ -65,7 +65,7 @@ export function TemplateEditorHeader({
           {t('Templates')}
         </button>
         <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/40" />
-        <span className="font-medium">{isEditMode ? templateName : 'New Template'}</span>
+        <span className="font-medium">{isEditMode ? templateName : t('New Template')}</span>
 
         {isEditMode ? (
           hasChanges ? (
@@ -123,7 +123,7 @@ export function TemplateEditorHeader({
           <PopoverContent align="end" className="w-80 p-0">
             <div className="p-3 border-b">
               <p className="text-sm font-medium">
-                {hasErrors ? 'Validation Errors' : 'Validation Passed'}
+                {hasErrors ? t('Validation Errors') : t('Validation Passed')}
               </p>
             </div>
             {hasErrors ? (

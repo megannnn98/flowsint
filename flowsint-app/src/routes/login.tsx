@@ -57,7 +57,7 @@ function Login() {
             {/* Display login error */}
             {login.error && (
               <div className="p-3 mb-4 text-sm bg-red-500/10 border border-red-400 text-red-700 rounded">
-                {login.error instanceof Error ? login.error.message : 'Login error'}
+                {login.error instanceof Error ? login.error.message : t('Login error')}
               </div>
             )}
 
@@ -133,7 +133,7 @@ function Login() {
                     {t('Signing in...')}
                   </span>
                 ) : (
-                  'Sign In'
+                  t('Sign In')
                 )}
               </button>
             </div>
@@ -143,7 +143,7 @@ function Login() {
         {/* Link to registration */}
         <div className="text-center mt-4">
           <p className="text-sm text-gray-600">
-            Don&apos;t have an account?{' '}
+            {t("Don't have an account?")}{' '}
             <Link to="/register" className="font-medium text-primary">
               {t('Create an account')}
             </Link>

@@ -136,7 +136,7 @@ export function TemplateEditor({ templateId, initialContent, importedYaml }: Tem
       navigate({ to: `/dashboard/enrichers/${data.id}` as string })
     },
     onError: (error) => {
-      toast.error(`Failed to create: ${error.message}`)
+      toast.error(t('Failed to create: {{message}}', { message: error.message }))
     }
   })
 
@@ -153,7 +153,7 @@ export function TemplateEditor({ templateId, initialContent, importedYaml }: Tem
     },
     onError: (error) => {
       contentBeingSavedRef.current = null
-      toast.error(`Failed to save: ${error.message}`)
+      toast.error(t('Failed to save: {{message}}', { message: error.message }))
     }
   })
 
@@ -165,7 +165,7 @@ export function TemplateEditor({ templateId, initialContent, importedYaml }: Tem
       navigate({ to: '/dashboard/enrichers' })
     },
     onError: (error) => {
-      toast.error(`Failed to delete: ${error.message}`)
+      toast.error(t('Failed to delete: {{message}}', { message: error.message }))
     }
   })
 

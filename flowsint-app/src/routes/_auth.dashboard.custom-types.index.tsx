@@ -50,7 +50,7 @@ function CustomTypesPage() {
       toast.success(t('Custom type deleted successfully'))
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete custom type: ${error.message}`)
+      toast.error(t('Failed to delete custom type: {{message}}', { message: error.message }))
     }
   })
 

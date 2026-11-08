@@ -72,7 +72,11 @@ const GraphPageContent = () => {
     <div className="h-full w-full flex items-center justify-center">
       <div className="text-center">
         <h2 className="text-lg font-semibold mb-2">{t('Type not supported')}</h2>
-        <p className="text-muted-foreground">The type &quot;{type}&quot; is not supported yet.</p>
+        <p className="text-muted-foreground">
+          {t('The type "')}
+          {type}
+          {t('" is not supported yet.')}
+        </p>
       </div>
     </div>
   )
@@ -120,8 +124,9 @@ export const Route = createFileRoute('/_auth/dashboard/investigations/$investiga
         </h2>
 
         <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
-          We couldn&apos;t load this investigation page. This might be due to a network issue,
-          invalid investigation ID, or the resource may not exist.
+          {t(
+            "We couldn't load this investigation page. This might be due to a network issue, invalid investigation ID, or the resource may not exist."
+          )}
         </p>
 
         <div className="space-y-3">

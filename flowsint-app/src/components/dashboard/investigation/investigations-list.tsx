@@ -195,7 +195,7 @@ function StatusBadge({ status }: { status: string }) {
           status === 'on-hold' && 'bg-warning'
         )}
       />
-      {status === 'on-hold' ? 'On Hold' : status.charAt(0).toUpperCase() + status.slice(1)}
+      {status === 'on-hold' ? t('On Hold') : status.charAt(0).toUpperCase() + status.slice(1)}
     </span>
   )
 }

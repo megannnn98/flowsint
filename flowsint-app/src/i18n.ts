@@ -16,3 +16,21 @@ void i18n.use(initReactI18next).init({
 
 export const t = i18n.t.bind(i18n)
 export default i18n
+
+const LOCALIZED_KEYS = new Set(['label', 'description', 'placeholder'])
+
+// Backend schemas (entity types, fields, options) arrive in English: translate their display strings.
+export function localizeSchema<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.map(localizeSchema) as T
+  }
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([k, v]) => [
+        k,
+        LOCALIZED_KEYS.has(k) && typeof v === 'string' ? t(v) : localizeSchema(v)
+      ])
+    ) as T
+  }
+  return value
+}

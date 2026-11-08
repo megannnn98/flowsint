@@ -50,7 +50,7 @@ export function ToolCard({ tool }: ToolCardProps) {
             }
           >
             <Key className="h-3 w-3 mr-1" />
-            {tool.apiKeyRequired === 'paid' ? 'Paid API Key' : 'Free API Key'}
+            {tool.apiKeyRequired === 'paid' ? t('Paid API Key') : t('Free API Key')}
           </Badge>
         )}
         {tool.active ? (

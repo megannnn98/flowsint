@@ -106,7 +106,7 @@ export function SaveModal({
             {t('Cancel')}
           </Button>
           <Button onClick={handleSave} disabled={isLoading}>
-            {isLoading ? 'Saving...' : 'Save flow'}
+            {isLoading ? t('Saving...') : t('Save flow')}
           </Button>
         </DialogFooter>
       </DialogContent>

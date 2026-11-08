@@ -276,12 +276,18 @@ const LaunchEnricherOrFlowPanel = memo(
                         </div>
                         <div className="space-y-2">
                           <h3 className="text-lg font-semibold">
-                            {enrichersSearchQuery ? 'No enrichers found' : 'No enrichers available'}
+                            {enrichersSearchQuery
+                              ? t('No enrichers found')
+                              : t('No enrichers available')}
                           </h3>
                           <p className="text-sm text-muted-foreground max-w-sm mx-auto">
                             {enrichersSearchQuery
-                              ? 'Try adjusting your search terms or browse all available enrichers.'
-                              : 'Enrichers are automated data processing tools that can enrich your investigation data.'}
+                              ? t(
+                                  'Try adjusting your search terms or browse all available enrichers.'
+                                )
+                              : t(
+                                  'Enrichers are automated data processing tools that can enrich your investigation data.'
+                                )}
                           </p>
                         </div>
                         {!enrichersSearchQuery && (
@@ -395,12 +401,14 @@ const LaunchEnricherOrFlowPanel = memo(
                         </div>
                         <div className="space-y-2">
                           <h3 className="text-lg font-semibold">
-                            {flowsSearchQuery ? 'No flows found' : 'No flows available'}
+                            {flowsSearchQuery ? t('No flows found') : t('No flows available')}
                           </h3>
                           <p className="text-sm text-muted-foreground max-w-sm mx-auto">
                             {flowsSearchQuery
-                              ? 'Try adjusting your search terms or browse all available flows.'
-                              : 'Flows are custom automation sequences that combine multiple transforms and data sources.'}
+                              ? t('Try adjusting your search terms or browse all available flows.')
+                              : t(
+                                  'Flows are custom automation sequences that combine multiple transforms and data sources.'
+                                )}
                           </p>
                         </div>
                         {!flowsSearchQuery && (

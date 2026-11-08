@@ -94,7 +94,10 @@ function VaultPage() {
   const handleDeleteKey = async (keyId: string, keyName: string) => {
     const confirmed = await confirm({
       title: t('Delete API Key'),
-      message: `Are you sure you want to delete the API key "${keyName}"? This action cannot be undone.`
+      message: t(
+        'Are you sure you want to delete the API key "{{name}}"? This action cannot be undone.',
+        { name: keyName }
+      )
     })
 
     if (confirmed) {

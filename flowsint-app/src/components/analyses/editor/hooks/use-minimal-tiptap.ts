@@ -108,9 +108,9 @@ const createExtensions = ({
     },
     onActionSuccess({ action }) {
       const mapping = {
-        copyImage: 'Copy Image',
-        copyLink: 'Copy Link',
-        download: 'Download'
+        copyImage: t('Copy Image'),
+        copyLink: t('Copy Link'),
+        download: t('Download')
       }
       toast.success(mapping[action], {
         position: 'bottom-right',
@@ -119,11 +119,11 @@ const createExtensions = ({
     },
     onActionError(error, { action }) {
       const mapping = {
-        copyImage: 'Copy Image',
-        copyLink: 'Copy Link',
-        download: 'Download'
+        copyImage: t('Failed to copy image'),
+        copyLink: t('Failed to copy link'),
+        download: t('Failed to download')
       }
-      toast.error(`Failed to ${mapping[action]}`, {
+      toast.error(mapping[action], {
         position: 'bottom-right',
         description: error.message
       })

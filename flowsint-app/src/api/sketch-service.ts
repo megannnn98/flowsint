@@ -1,4 +1,5 @@
 import { fetchWithAuth } from './api'
+import { localizeSchema } from '@/i18n'
 import type {
   Sketch,
   SketchGraphData,
@@ -100,9 +101,11 @@ export const sketchService = {
     })
   },
   types: async (flat = false): Promise<ActionItem[]> => {
-    return fetchWithAuth(`/api/types${flat ? '?flat=true' : ''}`, {
-      method: 'GET'
-    })
+    return localizeSchema(
+      await fetchWithAuth(`/api/types${flat ? '?flat=true' : ''}`, {
+        method: 'GET'
+      })
+    )
   },
   detectType: async (text: string): Promise<DetectionResult> => {
     return fetchWithAuth(`/api/types/detect`, {

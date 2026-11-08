@@ -156,7 +156,7 @@ function CustomTypeEditor() {
       navigate({ to: '/dashboard/custom-types' })
     },
     onError: (error: Error) => {
-      toast.error(`Failed to create: ${error.message}`)
+      toast.error(t('Failed to create: {{message}}', { message: error.message }))
     }
   })
 
@@ -170,7 +170,7 @@ function CustomTypeEditor() {
       toast.success(t('Changes saved'))
     },
     onError: (error: Error) => {
-      toast.error(`Failed to save: ${error.message}`)
+      toast.error(t('Failed to save: {{message}}', { message: error.message }))
     }
   })
 
@@ -251,7 +251,7 @@ function CustomTypeEditor() {
             </Button>
             <span className="text-muted-foreground/30">/</span>
             <span className="text-sm text-muted-foreground truncate max-w-[200px]">
-              {isNew ? 'New type' : name || 'Untitled'}
+              {isNew ? t('New type') : name || 'Untitled'}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -269,7 +269,7 @@ function CustomTypeEditor() {
               {t('Preview')}
             </Button>
             <Button size="sm" className="h-8" onClick={handleSave} disabled={isSaving}>
-              {isSaving ? 'Saving...' : isNew ? 'Create' : 'Save'}
+              {isSaving ? t('Saving...') : isNew ? t('Create') : t('Save')}
             </Button>
           </div>
         </div>

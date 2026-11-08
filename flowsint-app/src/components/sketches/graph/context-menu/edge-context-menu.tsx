@@ -116,7 +116,7 @@ export default function EdgeContextMenu({
       const count = edgeIds.length
       if (
         !(await confirm({
-          title: `You are about to delete ${count} relationship${count > 1 ? 's' : ''}?`,
+          title: t('You are about to delete relationships: {{n}}?', { n: count }),
           message: t('The action is irreversible.')
         }))
       ) {

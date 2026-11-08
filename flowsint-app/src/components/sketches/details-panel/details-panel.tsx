@@ -236,7 +236,7 @@ function PropertyRow({
 }) {
   return (
     <div className="grid grid-cols-[40%_1fr] items-center gap-2 px-6 py-1.5 group hover:bg-muted/50 transition-colors">
-      <span className="text-sm text-muted-foreground truncate">{label.replace(/_/g, ' ')}</span>
+      <span className="text-sm text-muted-foreground truncate">{t(label.replace(/_/g, ' '))}</span>
       <div className="min-w-0 text-sm flex items-center gap-1.5">
         <div className="min-w-0 flex-1">{children}</div>
         {copyValue && (
@@ -278,7 +278,7 @@ function PropertyInput({
         if (e.key === 'Enter') onBlur(draft)
       }}
       className="w-full bg-transparent outline-none placeholder:text-muted-foreground/30 focus:bg-muted/20 px-1 rounded transition-colors"
-      placeholder={placeholder ?? 'Empty'}
+      placeholder={placeholder ?? t('Empty')}
     />
   )
 }
@@ -525,7 +525,7 @@ const DetailsPanel = memo(() => {
           </div>
         </div>
         <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-muted text-muted-foreground">
-          {node.nodeType}
+          {t(node.nodeType)}
         </span>
       </div>
 
@@ -595,7 +595,7 @@ const DetailsPanel = memo(() => {
                         className="scale-75"
                       />
                     ) : (
-                      <span className="text-muted-foreground">{value ? 'Yes' : 'No'}</span>
+                      <span className="text-muted-foreground">{value ? t('Yes') : t('No')}</span>
                     )
                   ) : typeof value === 'number' ? (
                     <StatusCodeBadge statusCode={value} />
@@ -619,8 +619,8 @@ const DetailsPanel = memo(() => {
                         orientation="vertical"
                         placeholder={
                           (value as string[] | undefined)?.length === 0
-                            ? 'Empty'
-                            : `Enter ${key.toLowerCase()}`
+                            ? t('Empty')
+                            : t('Enter {{field}}', { field: t(key).toLowerCase() })
                         }
                       />
                     ) : (
@@ -649,7 +649,7 @@ const DetailsPanel = memo(() => {
                 value={formData.notes}
                 onChange={canEdit ? handleNotesChange : undefined}
                 output="html"
-                placeholder={canEdit ? 'Write something...' : ''}
+                placeholder={canEdit ? t('Write something...') : ''}
                 showToolbar={false}
                 editorContentClassName="px-6 py-3 !max-w-none prose-sm"
                 immediatelyRender={false}

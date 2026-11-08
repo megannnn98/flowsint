@@ -117,7 +117,7 @@ export default function NewAnalysis({ children }: NewAnalysisProps) {
           {t('Cancel')}
         </Button>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : 'Save'}
+          {isSubmitting ? t('Saving...') : t('Save')}
         </Button>
       </DialogFooter>
     </form>

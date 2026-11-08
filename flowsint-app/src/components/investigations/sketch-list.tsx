@@ -104,12 +104,14 @@ const SketchList = () => {
             <Waypoints className="h-10 w-10 text-yellow-500" />
             <div className="space-y-1">
               <h3 className="text-sm font-semibold text-foreground">
-                {searchQuery ? 'No matching sketches' : 'No sketches yet'}
+                {searchQuery ? t('No matching sketches') : t('No sketches yet')}
               </h3>
               <p className="text-xs opacity-70 max-w-xs">
                 {searchQuery
-                  ? "Try adjusting your search query to find what you're looking for."
-                  : "This investigation doesn't contain any sketch. Sketches let you organize and visualize your data as graphs."}
+                  ? t("Try adjusting your search query to find what you're looking for.")
+                  : t(
+                      "This investigation doesn't contain any sketch. Sketches let you organize and visualize your data as graphs."
+                    )}
               </p>
             </div>
             <NewSketch>

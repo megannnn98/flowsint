@@ -382,7 +382,9 @@ export const MapFromAddress: React.FC<MapFromAddressProps> = ({
           <MapPin className="mx-auto h-12 w-12 text-muted-foreground" />
           <div>
             <h3 className="text-lg font-semibold">{t('No location to display')}</h3>
-            <p className="text-muted-foreground">This sketch doesn&apos;t have any location yet.</p>
+            <p className="text-muted-foreground">
+              {t("This sketch doesn't have any location yet.")}
+            </p>
           </div>
         </div>
       </div>

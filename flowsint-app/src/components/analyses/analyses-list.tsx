@@ -160,12 +160,14 @@ const AnalysisList = () => {
             <FileText className="h-10 w-10 text-yellow-500" />
             <div className="space-y-1">
               <h3 className="text-sm font-semibold text-foreground">
-                {searchQuery ? 'No matching analyses' : 'No analyses yet'}
+                {searchQuery ? t('No matching analyses') : t('No analyses yet')}
               </h3>
               <p className="text-xs opacity-70 max-w-xs">
                 {searchQuery
-                  ? "Try adjusting your search query to find what you're looking for."
-                  : "This investigation doesn't contain any analysis. Analyses let you organize and document your findings."}
+                  ? t("Try adjusting your search query to find what you're looking for.")
+                  : t(
+                      "This investigation doesn't contain any analysis. Analyses let you organize and document your findings."
+                    )}
               </p>
             </div>
             <Button

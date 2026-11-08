@@ -108,7 +108,7 @@ function InvestigationForm({
             {t('Cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Creating...' : 'Create Investigation'}
+            {isSubmitting ? t('Creating...') : t('Create Investigation')}
           </Button>
         </DialogFooter>
       </form>

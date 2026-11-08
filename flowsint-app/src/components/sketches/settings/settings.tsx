@@ -115,7 +115,7 @@ function DynamicSetting({ categoryId, settingKey, setting, onValueChange }: Dyna
           <div className="flex items-center space-x-2">
             <Switch checked={setting.value} onCheckedChange={onValueChange} />
             <span className="text-sm text-muted-foreground">
-              {setting.value ? 'Enabled' : 'Disabled'}
+              {setting.value ? t('Enabled') : t('Disabled')}
             </span>
           </div>
         </SettingItem>
@@ -528,7 +528,7 @@ export default function GlobalSettings() {
           <SheetHeader>
             <SheetTitle>{t('General settings')}</SheetTitle>
             <SheetDescription>
-              Make changes to your sketch settings here. Click save when you&apos;re done.
+              {t("Make changes to your sketch settings here. Click save when you're done.")}
             </SheetDescription>
           </SheetHeader>
           <div className="grid gap-4 mt-6">
@@ -624,7 +624,7 @@ export default function GlobalSettings() {
                 onClick={handleSubmit}
                 className="flex-1 shadow-none"
               >
-                {updateMutation.isPending ? 'Saving...' : 'Save changes'}
+                {updateMutation.isPending ? t('Saving...') : t('Save changes')}
               </Button>
             </div>
           )}

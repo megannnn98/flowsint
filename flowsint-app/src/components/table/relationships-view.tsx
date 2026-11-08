@@ -253,7 +253,7 @@ export default function RelationshipsTable() {
     const count = selectedEdges.length
     if (
       !(await confirm({
-        title: `You are about to delete ${count} relationship${count > 1 ? 's' : ''}?`,
+        title: t('You are about to delete relationships: {{n}}?', { n: count }),
         message: t('The action is irreversible.')
       }))
     ) {
@@ -351,7 +351,7 @@ export default function RelationshipsTable() {
           <div>
             <h3 className="text-lg font-semibold">{t('No relationships found')}</h3>
             <p className="text-muted-foreground">
-              This sketch doesn&apos;t have any relationships yet.
+              {t("This sketch doesn't have any relationships yet.")}
             </p>
           </div>
         </div>
@@ -417,7 +417,7 @@ export default function RelationshipsTable() {
               onCheckedChange={handleSelectAll}
             />
             <span className="text-sm text-muted-foreground">
-              {selectedEdges.length > 0 ? `${selectedEdges.length} selected` : 'Select all'}
+              {selectedEdges.length > 0 ? `${selectedEdges.length} selected` : t('Select all')}
             </span>
           </div>
           {selectedEdges.length > 0 && (

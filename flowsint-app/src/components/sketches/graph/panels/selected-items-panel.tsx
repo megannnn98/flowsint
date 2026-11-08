@@ -104,7 +104,7 @@ const ActionBar = () => {
     if (!selectedNodes.length || !sketchId) return
     if (
       !(await confirm({
-        title: `You are about to delete ${selectedNodes.length} node(s).`,
+        title: t('You are about to delete nodes: {{n}}.', { n: selectedNodes.length }),
         message: t('The action is irreversible.')
       }))
     )

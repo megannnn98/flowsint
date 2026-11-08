@@ -90,7 +90,9 @@ export default function RawMaterial() {
         ))}
         {Object.keys(filteredEnrichers).length === 0 && (
           <div className="text-center py-4 text-muted-foreground">
-            No enrichers found matching &quot;{searchTerm}&quot;
+            {t('No enrichers found matching "')}
+            {searchTerm}
+            {t('"')}
           </div>
         )}
       </div>

@@ -213,7 +213,7 @@ export const Toolbar = memo(function Toolbar({ isLoading }: { isLoading: boolean
         } else {
           await sketchService.exportSketch(sketchId, format)
         }
-        toast.success(`Sketch exported as ${format.toUpperCase()}`)
+        toast.success(t('Sketch exported as {{format}}', { format: format.toUpperCase() }))
       } catch (error) {
         toast.error(
           `Failed to export sketch: ${error instanceof Error ? error.message : 'Unknown error'}`

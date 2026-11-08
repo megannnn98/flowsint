@@ -21,7 +21,10 @@ export function useLaunchEnricher(askUser: boolean = false) {
     if (askUser) {
       const confirmed = await confirm({
         title: `${enricherName} scan`,
-        message: `You're about to launch ${enricherName} enricher on ${node_ids.length} items.`
+        message: t("You're about to launch {{name}} enricher on {{n}} items.", {
+          name: enricherName,
+          n: node_ids.length
+        })
       })
       if (!confirmed) return
     }

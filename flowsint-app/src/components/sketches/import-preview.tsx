@@ -714,7 +714,7 @@ export function ImportPreview({
         </Button>
         <Button onClick={handleImport} disabled={isImporting}>
           {isImporting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isImporting ? 'Importing...' : `Import ${includedCount} entities`}
+          {isImporting ? t('Importing...') : `Import ${includedCount} entities`}
         </Button>
       </div>
     </div>

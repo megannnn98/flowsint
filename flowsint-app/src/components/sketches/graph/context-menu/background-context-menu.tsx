@@ -144,7 +144,7 @@ export default function BackgroundContextMenu({
     if (!selectedNodes.length || !sketchId) return
     if (
       !(await confirm({
-        title: `You are about to delete ${selectedNodes.length} node(s).`,
+        title: t('You are about to delete nodes: {{n}}.', { n: selectedNodes.length }),
         message: t('The action is irreversible.')
       }))
     )
@@ -313,7 +313,7 @@ export default function BackgroundContextMenu({
                 ) : (
                   <div className="p-4 text-center">
                     <p className="text-sm text-muted-foreground">
-                      {enrichersSearchQuery ? 'No enrichers found' : 'No enrichers available'}
+                      {enrichersSearchQuery ? t('No enrichers found') : t('No enrichers available')}
                     </p>
                   </div>
                 )}
@@ -390,7 +390,7 @@ export default function BackgroundContextMenu({
                 ) : (
                   <div className="p-4 text-center">
                     <p className="text-sm text-muted-foreground">
-                      {flowsSearchQuery ? 'No flows found' : 'No flows available'}
+                      {flowsSearchQuery ? t('No flows found') : t('No flows available')}
                     </p>
                   </div>
                 )}

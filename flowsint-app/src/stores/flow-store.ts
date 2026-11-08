@@ -97,7 +97,12 @@ export const useFlowStore = create<EnricherState>((set, get) => ({
   },
   onConnect: (connection: Connection) => {
     if ([connection.targetHandle, 'Any'].includes(connection.sourceHandle)) {
-      toast.error(`Cannot connect ${connection.sourceHandle} to ${connection.targetHandle}.`)
+      toast.error(
+        t('Cannot connect {{from}} to {{to}}.', {
+          from: connection.sourceHandle,
+          to: connection.targetHandle
+        })
+      )
       return
     }
     const edge: FlowEdge = {

@@ -29,7 +29,7 @@ const InfoDialog = () => {
               </p>
 
               <p>
-                Whether you&apos;re conducting <strong>{t('cyber investigations')}</strong>
+                {t("Whether you're conducting")} <strong>{t('cyber investigations')}</strong>
                 {t(', mapping out')} <strong>{t('fraud networks')}</strong>
                 {t(', or gathering intelligence for')} <strong>{t('threat assessments')}</strong>
                 {t(
@@ -109,10 +109,11 @@ const InfoDialog = () => {
 
               <p>
                 {t('Flowsint is designed for')} <strong>{t('professionals')}</strong>{' '}
-                {t('who need')} <strong>{t('full control')}</strong> over their investigation logic,
-                from how data is structured to how relationships are interpreted. It&apos;s not just
-                a tool — it&apos;s a <strong>{t('flexible workspace')}</strong>{' '}
-                {t('for building intelligence.')}
+                {t('who need')} <strong>{t('full control')}</strong>{' '}
+                {t(
+                  "over their investigation logic, from how data is structured to how relationships are interpreted. It's not just a tool — it's a"
+                )}{' '}
+                <strong>{t('flexible workspace')}</strong> {t('for building intelligence.')}
               </p>
             </div>
           </div>
