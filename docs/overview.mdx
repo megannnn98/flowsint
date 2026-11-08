@@ -1,7 +1,7 @@
 ---
-title: "Welcome to Flowsint"
-description: "Complete documentation for Flowsint - a modular OSINT investigation platform."
-category: "Overview"
+title: "Добро пожаловать во Flowsint"
+description: "Полная документация Flowsint — модульной платформы для OSINT-расследований."
+category: "Обзор"
 order: 1
 author: "Flowsint Team"
 tags: ["documentation", "overview", "getting-started"]
@@ -9,51 +9,51 @@ version: "1.2.8"
 last_updated_at: "2026-05-15"
 ---
 
-### What is Flowsint?
+### Что такое Flowsint?
 
-Flowsint is a modular investigation and reconnaissance platform focused on OSINT (Open Source Intelligence). It provides:
+Flowsint — это модульная платформа для расследований и разведки, ориентированная на OSINT (Open Source Intelligence, разведка по открытым источникам). Она предоставляет:
 
-- Graph-based visualization of entity relationships
-- 30+ automated enrichers for intelligence gathering
-- Modular architecture with clean separation of concerns
-- Privacy-first design with local data storage
-- Extensible platform for custom enrichers
-- Automated search flows (more on that [here](/docs/getting-started/flows))
+- Визуализацию связей между сущностями в виде графа
+- Более 30 автоматических обогатителей для сбора информации
+- Модульную архитектуру с чётким разделением ответственности
+- Подход «приватность прежде всего» с локальным хранением данных
+- Расширяемую платформу для собственных обогатителей
+- Автоматические потоки поиска (подробнее [здесь](/docs/getting-started/flows))
 
 <Alert variant="warning">
-    <AlertTitle>Disclaimer !</AlertTitle>
+    <AlertTitle>Отказ от ответственности!</AlertTitle>
     <AlertDescription>
-    The author(s) and contributor(s) of this tool assume no responsibility or liability for any damages, losses, or consequences that may result from the use or misuse of this software.
-    By using this tool, you acknowledge and agree that:
-        - You are solely responsible for your use of this software
-        - You will use this tool in compliance with all applicable laws and regulations
-        - You will obtain proper authorization before conducting any security testing or reconnaissance activities
-        - You understand the potential risks and legal implications of using security tools
+    Автор(ы) и участник(и) разработки этого инструмента не несут ответственности за любой ущерб, убытки или последствия, которые могут возникнуть в результате использования или неправильного использования этого программного обеспечения.
+    Используя этот инструмент, вы признаёте и соглашаетесь, что:
+        - Вы несёте единоличную ответственность за использование этого программного обеспечения
+        - Вы будете использовать этот инструмент в соответствии со всеми применимыми законами и нормативными актами
+        - Вы получите надлежащее разрешение до проведения любых проверок безопасности или разведывательных действий
+        - Вы понимаете потенциальные риски и правовые последствия использования инструментов безопасности
 </AlertDescription>
   </Alert>
 
-### Why Flowsint?
+### Зачем нужен Flowsint?
 
-If you've already practiced some OSINT, you know that analysts often rely on a multitude of research tools: scripts, third-party services, specialized applications. But these tools often work **in silos** and quickly become obsolete if they're not maintained: a service disappears, an API changes, an access point closes. The analyst juggles with unstable tools and sometimes has to **manually adapt their data** to continue their investigation.
+Если вы уже занимались OSINT, вы знаете, что аналитики часто опираются на множество исследовательских инструментов: скрипты, сторонние сервисы, специализированные приложения. Но эти инструменты нередко работают **изолированно** и быстро устаревают, если их не поддерживать: сервис исчезает, API меняется, точка доступа закрывается. Аналитик жонглирует нестабильными инструментами и порой вынужден **вручную адаптировать свои данные**, чтобы продолжить расследование.
 
-OSINT tools, for most, are **consumables**: they evolve, appear, and disappear. Research methods change, security mechanisms evolve. However, the fundamental need always remains the same: **to see, exploit, and analyze data in a clear and understandable way**. Analysts need to be able to list, centralize, and visualize connections to have a clear understanding of their investigation.
+OSINT-инструменты для большинства — **расходный материал**: они развиваются, появляются и исчезают. Методы исследования меняются, механизмы защиты эволюционируют. Но базовая потребность остаётся неизменной: **видеть, использовать и анализировать данные ясно и понятно**. Аналитикам нужно уметь перечислять, централизовать и визуализировать связи, чтобы чётко понимать ход расследования.
 
-This is exactly what Flowsint was built for: a solid and durable foundation on which your investigations rest. Tools become simple extensions that plug in and unplug easily. A new tool comes out, and with a few manipulations it can be integrated into your investigation workflow.
+Именно для этого создан Flowsint: как прочная и долговечная основа, на которой строятся ваши расследования. Инструменты становятся простыми расширениями, которые легко подключаются и отключаются. Появился новый инструмент — и с небольшими усилиями его можно встроить в ваш рабочий процесс расследования.
 
-**Flowsint is the stable infrastructure that allows you to stay agile in the face of constant evolution of methods and sources.**
+**Flowsint — это стабильная инфраструктура, которая позволяет сохранять гибкость при постоянной эволюции методов и источников.**
 
-Flowsint is a local tool, running on your machine only. This ensures a great level of confidentiality, but comes with responsabilities.
+Flowsint — локальный инструмент, работающий только на вашем компьютере. Это обеспечивает высокий уровень конфиденциальности, но накладывает ответственность.
 
 <Alert variant="warning">
-    <AlertTitle>At your own risk</AlertTitle>
+    <AlertTitle>На ваш страх и риск</AlertTitle>
     <AlertDescription>
-    All enrichers run locally on your machine. This means you can get banned from some services or get flagged from infrastructures if you start making thousands of requests to the same service.
-    You need to always know what you are doing, and understand that gathering can go very fast in scale.
+    Все обогатители выполняются локально на вашем компьютере. Это значит, что вас могут заблокировать в некоторых сервисах или пометить как подозрительного в инфраструктуре, если вы начнёте отправлять тысячи запросов к одному и тому же сервису.
+    Всегда нужно понимать, что вы делаете, и помнить, что сбор данных может очень быстро набрать масштаб.
 
-    For example, you can very easily happen to be making DNS resolution requests for 10 000 IPs.
+    Например, вы легко можете оказаться в ситуации, когда отправляете запросы DNS-разрешения для 10 000 IP-адресов.
 
-    Know you infrastructure and your limits. Know how the tools used in the enrichers actually work. You can have a list of the available enrichers and tools [here](/docs/sources/available-enrichers).
+    Знайте свою инфраструктуру и свои пределы. Знайте, как на самом деле работают инструменты, которые используют обогатители. Список доступных обогатителей и инструментов находится [здесь](/docs/sources/available-enrichers).
 </AlertDescription>
   </Alert>
 
-If all those points are clear for you, let's start investigating !
+Если все эти пункты вам понятны — приступаем к расследованию!

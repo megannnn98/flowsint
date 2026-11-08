@@ -1,7 +1,7 @@
 ---
-title: "Syllabus"
-description: "Syllabus, just to make sure we speak the same language. Those definitions apply in the context of Flowsint platform."
-category: "Overview"
+title: "Словарь терминов"
+description: "Словарь терминов, чтобы мы говорили на одном языке. Эти определения действуют в контексте платформы Flowsint."
+category: "Обзор"
 order: 2
 author: "Flowsint Team"
 tags: ["documentation", "overview",  "syllabus"]
@@ -11,63 +11,63 @@ last_updated_at: "2026-05-15"
 
 ### OSINT
 
-      Open Source Intelligence consists of collecting, analyzing, and exploiting **freely** and **openly** available information from search engines, images, social networks, public archives, etc.
+      Open Source Intelligence (разведка по открытым источникам) — это сбор, анализ и использование информации, **свободно** и **открыто** доступной из поисковых систем, изображений, социальных сетей, публичных архивов и т. д.
 
-### Investigation
+### Расследование (Investigation)
 
-    A structured process aimed at collecting, correlating, and analyzing information from different sources and enrichers, in order to answer a question or solve a problem. An investigation can be **exploratory** (discovering unknown elements) or **targeted** (validating a hypothesis). An investigation can contain multiple **sketches** (each representing a different view or stage of the analysis) and one or more **analyses**.
+    Структурированный процесс сбора, сопоставления и анализа информации из разных источников и обогатителей, цель которого — ответить на вопрос или решить задачу. Расследование может быть **поисковым** (обнаружение неизвестных элементов) или **целевым** (проверка гипотезы). В расследовании может быть несколько **скетчей** (каждый из которых отражает отдельное представление или этап анализа) и один или несколько **анализов**.
 
-### Sketch
+### Скетч (Sketch)
 
-    Visual result produced by executing one or more enrichers on one or more entities. A sketch represents the current state of the graph derived from collected data at a given moment in the investigation. Multiple sketches can exist for the same investigation to capture different perspectives or stages.
+    Визуальный результат выполнения одного или нескольких обогатителей над одной или несколькими сущностями. Скетч отражает текущее состояние графа, построенного на собранных данных, в конкретный момент расследования. Для одного расследования может существовать несколько скетчей, фиксирующих разные точки зрения или этапы.
 
-### Analysis
+### Анализ (Analysis)
 
-    Set of processing, interpretations, and verifications performed on data collected during the investigation. Analyses aim to identify trends, confirm or refute hypotheses, and produce actionable conclusions. They can be **quantitative** (measurements, statistics) or **qualitative** (contextual assessments, behavioral patterns).
+    Совокупность обработки, интерпретации и проверки данных, собранных в ходе расследования. Цель анализов — выявлять тенденции, подтверждать или опровергать гипотезы и формулировать практические выводы. Они могут быть **количественными** (измерения, статистика) или **качественными** (оценка контекста, модели поведения).
 
-### Enricher
+### Обогатитель (Enricher)
 
-    An **enricher** is an operation that, from an input element **A** (*source entity*), allows obtaining one or more elements **B** (*target entities*) by applying a search or correlation method called a **pivot**.
+    **Обогатитель** — это операция, которая по входному элементу **A** (*исходной сущности*) позволяет получить один или несколько элементов **B** (*целевых сущностей*), применяя метод поиска или сопоставления, называемый **пивотом**.
 
-    > Example:
+    > Пример:
     >
     >
-    > A = `my.domain.com` (*domain name*)
+    > A = `my.domain.com` (*доменное имя*)
     >
-    > p = "DNS resolution" (*pivot*)
+    > p = «DNS-разрешение» (*пивот*)
     >
-    > B = `12.23.34.45` (*IP address*).
+    > B = `12.23.34.45` (*IP-адрес*).
     >
-### Pivot
+### Пивот (Pivot)
 
-    A **pivot** is the method or technical process used to derive **B** from **A**. The pivot defines **how** the enricher obtains its result (e.g., DNS resolution, WHOIS lookup, API query, etc.).
+    **Пивот** — это метод или технический процесс, с помощью которого из **A** получают **B**. Пивот определяет, **как** обогатитель получает результат (например, DNS-разрешение, WHOIS-запрос, запрос к API и т. д.).
 
-    > Examples of pivots:
+    > Примеры пивотов:
     >
-    > DNS Resolution → domain → IP
-    > WHOIS Lookup → IP → owner
-    > Reverse Image Search → image → web pages containing this image
+    > DNS Resolution → домен → IP
+    > WHOIS Lookup → IP → владелец
+    > Reverse Image Search → изображение → веб-страницы, содержащие это изображение
 
-### Tool
+### Инструмент (Tool)
 
-    A tool generally refers to a script, program, or service providing a **pivot**, i.e., a means to retrieve or enricher information from an input element.
+    Инструментом обычно называют скрипт, программу или сервис, предоставляющий **пивот**, то есть способ получить или обогатить информацию по входному элементу.
 
-### Entity
+### Сущность (Entity)
 
-    An identifiable object or element manipulated by enrichers (e.g., IP address, domain, email address, user identifier, file hash, etc.). An entity is always associated with a **Sketch**. In the graph, entities are represented as **nodes** (see [Graph format](/docs/developers/graph-format) for technical details).
+    Идентифицируемый объект или элемент, с которым работают обогатители (например, IP-адрес, домен, email-адрес, идентификатор пользователя, хеш файла и т. д.). Сущность всегда связана со **скетчем**. На графе сущности представлены **узлами** (технические подробности — в разделе [Формат графа](/docs/developers/graph-format)).
 
-### Relationship
+### Связь (Relationship)
 
-    Defines a link between two entities. This link is generally named (in uppercase) and can be unidirectional or bidirectional.
+    Определяет отношение между двумя сущностями. Обычно связь имеет имя (заглавными буквами) и может быть однонаправленной или двунаправленной.
 
-    > Examples of relationships:
+    > Примеры связей:
     >
     >
     > A = `my.domain.com` → `RESOLVES_TO` → `12.23.34.45`
     >
 
-    A relationship is always associated between a **source** node (*from*) and a **target** node (*to*). In the graph, relationships are represented as **edges** (see [Graph format](/docs/developers/graph-format) for technical details).
+    Связь всегда соединяет **исходный** узел (*from*) и **целевой** узел (*to*). На графе связи представлены **рёбрами** (технические подробности — в разделе [Формат графа](/docs/developers/graph-format)).
 
-### Flow
+### Поток (Flow)
 
-    The chaining of multiple enrichers, where the output of one becomes the input of the next, allowing to expand or deepen an investigation.
+    Цепочка из нескольких обогатителей, в которой результат одного становится входными данными следующего; позволяет расширять или углублять расследование.
