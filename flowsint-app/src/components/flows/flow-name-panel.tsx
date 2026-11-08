@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/api/query-keys'
 import type { Flow } from '@/types/flow'
 
+import { t } from '@/i18n'
 interface FlowNamePanelProps {
   flow?: Flow
   onUpdate?: (updates: Partial<Flow>) => void
@@ -35,7 +36,7 @@ export const FlowNamePanel = ({ flow, onUpdate, disabled = false }: FlowNamePane
       queryClient.invalidateQueries({
         queryKey: queryKeys.flows.detail(variables.flowId)
       })
-      toast.success('Flow updated successfully.')
+      toast.success(t('Flow updated successfully.'))
     },
     onError: (error) => {
       toast.error(
@@ -135,7 +136,7 @@ export const FlowNamePanel = ({ flow, onUpdate, disabled = false }: FlowNamePane
             onKeyDown={(e) => handleKeyDown(e, 'name', name)}
             disabled={disabled || isSaving}
             className="!text-xl font-semibold bg-transparent border-b border-gray-300 focus:border-primary focus:outline-none !px-1 !py-0.5 w-full"
-            placeholder="Enter flow name"
+            placeholder={t('Enter flow name')}
           />
         ) : (
           <h1
@@ -156,14 +157,16 @@ export const FlowNamePanel = ({ flow, onUpdate, disabled = false }: FlowNamePane
             onKeyDown={(e) => handleKeyDown(e, 'description', description)}
             disabled={disabled || isSaving}
             className="text-sm text-muted-foreground bg-transparent border-b border-gray-300 focus:border-primary focus:outline-none px-1 py-0.5 w-full"
-            placeholder="Add a description..."
+            placeholder={t('Add a description...')}
           />
         ) : (
           <p
             className="text-sm text-muted-foreground cursor-pointer hover:bg-foreground/10 px-1 py-0.5 rounded-mdtransition-colors min-h-[1.5rem]"
             onClick={() => !disabled && setIsEditingDesc(true)}
           >
-            {description || <span className="italic text-gray-400">Add a description...</span>}
+            {description || (
+              <span className="italic text-gray-400">{t('Add a description...')}</span>
+            )}
           </p>
         )}
       </Card>

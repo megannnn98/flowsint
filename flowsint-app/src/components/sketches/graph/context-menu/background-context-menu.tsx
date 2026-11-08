@@ -35,6 +35,7 @@ import { sketchService } from '@/api/sketch-service'
 import { usePermissions } from '@/hooks/use-can'
 import type { PendingEnricherLaunch } from '@/components/sketches/enricher-params-sheet'
 
+import { t } from '@/i18n'
 interface GraphContextMenuProps {
   nodes: GraphNode[]
   top?: number
@@ -144,7 +145,7 @@ export default function BackgroundContextMenu({
     if (
       !(await confirm({
         title: `You are about to delete ${selectedNodes.length} node(s).`,
-        message: 'The action is irreversible.'
+        message: t('The action is irreversible.')
       }))
     )
       return
@@ -183,7 +184,9 @@ export default function BackgroundContextMenu({
           {/* Header with title and action buttons */}
           <div className="px-3 py-2 border-b gap-1 border-border flex items-center justify-between shrink-0">
             <div className="flex text-xs items-center gap-1 truncate">
-              <span className="block truncate">{selectedNodes.length} selected</span>
+              <span className="block truncate">
+                {selectedNodes.length} {t('selected')}
+              </span>
               {isSameType && <span className="block">- {sharedType}</span>}
             </div>
             <div className="grow" />
@@ -198,13 +201,15 @@ export default function BackgroundContextMenu({
                         className="h-6 p-0 hover:bg-muted opacity-70 hover:opacity-100 text-destructive hover:text-destructive"
                         onClick={handleDeleteNodes}
                       >
-                        <Trash2 className="h-3 w-3" strokeWidth={1.5} /> Delete{' '}
+                        <Trash2 className="h-3 w-3" strokeWidth={1.5} /> {t('Delete')}{' '}
                         {selectedNodeIds.length}
                       </Button>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Delete {selectedNodeIds.length} node(s)</p>
+                    <p>
+                      {t('Delete')} {selectedNodeIds.length} {t('node(s)')}
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -221,11 +226,11 @@ export default function BackgroundContextMenu({
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Zap className="h-3 w-3 mr-1" />
-                  Enrichers
+                  {t('Enrichers')}
                 </TabsTrigger>
                 <TabsTrigger value="flows" className="flex-1" onClick={(e) => e.stopPropagation()}>
                   <FileCode2 className="h-3 w-3 mr-1" />
-                  Flows
+                  {t('Flows')}
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -241,7 +246,7 @@ export default function BackgroundContextMenu({
                   <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
                   <Input
                     type="search"
-                    placeholder="Search enrichers..."
+                    placeholder={t('Search enrichers...')}
                     value={enrichersSearchQuery}
                     onChange={(e) => {
                       e.stopPropagation()
@@ -287,7 +292,7 @@ export default function BackgroundContextMenu({
                             </span>{' '}
                             {enricher.name || '(Unnamed enricher)'}
                             {enricher.params_schema?.length ? (
-                              <span title="Requires configuration">
+                              <span title={t('Requires configuration')}>
                                 <Settings className="h-3 w-3 text-muted-foreground shrink-0" />
                               </span>
                             ) : null}
@@ -323,7 +328,7 @@ export default function BackgroundContextMenu({
                   <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
                   <Input
                     type="search"
-                    placeholder="Search flows..."
+                    placeholder={t('Search flows...')}
                     value={flowsSearchQuery}
                     onChange={(e) => {
                       e.stopPropagation()
@@ -419,7 +424,7 @@ const DefaultBackgroundMenu = memo(() => {
   if (!canCreate) {
     return (
       <div className="flex-1 grow text-sm overflow-hidden min-h-0 p-3">
-        <p className="text-muted-foreground text-xs">View only</p>
+        <p className="text-muted-foreground text-xs">{t('View only')}</p>
       </div>
     )
   }
@@ -430,13 +435,13 @@ const DefaultBackgroundMenu = memo(() => {
         className="w-full rounded-t-md flex items-center gap-2 p-2 hover:bg-muted text-left transition-colors"
         onClick={handleOpenNewAddItemDialog}
       >
-        <Plus className="h-4 w-4 opacity-60" /> Add a new entity
+        <Plus className="h-4 w-4 opacity-60" /> {t('Add a new entity')}
       </button>
       <button
         className="w-full rounded-b-md flex items-center gap-2 p-2 hover:bg-muted text-left transition-colors"
         onClick={handleOpenImportDialog}
       >
-        <Download className="h-4 w-4 opacity-60" /> Import entities
+        <Download className="h-4 w-4 opacity-60" /> {t('Import entities')}
       </button>
     </div>
   )
@@ -485,7 +490,8 @@ const SubActions = memo(({ selectedNodes }: SubActionsProps) => {
         onClick={handleExportJson}
       >
         <FileJson className="h-4 w-4 opacity-60" />
-        Export {selectedNodes.length} node(s), {selectedEdges.length} edge(s) as JSON
+        {t('Export')} {selectedNodes.length} {t('node(s),')} {selectedEdges.length}{' '}
+        {t('edge(s) as JSON')}
       </Button>
     </div>
   )

@@ -12,6 +12,7 @@ import { queryKeys } from '@/api/query-keys'
 import ErrorState from '../shared/error-state'
 import { cn } from '@/lib/utils'
 
+import { t } from '@/i18n'
 const SketchList = () => {
   const { investigationId } = useParams({ strict: false })
   const {
@@ -38,8 +39,8 @@ const SketchList = () => {
   if (error)
     return (
       <ErrorState
-        title="Couldn't load sketches"
-        description="Something went wrong while fetching data. Please try again."
+        title={t("Couldn't load sketches")}
+        description={t('Something went wrong while fetching data. Please try again.')}
         error={error}
         onRetry={() => refetch()}
       />
@@ -55,7 +56,7 @@ const SketchList = () => {
         <Input
           type="search"
           className="!border border-border h-7"
-          placeholder="Search..."
+          placeholder={t('Search...')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -114,7 +115,7 @@ const SketchList = () => {
             <NewSketch>
               <Button size="sm" variant="outline">
                 <PlusIcon className="w-4 h-4 mr-2" />
-                Create your first sketch
+                {t('Create your first sketch')}
               </Button>
             </NewSketch>
           </div>

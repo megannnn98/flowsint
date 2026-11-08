@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/api/query-keys'
 import { TerminalLogViewer } from '../terminal'
 
+import { t } from '@/i18n'
 export const LogPanel = memo(() => {
   const { id: sketch_id } = useParams({ strict: false })
   const { confirm } = useConfirm()
@@ -34,8 +35,8 @@ export const LogPanel = memo(() => {
     if (!sketch_id) return
     if (
       !(await confirm({
-        title: 'Delete all logs',
-        message: 'Are you sure you want to delete all logs?'
+        title: t('Delete all logs'),
+        message: t('Are you sure you want to delete all logs?')
       }))
     )
       return

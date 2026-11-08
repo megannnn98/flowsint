@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 
+import { t } from '@/i18n'
 interface MetadataFieldProps {
   value: Record<string, string>
   onChange: (value: Record<string, string>) => void
@@ -78,14 +79,14 @@ export function MetadataField({ value = {}, onChange, error, className }: Metada
               <Input
                 value={key}
                 onChange={(e) => handleKeyChange(key, e.target.value, val)}
-                placeholder="Clé"
+                placeholder={t('Clé')}
                 className="flex-1"
               />
               <span className="text-muted-foreground">:</span>
               <Input
                 value={val}
                 onChange={(e) => handleValueChange(key, e.target.value)}
-                placeholder="Valeur"
+                placeholder={t('Valeur')}
                 className="flex-1"
               />
               <Button
@@ -96,7 +97,7 @@ export function MetadataField({ value = {}, onChange, error, className }: Metada
                 className="h-8 w-8 text-destructive"
               >
                 <X className="h-4 w-4" />
-                <span className="sr-only">Supprimer</span>
+                <span className="sr-only">{t('Supprimer')}</span>
               </Button>
             </div>
           ))}
@@ -109,7 +110,7 @@ export function MetadataField({ value = {}, onChange, error, className }: Metada
           <Input
             value={newKey}
             onChange={(e) => setNewKey(e.target.value)}
-            placeholder="Key"
+            placeholder={t('Key')}
             className={localError ? 'border-destructive' : ''}
           />
         </div>
@@ -118,7 +119,7 @@ export function MetadataField({ value = {}, onChange, error, className }: Metada
           <Input
             value={newValue}
             onChange={(e) => setNewValue(e.target.value)}
-            placeholder="Value"
+            placeholder={t('Value')}
           />
         </div>
         <Button
@@ -129,7 +130,7 @@ export function MetadataField({ value = {}, onChange, error, className }: Metada
           className="mb-0.5"
         >
           <PlusCircle className="h-4 w-4 mr-1" />
-          Add
+          {t('Add')}
         </Button>
       </div>
 

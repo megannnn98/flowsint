@@ -8,6 +8,7 @@ import { useQuery } from '@tanstack/react-query'
 import { SkeletonList } from '../shared/skeleton-list'
 import { flowService } from '@/api/flow-service'
 
+import { t } from '@/i18n'
 export default function RawMaterial() {
   const {
     data: materials,
@@ -42,7 +43,7 @@ export default function RawMaterial() {
     return result
   }, [searchTerm, materials])
 
-  if (error) return <div>error</div>
+  if (error) return <div>{t('error')}</div>
 
   if (isLoading)
     return (
@@ -56,7 +57,7 @@ export default function RawMaterial() {
         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
           type="text"
-          placeholder="Search enrichers..."
+          placeholder={t('Search enrichers...')}
           className="pl-8 border! border-border"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}

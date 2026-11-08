@@ -5,6 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
+import { t } from '@/i18n'
 interface CopyButtonProps {
   content: string
   delay?: number
@@ -49,7 +50,7 @@ export function CopyButton({
           size={label ? 'default' : size}
           variant="ghost"
           onClick={handleCopy}
-          aria-label="Copy content"
+          aria-label={t('Copy content')}
         >
           {isCopied ? (
             <CheckIcon className="!h-3.5 !w-3.5 text-primary" />
@@ -59,7 +60,7 @@ export function CopyButton({
           {label && <span className="text-xs">{label}</span>}
         </Button>
       </TooltipTrigger>
-      <TooltipContent>Copied !</TooltipContent>
+      <TooltipContent>{t('Copied !')}</TooltipContent>
     </Tooltip>
   )
 }

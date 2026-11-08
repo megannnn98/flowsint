@@ -14,6 +14,7 @@ import { Waypoints, FileText, Search, ChevronDown, Plus, ArrowLeft, Home } from 
 import NewSketch from '@/components/sketches/new-sketch'
 import { queryKeys } from '@/api/query-keys'
 
+import { t } from '@/i18n'
 export default function CaseSelector() {
   const navigate = useNavigate()
   const { id, investigationId, type } = useParams({ strict: false })
@@ -104,7 +105,7 @@ export default function CaseSelector() {
               <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search sketches and analyses..."
+                  placeholder={t('Search sketches and analyses...')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-8 h-8 text-sm"
@@ -123,7 +124,7 @@ export default function CaseSelector() {
                 >
                   <span className="text-left truncate flex items-center gap-1 text-muted-foreground">
                     <Home strokeWidth={1.5} />
-                    <ArrowLeft strokeWidth={1.5} /> back to case
+                    <ArrowLeft strokeWidth={1.5} /> {t('back to case')}
                   </span>
                 </Button>
               </div>
@@ -173,7 +174,7 @@ export default function CaseSelector() {
                   className="w-full justify-start gap-2 h-auto py-1.5 px-2 rounded-none hover:bg-accent text-muted-foreground hover:text-foreground text-sm"
                 >
                   <Plus className="w-4 h-4" />
-                  <span className="text-left truncate">Create new sketch</span>
+                  <span className="text-left truncate">{t('Create new sketch')}</span>
                 </Button>
               </NewSketch>
             </div>

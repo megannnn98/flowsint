@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Copy, MoreHorizontal, Download, Link2, Maximize } from 'lucide-react'
 
+import { t } from '@/i18n'
 interface ImageActionsProps {
   shouldMerge?: boolean
   isLink?: boolean
@@ -81,22 +82,22 @@ const ActionItems: Array<{
   {
     key: 'onView',
     icon: <Maximize className="size-4" />,
-    tooltip: 'View image'
+    tooltip: t('View image')
   },
   {
     key: 'onDownload',
     icon: <Download className="size-4" />,
-    tooltip: 'Download image'
+    tooltip: t('Download image')
   },
   {
     key: 'onCopy',
     icon: <Copy className="size-4" />,
-    tooltip: 'Copy image to clipboard'
+    tooltip: t('Copy image to clipboard')
   },
   {
     key: 'onCopyLink',
     icon: <Link2 className="size-4" />,
-    tooltip: 'Copy image link',
+    tooltip: t('Copy image link'),
     isLink: true
   }
 ]
@@ -126,7 +127,7 @@ export const ImageActions: React.FC<ImageActionsProps> = React.memo(
             <DropdownMenuTrigger asChild>
               <ActionButton
                 icon={<MoreHorizontal className="size-4" />}
-                tooltip="Open menu"
+                tooltip={t('Open menu')}
                 onClick={(e) => e.preventDefault()}
               />
             </DropdownMenuTrigger>

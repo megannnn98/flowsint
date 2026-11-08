@@ -8,6 +8,7 @@ import { isMac } from '@/lib/utils'
 import { NavUser } from '../nav-user'
 import { CONFIG } from '@/config'
 
+import { t } from '@/i18n'
 interface NavItem {
   icon: LucideIcon
   label: string
@@ -18,14 +19,14 @@ export const Sidebar = memo(() => {
   const togglePanel = useLayoutStore((s) => s.togglePanel)
 
   const navItems: NavItem[] = [
-    { icon: Home, label: 'Dashboard', href: '/dashboard/' },
-    { icon: Workflow, label: 'Flows', href: '/dashboard/flows' },
-    { icon: Shapes, label: 'Custom types', href: '/dashboard/custom-types' },
-    { icon: Lock, label: 'Vault', href: '/dashboard/vault' }
+    { icon: Home, label: t('Dashboard'), href: '/dashboard/' },
+    { icon: Workflow, label: t('Flows'), href: '/dashboard/flows' },
+    { icon: Shapes, label: t('Custom types'), href: '/dashboard/custom-types' },
+    { icon: Lock, label: t('Vault'), href: '/dashboard/vault' }
   ]
 
   if (CONFIG.ENRICHER_TEMPLATES_FEATURE_FLAG)
-    navItems.push({ icon: Puzzle, label: 'Enrichers', href: '/dashboard/enrichers' })
+    navItems.push({ icon: Puzzle, label: t('Enrichers'), href: '/dashboard/enrichers' })
 
   const commonClasses = 'flex items-center justify-center h-12 w-full rounded-sm hover:bg-muted'
 
@@ -76,8 +77,11 @@ export const Sidebar = memo(() => {
               </div>
             </TooltipTrigger>
             <TooltipContent side="right">
-              Toggle panel
-              <span className="text-[.7rem] ml-1 opacity-60">({isMac ? '⌘' : 'ctrl'}B)</span>
+              {t('Toggle panel')}
+              <span className="text-[.7rem] ml-1 opacity-60">
+                ({isMac ? '⌘' : 'ctrl'}
+                {t('B)')}
+              </span>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

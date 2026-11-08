@@ -36,6 +36,7 @@ import IconPicker, { NodeIconTrigger } from '@/components/shared/icon-picker'
 import { ColorPicker } from '@/components/shared/color-picker'
 import { usePermissions } from '@/hooks/use-can'
 
+import { t } from '@/i18n'
 // SettingItem Components
 interface SettingItemProps {
   label: string
@@ -125,7 +126,7 @@ function DynamicSetting({ categoryId, settingKey, setting, onValueChange }: Dyna
         <SettingItem label={displayName} description={setting.description} inline={true}>
           <Select value={setting.value} onValueChange={onValueChange}>
             <SelectTrigger className="h-9 w-48">
-              <SelectValue placeholder="Select option" />
+              <SelectValue placeholder={t('Select option')} />
             </SelectTrigger>
             <SelectContent>
               {setting.options?.map((option: any) => (
@@ -145,7 +146,7 @@ function DynamicSetting({ categoryId, settingKey, setting, onValueChange }: Dyna
             type="text"
             value={setting.value}
             onChange={(e) => onValueChange(e.target.value)}
-            placeholder="Enter value"
+            placeholder={t('Enter value')}
             className="h-10"
           />
         </SettingItem>
@@ -157,7 +158,7 @@ function DynamicSetting({ categoryId, settingKey, setting, onValueChange }: Dyna
           <Textarea
             value={setting.value}
             onChange={(e) => onValueChange(e.target.value)}
-            placeholder="Enter value"
+            placeholder={t('Enter value')}
             rows={4}
             className="resize-none"
           />
@@ -178,7 +179,7 @@ function DynamicSetting({ categoryId, settingKey, setting, onValueChange }: Dyna
             type="number"
             value={setting.value}
             onChange={(e) => onValueChange(Number(e.target.value))}
-            placeholder="Enter number"
+            placeholder={t('Enter number')}
             min={setting.min}
             max={setting.max}
             step={setting.step}
@@ -190,7 +191,9 @@ function DynamicSetting({ categoryId, settingKey, setting, onValueChange }: Dyna
     default:
       return (
         <SettingItem label={displayName} description={setting.description} inline={false}>
-          <div className="text-sm text-muted-foreground">Unknown setting type: {setting.type}</div>
+          <div className="text-sm text-muted-foreground">
+            {t('Unknown setting type:')} {setting.type}
+          </div>
         </SettingItem>
       )
   }
@@ -278,14 +281,14 @@ function NodeColorsSection() {
   return (
     <div className="space-y-6">
       <div className="space-y-1">
-        <h3 className="text-lg font-semibold text-foreground">Node</h3>
+        <h3 className="text-lg font-semibold text-foreground">{t('Node')}</h3>
         <p className="text-sm text-muted-foreground">
-          Customize the node styles for each type in the graph visualization.
+          {t('Customize the node styles for each type in the graph visualization.')}
         </p>
       </div>
       <div className="border-b flex items-center gap-2 pb-4">
         <Button variant="outline" size="sm" onClick={handleReset} className="grow shadow-none">
-          Reset to default
+          {t('Reset to default')}
         </Button>
         <Button
           variant="outline"
@@ -293,7 +296,7 @@ function NodeColorsSection() {
           onClick={handleRandomizeColors}
           className="grow shadow-none"
         >
-          Randomize
+          {t('Randomize')}
         </Button>
       </div>
       <div className="pr-4">
@@ -353,9 +356,9 @@ function DynamicSection({ categoryId, category, title, description }: DynamicSec
           <p className="text-sm text-muted-foreground">{description}</p>
         </div>
         <div className="text-sm text-muted-foreground">
-          No settings available for category: {category}
+          {t('No settings available for category:')} {category}
           <br />
-          Available categories: {Object.keys(category || {}).join(', ')}
+          {t('Available categories:')} {Object.keys(category || {}).join(', ')}
         </div>
       </div>
     )
@@ -376,9 +379,9 @@ function DynamicSection({ categoryId, category, title, description }: DynamicSec
       {categoryId === 'graph' && (
         <div className="border-b pb-6">
           <div className="space-y-1">
-            <h4 className="text-md font-semibold text-foreground">Force graph presets</h4>
+            <h4 className="text-md font-semibold text-foreground">{t('Force graph presets')}</h4>
             <p className="text-sm text-muted-foreground">
-              Apply predefined configurations for different graph layouts.
+              {t('Apply predefined configurations for different graph layouts.')}
             </p>
           </div>
           <div className="grid grid-cols-2 gap-2 mt-4">
@@ -389,7 +392,7 @@ function DynamicSection({ categoryId, category, title, description }: DynamicSec
                 size="sm"
                 onClick={() => {
                   applyPreset(presetName)
-                  toast.success('Settings saved. Re-apply a layout to see changes.')
+                  toast.success(t('Settings saved. Re-apply a layout to see changes.'))
                 }}
                 className="justify-start shadow-none"
               >
@@ -404,7 +407,7 @@ function DynamicSection({ categoryId, category, title, description }: DynamicSec
               onClick={() => resetSettings()}
               className="w-full shadow-none"
             >
-              Reset to defaults
+              {t('Reset to defaults')}
             </Button>
           </div>
         </div>
@@ -496,7 +499,7 @@ export default function GlobalSettings() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.sketches.detail(id)
       })
-      toast.success('Sketch updated successfully')
+      toast.success(t('Sketch updated successfully'))
       setSettingsModalOpen(false)
     },
     onError: (error) => {
@@ -523,7 +526,7 @@ export default function GlobalSettings() {
       <Sheet open={settingsModalOpen} onOpenChange={setSettingsModalOpen}>
         <SheetContent className="w-full sm:max-w-xl">
           <SheetHeader>
-            <SheetTitle>General settings</SheetTitle>
+            <SheetTitle>{t('General settings')}</SheetTitle>
             <SheetDescription>
               Make changes to your sketch settings here. Click save when you&apos;re done.
             </SheetDescription>
@@ -552,11 +555,11 @@ export default function GlobalSettings() {
       <Sheet open={settingsModalOpen} onOpenChange={setSettingsModalOpen}>
         <SheetContent className="w-full sm:max-w-xl">
           <SheetHeader>
-            <SheetTitle>General settings</SheetTitle>
-            <SheetDescription>Error loading sketch data. Please try again.</SheetDescription>
+            <SheetTitle>{t('General settings')}</SheetTitle>
+            <SheetDescription>{t('Error loading sketch data. Please try again.')}</SheetDescription>
           </SheetHeader>
           <div className="grid gap-4 mt-6">
-            <Button onClick={() => refetch()}>Retry</Button>
+            <Button onClick={() => refetch()}>{t('Retry')}</Button>
           </div>
         </SheetContent>
       </Sheet>
@@ -568,43 +571,43 @@ export default function GlobalSettings() {
       return (
         <div className="space-y-6">
           <div className="space-y-1">
-            <h3 className="text-lg font-semibold text-foreground">Sketch information</h3>
+            <h3 className="text-lg font-semibold text-foreground">{t('Sketch information')}</h3>
             <p className="text-sm text-muted-foreground">
-              Configure the basic details and metadata for your sketch.
+              {t('Configure the basic details and metadata for your sketch.')}
             </p>
           </div>
 
           <div className="space-y-5">
             <TextSetting
-              label="Title"
-              description="The name of your sketch"
+              label={t('Title')}
+              description={t('The name of your sketch')}
               value={formData.title}
               onValueChange={canEdit ? (value) => handleInputChange('title', value) : () => {}}
-              placeholder="Enter sketch title"
+              placeholder={t('Enter sketch title')}
             />
 
             <TextareaSetting
-              label="Description"
-              description="A brief description of what this sketch represents"
+              label={t('Description')}
+              description={t('A brief description of what this sketch represents')}
               value={formData.description}
               onValueChange={
                 canEdit ? (value) => handleInputChange('description', value) : () => {}
               }
-              placeholder="Enter sketch description"
+              placeholder={t('Enter sketch description')}
               rows={4}
             />
 
             <SelectSetting
-              label="Status"
-              description="The current status of this sketch"
+              label={t('Status')}
+              description={t('The current status of this sketch')}
               value={formData.status}
               onValueChange={canEdit ? (value) => handleInputChange('status', value) : () => {}}
               options={[
-                { value: 'active', label: 'Active' },
-                { value: 'inactive', label: 'Inactive' },
-                { value: 'archived', label: 'Archived' }
+                { value: 'active', label: t('Active') },
+                { value: 'inactive', label: t('Inactive') },
+                { value: 'archived', label: t('Archived') }
               ]}
-              placeholder="Select status"
+              placeholder={t('Select status')}
             />
           </div>
 
@@ -612,7 +615,7 @@ export default function GlobalSettings() {
             <div className="flex gap-3 pt-6">
               <SheetClose asChild>
                 <Button variant="outline" type="button" className="flex-1 shadow-none">
-                  Cancel
+                  {t('Cancel')}
                 </Button>
               </SheetClose>
               <Button
@@ -647,15 +650,17 @@ export default function GlobalSettings() {
       )
     }
 
-    return <div>Section not found.</div>
+    return <div>{t('Section not found.')}</div>
   }
 
   return (
     <Sheet open={settingsModalOpen} onOpenChange={setSettingsModalOpen}>
       <SheetContent className="w-full sm:max-w-2xl flex flex-col overflow-hidden p-0">
         <SheetHeader className="px-6 pt-6 pb-4">
-          <SheetTitle>Sketch settings</SheetTitle>
-          <SheetDescription>Configure your sketch settings and preferences.</SheetDescription>
+          <SheetTitle>{t('Sketch settings')}</SheetTitle>
+          <SheetDescription>
+            {t('Configure your sketch settings and preferences.')}
+          </SheetDescription>
         </SheetHeader>
         <Tabs
           value={activeSection}
@@ -671,7 +676,7 @@ export default function GlobalSettings() {
                 </TabsTrigger>
               ))}
               <TabsTrigger value="nodecolors" className="h-9">
-                Node
+                {t('Node')}
               </TabsTrigger>
             </TabsList>
           </div>
@@ -800,31 +805,31 @@ export function KeyboardShortcuts() {
     {
       category: 'Navigation & panels',
       items: [
-        { key: `${modKey}+L`, description: 'Toggle analysis panel' },
-        { key: `${modKey}+B`, description: 'Toggle panel' },
-        { key: `${modKey}+D`, description: 'Toggle console' },
-        { key: `${modKey}+J`, description: 'Open command palette' }
+        { key: `${modKey}+L`, description: t('Toggle analysis panel') },
+        { key: `${modKey}+B`, description: t('Toggle panel') },
+        { key: `${modKey}+D`, description: t('Toggle console') },
+        { key: `${modKey}+J`, description: t('Open command palette') }
       ]
     },
     {
       category: 'Graph',
       items: [
-        { key: `S`, description: 'Hold to activate selection' },
-        { key: `Shift`, description: 'Hold while clicking on nodes to add to selection' }
+        { key: `S`, description: t('Hold to activate selection') },
+        { key: `Shift`, description: t('Hold while clicking on nodes to add to selection') }
       ]
     },
     {
       category: 'Settings',
       items: [
-        { key: `${modKey}+G`, description: 'Toggle graph settings' },
-        { key: `${modKey}+K`, description: 'Toggle keyboard shortcuts' }
+        { key: `${modKey}+G`, description: t('Toggle graph settings') },
+        { key: `${modKey}+K`, description: t('Toggle keyboard shortcuts') }
       ]
     },
     {
       category: 'Chat & assistant',
       items: [
-        { key: `${modKey}+E`, description: 'Toggle chat assistant' },
-        { key: 'Escape', description: 'Close chat assistant' }
+        { key: `${modKey}+E`, description: t('Toggle chat assistant') },
+        { key: 'Escape', description: t('Close chat assistant') }
       ]
     },
     {
@@ -837,8 +842,10 @@ export function KeyboardShortcuts() {
     <Sheet open={keyboardShortcutsOpen} onOpenChange={setKeyboardShortcutsOpen}>
       <SheetContent className="w-full sm:max-w-lg overflow-y-auto py-3">
         <SheetHeader>
-          <SheetTitle>Keyboard Shortcuts</SheetTitle>
-          <SheetDescription>Here is the list of all available keyboard shortcuts.</SheetDescription>
+          <SheetTitle>{t('Keyboard Shortcuts')}</SheetTitle>
+          <SheetDescription>
+            {t('Here is the list of all available keyboard shortcuts.')}
+          </SheetDescription>
         </SheetHeader>
         <div className="space-y-6 mt-6  p-4">
           {shortcuts.map((category) => (

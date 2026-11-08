@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useTheme } from '@/components/theme-provider'
 
+import { t } from '@/i18n'
 export function ModeToggle() {
   const { setTheme } = useTheme()
 
@@ -19,14 +20,14 @@ export function ModeToggle() {
           <Button variant="ghost" className="h-6" size="icon">
             <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 opacity-60" />
             <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 opacity-60" />
-            <span className="sr-only">Toggle theme</span>
+            <span className="sr-only">{t('Toggle theme')}</span>
           </Button>
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme('light')}>Light</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark')}>Dark</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('system')}>System</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme('light')}>{t('Light')}</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme('dark')}>{t('Dark')}</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme('system')}>{t('System')}</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

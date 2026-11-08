@@ -6,6 +6,7 @@ import type { VariantProps } from 'class-variance-authority'
 import { ChevronDown, List } from 'lucide-react'
 import { ToolbarSection } from '../toolbar-section'
 
+import { t } from '@/i18n'
 type ListItemAction = 'orderedList' | 'bulletList'
 interface ListItem extends FormatAction {
   value: ListItemAction
@@ -14,7 +15,7 @@ interface ListItem extends FormatAction {
 const formatActions: ListItem[] = [
   {
     value: 'orderedList',
-    label: 'Numbered list',
+    label: t('Numbered list'),
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -33,7 +34,7 @@ const formatActions: ListItem[] = [
   },
   {
     value: 'bulletList',
-    label: 'Bullet list',
+    label: t('Bullet list'),
     icon: <List className="size-5" />,
     isActive: (editor) => editor.isActive('bulletList'),
     action: (editor) => editor.chain().focus().toggleBulletList().run(),

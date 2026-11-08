@@ -18,6 +18,7 @@ import { Badge } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
+import { t } from '@/i18n'
 interface TemplateEditorHeaderProps {
   isEditMode: boolean
   templateName: string
@@ -61,7 +62,7 @@ export function TemplateEditorHeader({
           onClick={onNavigateBack}
           className="text-muted-foreground hover:text-foreground transition-colors"
         >
-          Templates
+          {t('Templates')}
         </button>
         <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/40" />
         <span className="font-medium">{isEditMode ? templateName : 'New Template'}</span>
@@ -72,7 +73,7 @@ export function TemplateEditorHeader({
               variant="outline"
               className="ml-1 text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20"
             >
-              Unsaved
+              {t('Unsaved')}
             </Badge>
           ) : (
             !hasErrors && (
@@ -81,7 +82,7 @@ export function TemplateEditorHeader({
                 className="ml-1 text-[10px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
               >
                 <CheckCircle2 className="h-2.5 w-2.5 mr-0.5" />
-                Saved
+                {t('Saved')}
               </Badge>
             )
           )
@@ -90,7 +91,7 @@ export function TemplateEditorHeader({
             variant="outline"
             className="ml-1 text-[10px] bg-blue-500/10 text-blue-600 border-blue-500/20"
           >
-            Draft
+            {t('Draft')}
           </Badge>
         )}
       </div>
@@ -108,12 +109,13 @@ export function TemplateEditorHeader({
               {hasErrors ? (
                 <>
                   <XCircle className="h-3.5 w-3.5" />
-                  {totalErrors} error{totalErrors !== 1 ? 's' : ''}
+                  {totalErrors} {t('error')}
+                  {totalErrors !== 1 ? 's' : ''}
                 </>
               ) : (
                 <>
                   <CheckCircle2 className="h-3.5 w-3.5" />
-                  Valid
+                  {t('Valid')}
                 </>
               )}
             </Button>
@@ -138,7 +140,7 @@ export function TemplateEditorHeader({
                     <div key={`e-${i}`} className="flex gap-2 text-xs">
                       <AlertCircle className="h-3.5 w-3.5 text-destructive shrink-0 mt-0.5" />
                       <span className="text-destructive">
-                        Line {error.startLineNumber}: {error.message}
+                        {t('Line')} {error.startLineNumber}: {error.message}
                       </span>
                     </div>
                   ))}
@@ -146,7 +148,7 @@ export function TemplateEditorHeader({
             ) : (
               <div className="p-3">
                 <p className="text-xs text-muted-foreground">
-                  All required fields are present and valid.
+                  {t('All required fields are present and valid.')}
                 </p>
               </div>
             )}
@@ -165,10 +167,10 @@ export function TemplateEditorHeader({
               className="h-7 gap-1.5 text-xs"
             >
               <Sparkles className="h-3.5 w-3.5" />
-              Generate
+              {t('Generate')}
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Focus AI assistant</TooltipContent>
+          <TooltipContent>{t('Focus AI assistant')}</TooltipContent>
         </Tooltip>
 
         <div className="w-px h-4 bg-border mx-0.5" />
@@ -180,7 +182,7 @@ export function TemplateEditorHeader({
               {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Copy YAML</TooltipContent>
+          <TooltipContent>{t('Copy YAML')}</TooltipContent>
         </Tooltip>
 
         {/* Save */}
@@ -197,12 +199,12 @@ export function TemplateEditorHeader({
               ) : (
                 <Save className="h-3.5 w-3.5" />
               )}
-              Save Enricher
+              {t('Save Enricher')}
             </Button>
           </TooltipTrigger>
           <TooltipContent>
             <span className="flex items-center gap-1.5">
-              <Keyboard className="h-3 w-3" /> ⌘S
+              <Keyboard className="h-3 w-3" /> {t('⌘S')}
             </span>
           </TooltipContent>
         </Tooltip>
@@ -223,7 +225,7 @@ export function TemplateEditorHeader({
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Delete template</TooltipContent>
+              <TooltipContent>{t('Delete template')}</TooltipContent>
             </Tooltip>
           </>
         )}

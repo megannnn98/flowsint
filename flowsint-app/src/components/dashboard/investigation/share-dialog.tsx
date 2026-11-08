@@ -36,6 +36,7 @@ import { X, UserPlus, Crown, Shield, Pencil, Eye, Users, Check } from 'lucide-re
 import { getDisplayName } from '@/lib/user-display'
 import { cn } from '@/lib/utils'
 
+import { t } from '@/i18n'
 const ROLE_OPTIONS: {
   value: InvestigationRole
   label: string
@@ -44,19 +45,19 @@ const ROLE_OPTIONS: {
 }[] = [
   {
     value: 'admin',
-    label: 'Admin',
+    label: t('Admin'),
     icon: Shield,
     className: 'bg-purple-500/15 text-purple-700 border-purple-500/30 dark:text-purple-400'
   },
   {
     value: 'editor',
-    label: 'Editor',
+    label: t('Editor'),
     icon: Pencil,
     className: 'bg-blue-500/15 text-blue-700 border-blue-500/30 dark:text-blue-400'
   },
   {
     value: 'viewer',
-    label: 'Viewer',
+    label: t('Viewer'),
     icon: Eye,
     className: 'bg-zinc-500/15 text-zinc-700 border-zinc-500/30 dark:text-zinc-400'
   }
@@ -67,22 +68,22 @@ const ROLE_BADGE: Record<
   { label: string; icon: typeof Eye; className: string }
 > = {
   owner: {
-    label: 'Owner',
+    label: t('Owner'),
     icon: Crown,
     className: 'bg-amber-500/15 text-amber-700 border-amber-500/30 dark:text-amber-400'
   },
   admin: {
-    label: 'Admin',
+    label: t('Admin'),
     icon: Shield,
     className: 'bg-purple-500/15 text-purple-700 border-purple-500/30 dark:text-purple-400'
   },
   editor: {
-    label: 'Editor',
+    label: t('Editor'),
     icon: Pencil,
     className: 'bg-blue-500/15 text-blue-700 border-blue-500/30 dark:text-blue-400'
   },
   viewer: {
-    label: 'Viewer',
+    label: t('Viewer'),
     icon: Eye,
     className: 'bg-zinc-500/15 text-zinc-700 border-zinc-500/30 dark:text-zinc-400'
   }
@@ -179,7 +180,7 @@ export function ShareDialog({ investigationId, children }: ShareDialogProps) {
       })
       setQuery('')
       setSelectedEmail('')
-      toast.success('Collaborator added')
+      toast.success(t('Collaborator added'))
     },
     onError: (error: any) => {
       const message = error?.message || 'Failed to add collaborator'
@@ -194,9 +195,9 @@ export function ShareDialog({ investigationId, children }: ShareDialogProps) {
       queryClient.invalidateQueries({
         queryKey: queryKeys.investigations.collaborators(investigationId)
       })
-      toast.success('Role updated')
+      toast.success(t('Role updated'))
     },
-    onError: () => toast.error('Failed to update role')
+    onError: () => toast.error(t('Failed to update role'))
   })
 
   const removeMutation = useMutation({
@@ -206,9 +207,9 @@ export function ShareDialog({ investigationId, children }: ShareDialogProps) {
       queryClient.invalidateQueries({
         queryKey: queryKeys.investigations.collaborators(investigationId)
       })
-      toast.success('Collaborator removed')
+      toast.success(t('Collaborator removed'))
     },
-    onError: () => toast.error('Failed to remove collaborator')
+    onError: () => toast.error(t('Failed to remove collaborator'))
   })
 
   const handleInvite = () => {
@@ -221,9 +222,9 @@ export function ShareDialog({ investigationId, children }: ShareDialogProps) {
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-xl gap-0 p-0 overflow-hidden">
         <DialogHeader className="px-5 pt-5 pb-4">
-          <DialogTitle className="text-base">Share investigation</DialogTitle>
+          <DialogTitle className="text-base">{t('Share investigation')}</DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
-            Invite collaborators and manage access.
+            {t('Invite collaborators and manage access.')}
           </DialogDescription>
         </DialogHeader>
 
@@ -232,7 +233,7 @@ export function ShareDialog({ investigationId, children }: ShareDialogProps) {
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
               <Input
-                placeholder="Search by name or email..."
+                placeholder={t('Search by name or email...')}
                 value={query}
                 onChange={(e) => handleQueryChange(e.target.value)}
                 onKeyDown={(e) => {
@@ -293,7 +294,7 @@ export function ShareDialog({ investigationId, children }: ShareDialogProps) {
               disabled={!selectedEmail.trim() || addMutation.isPending}
             >
               <UserPlus className="w-4 h-4 mr-1.5" />
-              Invite
+              {t('Invite')}
             </Button>
           </div>
         </div>
@@ -318,7 +319,7 @@ export function ShareDialog({ investigationId, children }: ShareDialogProps) {
           ) : collaborators.length === 0 ? (
             <div className="py-10 flex flex-col items-center gap-2 text-center">
               <Users className="w-8 h-8 text-muted-foreground/30" />
-              <p className="text-sm text-muted-foreground">No collaborators yet</p>
+              <p className="text-sm text-muted-foreground">{t('No collaborators yet')}</p>
             </div>
           ) : (
             <div className="p-2">
@@ -399,7 +400,8 @@ export function ShareDialog({ investigationId, children }: ShareDialogProps) {
             <Separator />
             <div className="px-5 py-3">
               <p className="text-xs text-muted-foreground">
-                {collaborators.length} member{collaborators.length !== 1 ? 's' : ''} have access
+                {collaborators.length} {t('member')}
+                {collaborators.length !== 1 ? 's' : ''} {t('have access')}
               </p>
             </div>
           </>

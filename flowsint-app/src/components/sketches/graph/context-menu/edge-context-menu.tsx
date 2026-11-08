@@ -12,6 +12,7 @@ import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { usePermissions } from '@/hooks/use-can'
 
+import { t } from '@/i18n'
 interface EdgeContextMenuProps {
   edge?: GraphEdge
   edges?: GraphEdge[]
@@ -92,11 +93,11 @@ export default function EdgeContextMenu({
             data: { label: newLabel }
           })
         )
-        toast.success('Relationship updated successfully.')
+        toast.success(t('Relationship updated successfully.'))
       } catch {
         // Rollback on error
         updateEdge(edge.id, { label: previousLabel })
-        toast.error('Failed to update relationship.')
+        toast.error(t('Failed to update relationship.'))
       }
     }
   }, [edge, updateEdge, sketchId, setMenu, onSubmitNew])
@@ -116,7 +117,7 @@ export default function EdgeContextMenu({
       if (
         !(await confirm({
           title: `You are about to delete ${count} relationship${count > 1 ? 's' : ''}?`,
-          message: 'The action is irreversible.'
+          message: t('The action is irreversible.')
         }))
       ) {
         return
@@ -163,7 +164,9 @@ export default function EdgeContextMenu({
       <div className="px-3 py-1 flex items-center justify-between shrink-0">
         <div className="flex text-xs items-center gap-1 truncate">
           {isMultiSelect ? (
-            <span className="block truncate">{edgeIds.length} relationships selected</span>
+            <span className="block truncate">
+              {edgeIds.length} {t('relationships selected')}
+            </span>
           ) : (
             <div className="p-1">
               <Input

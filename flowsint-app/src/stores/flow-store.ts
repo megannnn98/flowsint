@@ -14,6 +14,7 @@ import {
 import { toast } from 'sonner'
 import { type EnricherNodeData } from '@/types/enricher'
 
+import { t } from '@/i18n'
 export type NodeData = EnricherNodeData
 
 export type FlowNode = Node<NodeData>
@@ -122,7 +123,7 @@ export const useFlowStore = create<EnricherState>((set, get) => ({
       set({ selectedNode: node })
     }
     if (openParamsDialog && !get().selectedNode) {
-      toast.error('Please select a node first to configure its parameters.')
+      toast.error(t('Please select a node first to configure its parameters.'))
       return
     }
     set({ openParamsDialog })
@@ -133,7 +134,7 @@ export const useFlowStore = create<EnricherState>((set, get) => ({
       set({ selectedNode: node })
     }
     if (openFlowSheet && !get().selectedNode) {
-      toast.error('Please select a node first to add a connector.')
+      toast.error(t('Please select a node first to add a connector.'))
       return
     }
     set({ openFlowSheet })

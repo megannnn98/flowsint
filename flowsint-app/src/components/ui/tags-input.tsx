@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 
+import { t } from '@/i18n'
 interface TagsInputProps {
   id?: string | undefined
   value: string[]
@@ -70,7 +71,9 @@ function TagsInput({
             disabled={disabled}
           >
             <X className="h-3 w-3" />
-            <span className="sr-only">Delete tag {tag}</span>
+            <span className="sr-only">
+              {t('Delete tag')} {tag}
+            </span>
           </Button>
         </Badge>
       ))}

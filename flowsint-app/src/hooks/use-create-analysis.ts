@@ -5,6 +5,7 @@ import default_content from '@/components/analyses/default_content.json'
 import { queryKeys } from '@/api/query-keys'
 import { toast } from 'sonner'
 
+import { t } from '@/i18n'
 export const useCreateAnalysis = (
   investigationId: string,
   onAnalysisCreate?: (investigationId: string) => void
@@ -14,7 +15,7 @@ export const useCreateAnalysis = (
   return useMutation({
     mutationFn: async () => {
       const newAnalysis: Partial<Analysis> = {
-        title: 'Untitled Analysis',
+        title: t('Untitled Analysis'),
         investigation_id: investigationId,
         content: default_content
       }
@@ -26,7 +27,7 @@ export const useCreateAnalysis = (
         queryKey: queryKeys.analyses.byInvestigation(investigationId || '')
       })
       onAnalysisCreate?.(investigationId)
-      toast.success('New analysis created')
+      toast.success(t('New analysis created'))
     },
     onError: (error) => {
       toast.error(

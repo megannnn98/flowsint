@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Plus, FileCode, FileImage, FileText, File } from 'lucide-react'
 
+import { t } from '@/i18n'
 const evidence = [
   { id: 1, name: 'network_capture_nov28.pcap', size: '245 MB', icon: FileCode },
   { id: 2, name: 'malware_sample_hash.zip', size: '12.4 MB', icon: File },
@@ -13,14 +14,14 @@ export function EvidenceSection() {
   return (
     <section>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-medium text-foreground">Evidence & Files</h2>
+        <h2 className="text-sm font-medium text-foreground">{t('Evidence & Files')}</h2>
         <Button
           variant="ghost"
           size="sm"
           className="h-7 text-xs text-muted-foreground hover:text-foreground gap-1"
         >
           <Plus className="w-3.5 h-3.5" />
-          Upload
+          {t('Upload')}
         </Button>
       </div>
 

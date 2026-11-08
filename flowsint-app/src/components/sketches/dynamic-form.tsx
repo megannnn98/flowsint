@@ -25,6 +25,7 @@ import { MetadataField } from '@/components/sketches/metadata-field'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { toast } from 'sonner'
 
+import { t } from '@/i18n'
 interface DynamicFormProps {
   currentNodeType: any
   initialData?: Record<string, any>
@@ -53,8 +54,11 @@ export function DynamicForm({
               ? z
                   .string()
                   .min(1, { message: `${field.label} is required` })
-                  .email({ message: 'Email invalide' })
-              : z.string().email({ message: 'Email invalide' }).optional()
+                  .email({ message: t('Email invalide') })
+              : z
+                  .string()
+                  .email({ message: t('Email invalide') })
+                  .optional()
             break
           case 'url':
             schemaMap[field.name] = field.required
@@ -70,12 +74,12 @@ export function DynamicForm({
                   .string()
                   .min(1, { message: `${field.label} is required` })
                   .refine((val) => !isNaN(Number(val)), {
-                    message: 'Doit être un nombre valide'
+                    message: t('Doit être un nombre valide')
                   })
               : z
                   .string()
                   .refine((val) => val === '' || !isNaN(Number(val)), {
-                    message: 'Doit être un nombre valide'
+                    message: t('Doit être un nombre valide')
                   })
                   .optional()
             break
@@ -87,12 +91,12 @@ export function DynamicForm({
                     .string()
                     .min(1, { message: `${field.label} is required` })
                     .refine((val) => validValues.includes(val), {
-                      message: 'Valeur non valide'
+                      message: t('Valeur non valide')
                     })
                 : z
                     .string()
                     .refine((val) => val === '' || validValues.includes(val), {
-                      message: 'Valeur non valide'
+                      message: t('Valeur non valide')
                     })
                     .optional()
             } else {
@@ -117,7 +121,7 @@ export function DynamicForm({
           case 'metadata':
             schemaMap[field.name] = field.required
               ? z.record(z.string(), z.string()).refine((val) => Object.keys(val).length > 0, {
-                  message: 'Au moins une métadonnée is requirede'
+                  message: t('Au moins une métadonnée is requirede')
                 })
               : z.record(z.string(), z.string()).optional()
             break
@@ -202,7 +206,7 @@ export function DynamicForm({
       }
     } catch (error) {
       console.log(error)
-      toast.error('An error occurred while submitting the form.')
+      toast.error(t('An error occurred while submitting the form.'))
     } finally {
       setIsSubmitting(false)
     }
@@ -331,7 +335,9 @@ export function DynamicForm({
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    {!field.required && <SelectItem value=" ">-- Sélectionner --</SelectItem>}
+                    {!field.required && (
+                      <SelectItem value=" ">{t('-- Sélectionner --')}</SelectItem>
+                    )}
                     {field.options?.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
@@ -466,7 +472,9 @@ export function DynamicForm({
   }
 
   if (!currentNodeType) {
-    return <div className="p-4 text-center text-muted-foreground">Could not find this item.</div>
+    return (
+      <div className="p-4 text-center text-muted-foreground">{t('Could not find this item.')}</div>
+    )
   }
   if (!isForm) {
     return <div className="space-y-4">{currentNodeType.fields.map(renderField)}</div>
@@ -479,7 +487,7 @@ export function DynamicForm({
           {isSubmitting || loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Submitting...
+              {t('Submitting...')}
             </>
           ) : (
             `Add ${currentNodeType.label}`

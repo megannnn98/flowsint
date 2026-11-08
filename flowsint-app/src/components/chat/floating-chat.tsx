@@ -17,6 +17,7 @@ import type { UIMessage } from 'ai'
 import { useIsChatActive } from '@/hooks/use-is-chat-active'
 import ChatInactive from './chat-inactive'
 
+import { t } from '@/i18n'
 function FloatingChat() {
   const bottomRef = useRef<HTMLDivElement>(null)
   const isOpenChat = useLayoutStore((s) => s.isOpenChat)
@@ -79,13 +80,13 @@ function FloatingChat() {
                     variant="outline"
                     onClick={toggleChat}
                   >
-                    <img src="/logo.svg" alt="Flowsint" className="h-8 w-8 object-contain" />
+                    <img src="/logo.svg" alt={t('Flowsint')} className="h-8 w-8 object-contain" />
                   </Button>
                 </div>
               </TooltipTrigger>
               <TooltipContent side="left">
                 <div className="text-center">
-                  <div>Toggle assistant</div>
+                  <div>{t('Toggle assistant')}</div>
                   <div className="text-xs opacity-70">{keyboardShortcut}</div>
                 </div>
               </TooltipContent>
@@ -116,7 +117,7 @@ function FloatingChat() {
                             size="icon"
                             className="h-6 w-6"
                             onClick={handleCreateNewChat}
-                            title="Create new chat"
+                            title={t('Create new chat')}
                           >
                             <Plus className="h-3 w-3" />
                           </Button>
@@ -130,7 +131,7 @@ function FloatingChat() {
                             size="icon"
                             className="h-6 w-6"
                             onClick={() => setView('history')}
-                            title="Create new chat"
+                            title={t('Create new chat')}
                           >
                             <History className="h-3 w-3 opacity-60" />
                           </Button>
@@ -167,18 +168,19 @@ function FloatingChat() {
                                 <div className="relative bg-linear-to-br from-primary/10 to-primary/5 rounded-full p-4 border border-primary/20">
                                   <img
                                     src="/logo.svg"
-                                    alt="Flowsint"
+                                    alt={t('Flowsint')}
                                     className="h-12 w-12 object-contain"
                                   />
                                 </div>
                               </div>
                               <div className="space-y-2 max-w-sm">
                                 <h3 className="text-lg font-semibold text-foreground">
-                                  No conversations yet
+                                  {t('No conversations yet')}
                                 </h3>
                                 <p className="text-sm opacity-70">
-                                  Start chatting with AI to analyze your investigation data and get
-                                  insights. Your conversation history will appear here.
+                                  {t(
+                                    'Start chatting with AI to analyze your investigation data and get insights. Your conversation history will appear here.'
+                                  )}
                                 </p>
                               </div>
                               <div className="mt-6">
@@ -188,7 +190,7 @@ function FloatingChat() {
                                   onClick={handleCreateNewChat}
                                   className="bg-linear-to-r from-primary/10 to-primary/5 border-primary/20 hover:from-primary/20 hover:to-primary/10"
                                 >
-                                  Start your first chat
+                                  {t('Start your first chat')}
                                 </Button>
                               </div>
                             </>
@@ -196,16 +198,20 @@ function FloatingChat() {
                             <>
                               <div className="space-y-2 max-w-sm">
                                 <h3 className="text-lg font-semibold text-foreground">
-                                  Start your conversation with{' '}
-                                  <span className="text-primary">Flo</span>
+                                  {t('Start your conversation with')}{' '}
+                                  <span className="text-primary">{t('Flo')}</span>
                                 </h3>
                                 <p className="text-sm opacity-70">
-                                  Ask me anything about your investigation. Here are some examples:
+                                  {t(
+                                    'Ask me anything about your investigation. Here are some examples:'
+                                  )}
                                 </p>
                               </div>
                               <div className="mt-6 space-y-3 max-w-md">
                                 <div className="text-xs space-y-1">
-                                  <p className="font-medium text-left">Analysis & Insights</p>
+                                  <p className="font-medium text-left">
+                                    {t('Analysis & Insights')}
+                                  </p>
                                   <ul className="space-y-1 text-left opacity-60">
                                     <li>
                                       • &quot;Analyze the connections between these entities&quot;
@@ -218,7 +224,7 @@ function FloatingChat() {
                                   </ul>
                                 </div>
                                 <div className="text-xs space-y-1">
-                                  <p className="font-medium text-left">Investigation Help</p>
+                                  <p className="font-medium text-left">{t('Investigation Help')}</p>
                                   <ul className="space-y-1 text-left opacity-60">
                                     <li>• &quot;Suggest next steps for this investigation&quot;</li>
                                     <li>• &quot;What should I look for next?&quot;</li>

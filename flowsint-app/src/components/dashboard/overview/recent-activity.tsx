@@ -1,34 +1,35 @@
 import { FileText, Network, Upload, UserPlus, CheckCircle } from 'lucide-react'
 
+import { t } from '@/i18n'
 const activities = [
   {
     icon: FileText,
-    text: 'New analysis added to APT-29 Campaign',
+    text: t('New analysis added to APT-29 Campaign'),
     time: '2 hours ago'
   },
   {
     icon: Network,
-    text: 'Sketch updated in Ransomware Incident',
+    text: t('Sketch updated in Ransomware Incident'),
     time: '5 hours ago'
   },
   {
     icon: Upload,
-    text: 'Evidence uploaded to Data Breach case',
+    text: t('Evidence uploaded to Data Breach case'),
     time: 'Yesterday'
   },
   {
     icon: UserPlus,
-    text: 'Sarah Kim joined Phishing Investigation',
+    text: t('Sarah Kim joined Phishing Investigation'),
     time: '2 days ago'
   },
   {
     icon: CheckCircle,
-    text: 'Phishing Investigation Q4 closed',
+    text: t('Phishing Investigation Q4 closed'),
     time: '3 days ago'
   },
   {
     icon: FileText,
-    text: 'Draft analysis saved in Insider Threat',
+    text: t('Draft analysis saved in Insider Threat'),
     time: '4 days ago'
   }
 ]
@@ -36,7 +37,7 @@ const activities = [
 export function RecentActivity() {
   return (
     <div>
-      <h2 className="text-sm font-medium text-foreground mb-4">Recent Activity</h2>
+      <h2 className="text-sm font-medium text-foreground mb-4">{t('Recent Activity')}</h2>
       <div className="space-y-1">
         {activities.map((activity, i) => (
           <div
@@ -54,7 +55,7 @@ export function RecentActivity() {
         ))}
       </div>
       <button className="w-full mt-3 py-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
-        View all activity
+        {t('View all activity')}
       </button>
     </div>
   )

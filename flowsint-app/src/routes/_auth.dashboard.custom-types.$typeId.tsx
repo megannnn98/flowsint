@@ -24,6 +24,7 @@ import { clearIconTypeCache } from '@/components/sketches/graph/utils/image-cach
 import { useKeyboardShortcut } from '@/hooks/use-keyboard-shortcut'
 import { useActionItems } from '@/hooks/use-action-items'
 
+import { t } from '@/i18n'
 export const Route = createFileRoute('/_auth/dashboard/custom-types/$typeId')({
   component: CustomTypeEditor
 })
@@ -151,7 +152,7 @@ function CustomTypeEditor() {
       syncDisplaySettings()
       queryClient.invalidateQueries({ queryKey: ['custom-types'] })
       queryClient.invalidateQueries({ queryKey: ['actionItems'] })
-      toast.success('Custom type created')
+      toast.success(t('Custom type created'))
       navigate({ to: '/dashboard/custom-types' })
     },
     onError: (error: Error) => {
@@ -166,7 +167,7 @@ function CustomTypeEditor() {
       queryClient.invalidateQueries({ queryKey: ['custom-types'] })
       queryClient.invalidateQueries({ queryKey: ['custom-type', id] })
       queryClient.invalidateQueries({ queryKey: ['actionItems'] })
-      toast.success('Changes saved')
+      toast.success(t('Changes saved'))
     },
     onError: (error: Error) => {
       toast.error(`Failed to save: ${error.message}`)
@@ -175,16 +176,16 @@ function CustomTypeEditor() {
 
   const handleSave = () => {
     if (!name.trim()) {
-      toast.error('Please enter a name')
+      toast.error(t('Please enter a name'))
       return
     }
     const keys = fields.map((f) => f.key.trim()).filter((k) => k)
     if (new Set(keys).size !== keys.length) {
-      toast.error('Field keys must be unique')
+      toast.error(t('Field keys must be unique'))
       return
     }
     if (fields.length === 0 || fields.every((f) => !f.key.trim())) {
-      toast.error('Add at least one field')
+      toast.error(t('Add at least one field'))
       return
     }
 
@@ -246,7 +247,7 @@ function CustomTypeEditor() {
               onClick={() => navigate({ to: '/dashboard/custom-types' })}
             >
               <ArrowLeft className="w-4 h-4 mr-1.5" />
-              <span className="text-sm">Types</span>
+              <span className="text-sm">{t('Types')}</span>
             </Button>
             <span className="text-muted-foreground/30">/</span>
             <span className="text-sm text-muted-foreground truncate max-w-[200px]">
@@ -265,7 +266,7 @@ function CustomTypeEditor() {
               ) : (
                 <Eye className="w-3.5 h-3.5 mr-1.5" />
               )}
-              Preview
+              {t('Preview')}
             </Button>
             <Button size="sm" className="h-8" onClick={handleSave} disabled={isSaving}>
               {isSaving ? 'Saving...' : isNew ? 'Create' : 'Save'}
@@ -286,13 +287,13 @@ function CustomTypeEditor() {
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value.replaceAll(' ', ''))}
-                    placeholder="Untitled type"
+                    placeholder={t('Untitled type')}
                     className="w-full text-3xl font-bold bg-transparent border-none outline-none placeholder:text-muted-foreground/30 text-foreground tracking-tight"
                   />
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Add a description..."
+                    placeholder={t('Add a description...')}
                     rows={1}
                     className="w-full text-sm bg-transparent border-none outline-none placeholder:text-muted-foreground/40 text-muted-foreground resize-none leading-relaxed"
                     onInput={(e) => {
@@ -305,7 +306,7 @@ function CustomTypeEditor() {
               </div>
               <div className="flex flex-col gap-3 items-end">
                 <div className="flex items-center gap-3">
-                  <span className="text-xs text-muted-foreground/60">Status</span>
+                  <span className="text-xs text-muted-foreground/60">{t('Status')}</span>
                   <Select value={status} onValueChange={(v: any) => setStatus(v)}>
                     <SelectTrigger className="w-[130px] h-7 text-xs border-border/40 bg-transparent">
                       <SelectValue />
@@ -314,20 +315,20 @@ function CustomTypeEditor() {
                       <SelectItem value="draft">
                         <div className="flex items-center gap-2">
                           <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
-                          Draft
+                          {t('Draft')}
                         </div>
                       </SelectItem>
                       <SelectItem value="published">
                         <div className="flex items-center gap-2">
                           <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                          Published
+                          {t('Published')}
                         </div>
                       </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-xs text-muted-foreground/60">Category</span>
+                  <span className="text-xs text-muted-foreground/60">{t('Category')}</span>
                   <Select value={category} onValueChange={(v: any) => setCategory(v)}>
                     <SelectTrigger className="w-[130px] h-7 text-xs border-border/40 bg-transparent">
                       <SelectValue />
@@ -348,9 +349,9 @@ function CustomTypeEditor() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-sm font-semibold text-foreground">Properties</h2>
+                  <h2 className="text-sm font-semibold text-foreground">{t('Properties')}</h2>
                   <p className="text-xs text-muted-foreground/60 mt-0.5">
-                    Define the data structure for this entity type
+                    {t('Define the data structure for this entity type')}
                   </p>
                 </div>
                 <Button
@@ -360,7 +361,7 @@ function CustomTypeEditor() {
                   onClick={addField}
                 >
                   <Plus className="w-3.5 h-3.5 mr-1" />
-                  Add property
+                  {t('Add property')}
                 </Button>
               </div>
 
@@ -370,7 +371,7 @@ function CustomTypeEditor() {
                   className="w-full py-10 border border-dashed border-border/50 rounded-lg text-sm text-muted-foreground/50 hover:text-muted-foreground hover:border-border transition-colors"
                 >
                   <Plus className="w-4 h-4 mx-auto mb-2 opacity-50" />
-                  Add your first property
+                  {t('Add your first property')}
                 </button>
               ) : (
                 <div className="space-y-px">
@@ -379,16 +380,16 @@ function CustomTypeEditor() {
                     <div className="w-[52px] shrink-0" />
                     <div className="flex-1 grid grid-cols-[1fr_1fr_120px_120px] gap-2">
                       <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider">
-                        Key
+                        {t('Key')}
                       </span>
                       <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider">
-                        Label
+                        {t('Label')}
                       </span>
                       <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider">
-                        Type
+                        {t('Type')}
                       </span>
                       <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider">
-                        Format
+                        {t('Format')}
                       </span>
                     </div>
                     <div className="w-9 shrink-0" />
@@ -416,7 +417,7 @@ function CustomTypeEditor() {
                     className="w-full flex items-center gap-2 px-2 py-2 text-xs text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted/30 rounded-lg transition-colors"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    New property
+                    {t('New property')}
                   </button>
                 </div>
               )}

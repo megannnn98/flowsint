@@ -17,6 +17,7 @@ import { Alert, AlertDescription } from '../ui/alert'
 import { useIcon } from '@/hooks/use-icon'
 import { flowService } from '@/api/flow-service'
 
+import { t } from '@/i18n'
 const FlowSheet = () => {
   const openFlowSheet = useFlowStore((state) => state.openFlowSheet)
   const setOpenFlowSheet = useFlowStore((state) => state.setOpenFlowSheet)
@@ -104,13 +105,16 @@ const FlowSheet = () => {
         <SheetContent className="sm:max-w-xl">
           <SheetHeader>
             <SheetTitle>
-              Add connector to <span className="text-primary">{selectedNode?.data.class_name}</span>
+              {t('Add connector to')}{' '}
+              <span className="text-primary">{selectedNode?.data.class_name}</span>
             </SheetTitle>
-            <SheetDescription>Choose an enricher to launch from the list below.</SheetDescription>
+            <SheetDescription>
+              {t('Choose an enricher to launch from the list below.')}
+            </SheetDescription>
           </SheetHeader>
           <div className="p-4 grow overflow-auto border-t">
             <Input
-              placeholder="Search enrichers..."
+              placeholder={t('Search enrichers...')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="mb-4"
@@ -119,14 +123,16 @@ const FlowSheet = () => {
             {isLoading && (
               <div className="flex items-center justify-center py-8">
                 <Loader2 className="h-6 w-6 animate-spin" />
-                <span className="ml-2">Loading enrichers...</span>
+                <span className="ml-2">{t('Loading enrichers...')}</span>
               </div>
             )}
 
             {error && (
               <Alert variant="destructive" className="mb-4">
                 <TriangleAlert className="h-4 w-4" />
-                <AlertDescription>Failed to load enrichers. Please try again.</AlertDescription>
+                <AlertDescription>
+                  {t('Failed to load enrichers. Please try again.')}
+                </AlertDescription>
               </Alert>
             )}
 
@@ -208,14 +214,14 @@ const EnricherItem = memo(({ enricher, onClick }: { enricher: Enricher; onClick:
               </p>
               <div className="mt-2 flex items-center gap-2 text-xs">
                 <div className="flex items-center gap-1">
-                  <span className="text-muted-foreground">Takes</span>
+                  <span className="text-muted-foreground">{t('Takes')}</span>
                   <span className="font-bold truncate text-ellipsis">{enricher.inputs.type}</span>
                 </div>
                 <span>
                   <ArrowRight className="h-3 w-3" />
                 </span>
                 <div className="flex items-center gap-1">
-                  <span className="text-muted-foreground">Returns</span>
+                  <span className="text-muted-foreground">{t('Returns')}</span>
                   <span className="font-bold truncate text-ellipsis">{enricher.outputs.type}</span>
                 </div>
               </div>
@@ -229,7 +235,7 @@ const EnricherItem = memo(({ enricher, onClick }: { enricher: Enricher; onClick:
                 <TriangleAlert className="h-4 w-4 text-yellow-500" />
               </TooltipTrigger>
               <TooltipContent>
-                <p>API key required</p>
+                <p>{t('API key required')}</p>
               </TooltipContent>
             </Tooltip>
           </div>

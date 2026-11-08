@@ -1,6 +1,7 @@
 import { Type, Share2 } from 'lucide-react'
 import { TooltipState } from '../utils/types'
 
+import { t } from '@/i18n'
 interface GraphTooltipProps {
   tooltip: TooltipState
 }
@@ -21,13 +22,13 @@ export const GraphTooltip: React.FC<GraphTooltipProps> = ({ tooltip }) => {
         <span className="text-md font-semibold">{tooltip.data.label}</span>
         <span className="flex items-center gap-1">
           <span className="flex items-center gap-1 opacity-60">
-            <Type className="h-3 w-3" /> type:
+            <Type className="h-3 w-3" /> {t('type:')}
           </span>{' '}
           <span className="font-medium">{tooltip.data.type}</span>
         </span>
         <span className="flex items-center gap-1">
           <span className="flex items-center gap-1 opacity-60">
-            <Share2 className="h-3 w-3" /> connections:
+            <Share2 className="h-3 w-3" /> {t('connections:')}
           </span>{' '}
           <span className="font-medium">{tooltip.data.connections}</span>
         </span>

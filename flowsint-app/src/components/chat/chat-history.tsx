@@ -9,6 +9,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { useConfirm, type ConfirmProps } from '../use-confirm-dialog'
 import { useChatState } from '@/stores/use-chat-store'
 
+import { t } from '@/i18n'
 type DeleteChatMutation = UseMutationResult<unknown, Error, string>
 
 const ChatHistory = ({
@@ -40,7 +41,7 @@ const ChatHistory = ({
             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setView('chat')}>
               <ArrowLeft className="h-3 w-3" />
             </Button>
-            <span className="opacity-60">Chat history</span>
+            <span className="opacity-60">{t('Chat history')}</span>
           </div>
         </div>
       </div>
@@ -69,10 +70,11 @@ const ChatHistory = ({
             </div>
           </div>
           <div className="space-y-2 max-w-sm">
-            <h3 className="text-lg font-semibold text-foreground">No conversations yet</h3>
+            <h3 className="text-lg font-semibold text-foreground">{t('No conversations yet')}</h3>
             <p className="text-sm opacity-70">
-              Start chatting with AI to analyze your investigation data and get insights. Your
-              conversation history will appear here.
+              {t(
+                'Start chatting with AI to analyze your investigation data and get insights. Your conversation history will appear here.'
+              )}
             </p>
           </div>
           <div className="mt-6">
@@ -82,7 +84,7 @@ const ChatHistory = ({
               onClick={handleCreateNewChat}
               className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20 hover:from-primary/20 hover:to-primary/10"
             >
-              Start your first chat
+              {t('Start your first chat')}
             </Button>
           </div>
         </div>
@@ -109,8 +111,8 @@ const ChatItem = ({
       e.stopPropagation()
       if (
         await confirm({
-          title: 'Are you sure you want to delete this chat?',
-          message: 'This action is irreversible.'
+          title: t('Are you sure you want to delete this chat?'),
+          message: t('This action is irreversible.')
         })
       ) {
         await deleteChatMutation.mutateAsync(chat.id)

@@ -5,6 +5,7 @@ import { useLayoutStore } from '@/stores/layout-store'
 import { useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/api/query-keys'
 
+import { t } from '@/i18n'
 export function useLaunchEnricher(askUser: boolean = false) {
   const { confirm } = useConfirm()
   const openClonsole = useLayoutStore((s) => s.openConsole)
@@ -16,7 +17,7 @@ export function useLaunchEnricher(askUser: boolean = false) {
     sketch_id: string | null | undefined,
     params?: Record<string, string>
   ) => {
-    if (!sketch_id) return toast.error('Could not find the graph.')
+    if (!sketch_id) return toast.error(t('Could not find the graph.'))
     if (askUser) {
       const confirmed = await confirm({
         title: `${enricherName} scan`,

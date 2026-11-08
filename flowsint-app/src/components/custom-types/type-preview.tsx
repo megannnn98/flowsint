@@ -1,6 +1,7 @@
 import * as LucideIcons from 'lucide-react'
 import type { SchemaField } from './field-row'
 
+import { t } from '@/i18n'
 interface TypePreviewProps {
   name: string
   description: string
@@ -27,7 +28,7 @@ export function TypePreview({
     <div className="space-y-6">
       {/* Entity card preview */}
       <div>
-        <p className="text-xs font-medium text-muted-foreground mb-3">Entity card</p>
+        <p className="text-xs font-medium text-muted-foreground mb-3">{t('Entity card')}</p>
         <div className="border border-border/60 rounded-xl p-5 bg-card max-w-sm">
           <div className="flex items-start gap-3.5">
             <div
@@ -41,7 +42,7 @@ export function TypePreview({
                 <h4 className="font-semibold text-sm truncate">{name || 'Untitled type'}</h4>
                 {status === 'draft' && (
                   <span className="shrink-0 text-[10px] font-medium uppercase tracking-wide text-muted-foreground border border-border/60 rounded px-1.5 py-0.5">
-                    Draft
+                    {t('Draft')}
                   </span>
                 )}
               </div>
@@ -67,7 +68,7 @@ export function TypePreview({
               ))}
               {validFields.length > 4 && (
                 <p className="text-[10px] text-muted-foreground/50">
-                  +{validFields.length - 4} more fields
+                  +{validFields.length - 4} {t('more fields')}
                 </p>
               )}
             </div>
@@ -77,7 +78,7 @@ export function TypePreview({
 
       {/* Graph node preview */}
       <div>
-        <p className="text-xs font-medium text-muted-foreground mb-3">Graph node</p>
+        <p className="text-xs font-medium text-muted-foreground mb-3">{t('Graph node')}</p>
         <div className="flex items-center gap-3 p-4 border border-border/60 rounded-xl bg-card max-w-[200px]">
           <div
             className="rounded-full flex items-center justify-center shrink-0"
@@ -88,7 +89,8 @@ export function TypePreview({
           <div className="min-w-0">
             <p className="text-xs font-medium truncate">{name || 'Untitled'}</p>
             <p className="text-[10px] text-muted-foreground">
-              {validFields.length} field{validFields.length !== 1 ? 's' : ''}
+              {validFields.length} {t('field')}
+              {validFields.length !== 1 ? 's' : ''}
             </p>
           </div>
         </div>
@@ -96,7 +98,7 @@ export function TypePreview({
 
       {/* Schema preview */}
       <div>
-        <p className="text-xs font-medium text-muted-foreground mb-3">JSON Schema</p>
+        <p className="text-xs font-medium text-muted-foreground mb-3">{t('JSON Schema')}</p>
         <pre className="p-4 bg-muted/50 rounded-lg text-xs font-mono overflow-x-auto text-muted-foreground leading-relaxed">
           {JSON.stringify(buildSchema(name, fields), null, 2)}
         </pre>

@@ -5,6 +5,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { FlowNamePanel } from './flow-name-panel'
 import type { Flow } from '@/types/flow'
 
+import { t } from '@/i18n'
 interface FlowControlsProps {
   loading: boolean
   handleSaveFlow: () => void
@@ -46,7 +47,7 @@ export function FlowControls({
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Save flow</p>
+            <p>{t('Save flow')}</p>
           </TooltipContent>
         </Tooltip>
 
@@ -64,7 +65,7 @@ export function FlowControls({
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Delete flow</p>
+              <p>{t('Delete flow')}</p>
             </TooltipContent>
           </Tooltip>
         )}
@@ -82,7 +83,7 @@ export function FlowControls({
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Auto Layout</p>
+            <p>{t('Auto Layout')}</p>
           </TooltipContent>
         </Tooltip>
 
@@ -93,7 +94,7 @@ export function FlowControls({
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Fit View</p>
+            <p>{t('Fit View')}</p>
           </TooltipContent>
         </Tooltip>
 
@@ -104,7 +105,7 @@ export function FlowControls({
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Zoom In</p>
+            <p>{t('Zoom In')}</p>
           </TooltipContent>
         </Tooltip>
 
@@ -115,7 +116,7 @@ export function FlowControls({
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Zoom Out</p>
+            <p>{t('Zoom Out')}</p>
           </TooltipContent>
         </Tooltip>
       </Panel>

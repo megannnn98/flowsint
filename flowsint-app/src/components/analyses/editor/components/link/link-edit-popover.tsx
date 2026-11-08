@@ -7,6 +7,7 @@ import { Link2 } from 'lucide-react'
 import { ToolbarButton } from '../toolbar-button'
 import { LinkEditBlock } from './link-edit-block'
 
+import { t } from '@/i18n'
 interface LinkEditPopoverProps extends VariantProps<typeof toggleVariants> {
   editor: Editor
 }
@@ -49,8 +50,8 @@ const LinkEditPopover = ({ editor, size, variant }: LinkEditPopoverProps) => {
       <PopoverTrigger asChild>
         <ToolbarButton
           isActive={editor.isActive('link')}
-          tooltip="Link"
-          aria-label="Insert link"
+          tooltip={t('Link')}
+          aria-label={t('Insert link')}
           disabled={editor.isActive('codeBlock')}
           size={size}
           variant={variant}

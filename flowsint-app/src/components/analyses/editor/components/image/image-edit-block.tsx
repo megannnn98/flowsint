@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 
+import { t } from '@/i18n'
 interface ImageEditBlockProps {
   editor: Editor
   close: () => void
@@ -55,7 +56,7 @@ export const ImageEditBlock: React.FC<ImageEditBlockProps> = ({ editor, close })
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-1">
-        <Label htmlFor="image-link">Attach an image link</Label>
+        <Label htmlFor="image-link">{t('Attach an image link')}</Label>
         <div className="flex">
           <Input
             id="image-link"
@@ -67,12 +68,12 @@ export const ImageEditBlock: React.FC<ImageEditBlockProps> = ({ editor, close })
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLink(e.target.value)}
           />
           <Button type="submit" className="ml-2">
-            Submit
+            {t('Submit')}
           </Button>
         </div>
       </div>
       <Button type="button" className="w-full" onClick={handleClick}>
-        Upload from your computer
+        {t('Upload from your computer')}
       </Button>
       <input
         type="file"

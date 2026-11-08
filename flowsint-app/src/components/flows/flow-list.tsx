@@ -11,6 +11,7 @@ import NewFlow from './new-flow'
 import ErrorState from '../shared/error-state'
 import { Flow } from '@/types'
 
+import { t } from '@/i18n'
 const FlowsList = () => {
   const {
     data: flows,
@@ -48,8 +49,8 @@ const FlowsList = () => {
   if (error)
     return (
       <ErrorState
-        title="Couldn't load flows"
-        description="Something went wrong while fetching data. Please try again."
+        title={t("Couldn't load flows")}
+        description={t('Something went wrong while fetching data. Please try again.')}
         error={error}
         onRetry={() => refetch()}
       />
@@ -66,7 +67,7 @@ const FlowsList = () => {
         <Input
           type="search"
           className="h-7"
-          placeholder="Search flows..."
+          placeholder={t('Search flows...')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />

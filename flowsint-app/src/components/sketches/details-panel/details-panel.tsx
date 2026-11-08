@@ -45,6 +45,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { MinimalTiptapEditor } from '@/components/analyses/editor/minimal-tiptap'
 import type { Content } from '@tiptap/react'
 
+import { t } from '@/i18n'
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 type FormData = {
@@ -171,7 +172,7 @@ function TitleInput({ value, onChange }: { value: string; onChange: (val: string
     return (
       <button onClick={() => setEditing(true)} className="min-w-0 flex-1 text-left">
         <span className="block truncate text-2xl font-bold">
-          {value || <span className="text-muted-foreground/40">Untitled</span>}
+          {value || <span className="text-muted-foreground/40">{t('Untitled')}</span>}
         </span>
       </button>
     )
@@ -192,7 +193,7 @@ function TitleInput({ value, onChange }: { value: string; onChange: (val: string
           setEditing(false)
         }
       }}
-      placeholder="Untitled"
+      placeholder={t('Untitled')}
     />
   )
 }
@@ -368,10 +369,10 @@ const DetailsPanel = memo(() => {
           queryClient.invalidateQueries({ queryKey: queryKeys.sketches.graph(sketchId, sketchId) })
         }
       } else {
-        toast.error('Failed to update')
+        toast.error(t('Failed to update'))
       }
     },
-    onError: () => toast.error('Failed to save')
+    onError: () => toast.error(t('Failed to save'))
   })
 
   const saveState = useCallback(
@@ -489,7 +490,7 @@ const DetailsPanel = memo(() => {
     return (
       <div className="flex flex-col items-center justify-center h-full p-8">
         <MousePointer className="h-5 w-5 text-muted-foreground/40 mb-3" />
-        <p className="text-[13px] text-muted-foreground/60">Select a node</p>
+        <p className="text-[13px] text-muted-foreground/60">{t('Select a node')}</p>
       </div>
     )
   }
@@ -534,7 +535,7 @@ const DetailsPanel = memo(() => {
           <LaunchFlow values={[node.id]} type={node.nodeType}>
             <Button className="rounded-full h-8 gap-1.5 px-4 text-sm" size="sm">
               <Rocket className="size-3.5" strokeWidth={1.7} />
-              Enrich
+              {t('Enrich')}
             </Button>
           </LaunchFlow>
         </div>
@@ -551,26 +552,26 @@ const DetailsPanel = memo(() => {
               value="properties"
               className="flex-1 rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none text-xs h-full"
             >
-              Properties
+              {t('Properties')}
             </TabsTrigger>
             <TabsTrigger
               value="neighbors"
               className="flex-1 rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none text-xs h-full"
             >
-              Neighbors
+              {t('Neighbors')}
             </TabsTrigger>
             <TabsTrigger
               value="relations"
               className="flex-1 rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none text-xs h-full"
             >
-              Relations
+              {t('Relations')}
             </TabsTrigger>
             {canEdit && (
               <TabsTrigger
                 value="appearance"
                 className="flex-1 rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none text-xs h-full"
               >
-                Style
+                {t('Style')}
               </TabsTrigger>
             )}
           </TabsList>
@@ -578,7 +579,7 @@ const DetailsPanel = memo(() => {
 
         {/* Properties tab */}
         <TabsContent value="properties" className="flex-1 min-h-0 overflow-y-auto mt-0 pb-6">
-          <CollapsibleSection label="Properties" defaultOpen noBorderTop>
+          <CollapsibleSection label={t('Properties')} defaultOpen noBorderTop>
             {propertiesFields.length > 0 ? (
               propertiesFields.map(([key, value]) => (
                 <PropertyRow key={key} label={key} copyValue={copyField(value)}>
@@ -638,11 +639,11 @@ const DetailsPanel = memo(() => {
                 </PropertyRow>
               ))
             ) : (
-              <p className="px-6 py-2 text-sm text-muted-foreground/40">No properties</p>
+              <p className="px-6 py-2 text-sm text-muted-foreground/40">{t('No properties')}</p>
             )}
           </CollapsibleSection>
 
-          <CollapsibleSection label="Notes" defaultOpen>
+          <CollapsibleSection label={t('Notes')} defaultOpen>
             <div className="min-h-[120px]">
               <MinimalTiptapEditor
                 value={formData.notes}
@@ -658,7 +659,7 @@ const DetailsPanel = memo(() => {
           </CollapsibleSection>
 
           {metadataFields.length > 0 && (
-            <CollapsibleSection label="Metadata" defaultOpen={false}>
+            <CollapsibleSection label={t('Metadata')} defaultOpen={false}>
               {metadataFields.map(([key, value]) => (
                 <PropertyRow
                   key={key}
@@ -698,7 +699,7 @@ const DetailsPanel = memo(() => {
 
         {/* Appearance tab */}
         <TabsContent value="appearance" className="flex-1 min-h-0 overflow-y-auto mt-0 pb-6">
-          <CollapsibleSection label="Visual" defaultOpen noBorderTop>
+          <CollapsibleSection label={t('Visual')} defaultOpen noBorderTop>
             <PropertyRow label={`Size (${nodeSize})`}>
               <Slider
                 value={[nodeSize]}
@@ -709,7 +710,7 @@ const DetailsPanel = memo(() => {
               />
             </PropertyRow>
 
-            <PropertyRow label="Color">
+            <PropertyRow label={t('Color')}>
               <div className="flex items-center gap-1.5 flex-wrap">
                 {COLORS.map((color) => (
                   <button
@@ -727,7 +728,7 @@ const DetailsPanel = memo(() => {
               </div>
             </PropertyRow>
 
-            <PropertyRow label="Shape">
+            <PropertyRow label={t('Shape')}>
               <ToggleGroup
                 onValueChange={(value) => handleChange('nodeShape', value || null)}
                 type="single"
@@ -746,7 +747,7 @@ const DetailsPanel = memo(() => {
               </ToggleGroup>
             </PropertyRow>
 
-            <PropertyRow label="Icon">
+            <PropertyRow label={t('Icon')}>
               <button
                 onClick={() => setOpenIconPicker(true)}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -755,10 +756,10 @@ const DetailsPanel = memo(() => {
               </button>
             </PropertyRow>
 
-            <PropertyRow label="Image">
+            <PropertyRow label={t('Image')}>
               <PropertyInput
                 value={formData.nodeImage || ''}
-                placeholder="URL..."
+                placeholder={t('URL...')}
                 onBlur={(val) => {
                   const newFd = { ...formDataRef.current, nodeImage: val || null }
                   formDataRef.current = newFd

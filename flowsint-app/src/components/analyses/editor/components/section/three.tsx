@@ -9,6 +9,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useTheme } from '@/components/theme-provider'
 
+import { t } from '@/i18n'
 interface ColorItem {
   cssVar: string
   label: string
@@ -23,42 +24,42 @@ interface ColorPalette {
 
 const COLORS: ColorPalette[] = [
   {
-    label: 'Palette 1',
+    label: t('Palette 1'),
     inverse: 'hsl(var(--background))',
     colors: [
-      { cssVar: 'hsl(var(--foreground))', label: 'Default' },
-      { cssVar: 'var(--mt-accent-bold-blue)', label: 'Bold blue' },
-      { cssVar: 'var(--mt-accent-bold-teal)', label: 'Bold teal' },
-      { cssVar: 'var(--mt-accent-bold-green)', label: 'Bold green' },
-      { cssVar: 'var(--mt-accent-bold-orange)', label: 'Bold orange' },
-      { cssVar: 'var(--mt-accent-bold-red)', label: 'Bold red' },
-      { cssVar: 'var(--mt-accent-bold-purple)', label: 'Bold purple' }
+      { cssVar: 'hsl(var(--foreground))', label: t('Default') },
+      { cssVar: 'var(--mt-accent-bold-blue)', label: t('Bold blue') },
+      { cssVar: 'var(--mt-accent-bold-teal)', label: t('Bold teal') },
+      { cssVar: 'var(--mt-accent-bold-green)', label: t('Bold green') },
+      { cssVar: 'var(--mt-accent-bold-orange)', label: t('Bold orange') },
+      { cssVar: 'var(--mt-accent-bold-red)', label: t('Bold red') },
+      { cssVar: 'var(--mt-accent-bold-purple)', label: t('Bold purple') }
     ]
   },
   {
-    label: 'Palette 2',
+    label: t('Palette 2'),
     inverse: 'hsl(var(--background))',
     colors: [
-      { cssVar: 'var(--mt-accent-gray)', label: 'Gray' },
-      { cssVar: 'var(--mt-accent-blue)', label: 'Blue' },
-      { cssVar: 'var(--mt-accent-teal)', label: 'Teal' },
-      { cssVar: 'var(--mt-accent-green)', label: 'Green' },
-      { cssVar: 'var(--mt-accent-orange)', label: 'Orange' },
-      { cssVar: 'var(--mt-accent-red)', label: 'Red' },
-      { cssVar: 'var(--mt-accent-purple)', label: 'Purple' }
+      { cssVar: 'var(--mt-accent-gray)', label: t('Gray') },
+      { cssVar: 'var(--mt-accent-blue)', label: t('Blue') },
+      { cssVar: 'var(--mt-accent-teal)', label: t('Teal') },
+      { cssVar: 'var(--mt-accent-green)', label: t('Green') },
+      { cssVar: 'var(--mt-accent-orange)', label: t('Orange') },
+      { cssVar: 'var(--mt-accent-red)', label: t('Red') },
+      { cssVar: 'var(--mt-accent-purple)', label: t('Purple') }
     ]
   },
   {
-    label: 'Palette 3',
+    label: t('Palette 3'),
     inverse: 'hsl(var(--foreground))',
     colors: [
-      { cssVar: 'hsl(var(--background))', label: 'White', darkLabel: 'Black' },
-      { cssVar: 'var(--mt-accent-blue-subtler)', label: 'Blue subtle' },
-      { cssVar: 'var(--mt-accent-teal-subtler)', label: 'Teal subtle' },
-      { cssVar: 'var(--mt-accent-green-subtler)', label: 'Green subtle' },
-      { cssVar: 'var(--mt-accent-yellow-subtler)', label: 'Yellow subtle' },
-      { cssVar: 'var(--mt-accent-red-subtler)', label: 'Red subtle' },
-      { cssVar: 'var(--mt-accent-purple-subtler)', label: 'Purple subtle' }
+      { cssVar: 'hsl(var(--background))', label: t('White'), darkLabel: t('Black') },
+      { cssVar: 'var(--mt-accent-blue-subtler)', label: t('Blue subtle') },
+      { cssVar: 'var(--mt-accent-teal-subtler)', label: t('Teal subtle') },
+      { cssVar: 'var(--mt-accent-green-subtler)', label: t('Green subtle') },
+      { cssVar: 'var(--mt-accent-yellow-subtler)', label: t('Yellow subtle') },
+      { cssVar: 'var(--mt-accent-red-subtler)', label: t('Red subtle') },
+      { cssVar: 'var(--mt-accent-purple-subtler)', label: t('Purple subtle') }
     ]
   }
 ]
@@ -150,8 +151,8 @@ export const SectionThree: React.FC<SectionThreeProps> = ({ editor, size, varian
     <Popover>
       <PopoverTrigger asChild>
         <ToolbarButton
-          tooltip="Text color"
-          aria-label="Text color"
+          tooltip={t('Text color')}
+          aria-label={t('Text color')}
           className="w-12"
           size={size}
           variant={variant}

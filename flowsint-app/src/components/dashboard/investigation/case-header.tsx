@@ -33,27 +33,28 @@ import { usePermissions } from '@/hooks/use-can'
 import type { InvestigationRole } from '@/types'
 import { ShareDialog } from './share-dialog'
 
+import { t } from '@/i18n'
 const ROLE_CONFIG: Record<
   InvestigationRole,
   { label: string; icon: typeof Eye; className: string }
 > = {
   owner: {
-    label: 'Owner',
+    label: t('Owner'),
     icon: Crown,
     className: 'bg-amber-500/15 text-amber-700 border-amber-500/30 dark:text-amber-400'
   },
   admin: {
-    label: 'Admin',
+    label: t('Admin'),
     icon: Shield,
     className: 'bg-purple-500/15 text-purple-700 border-purple-500/30 dark:text-purple-400'
   },
   editor: {
-    label: 'Editor',
+    label: t('Editor'),
     icon: Pencil,
     className: 'bg-blue-500/15 text-blue-700 border-blue-500/30 dark:text-blue-400'
   },
   viewer: {
-    label: 'Viewer',
+    label: t('Viewer'),
     icon: Eye,
     className: 'bg-zinc-500/15 text-zinc-700 border-zinc-500/30 dark:text-zinc-400'
   }
@@ -80,7 +81,7 @@ export function CaseHeader({ investigation }: CaseOverviewPageProps) {
 
   const handleDeleteInvestigation = async () => {
     const confirmed = await confirm({
-      title: 'Delete Investigation',
+      title: t('Delete Investigation'),
       message: `Are you sure you want to delete "${investigation.name}"? This will also delete all sketches within it. This action cannot be undone.`
     })
 
@@ -118,7 +119,7 @@ export function CaseHeader({ investigation }: CaseOverviewPageProps) {
       {/* Breadcrumb */}
       <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
         <Link to={'/dashboard'} className="hover:text-foreground cursor-pointer transition-colors">
-          Cases
+          {t('Cases')}
         </Link>
         <span>/</span>
         <span className="text-foreground">{investigation.name}</span>
@@ -149,10 +150,14 @@ export function CaseHeader({ investigation }: CaseOverviewPageProps) {
 
           {/* Inline properties */}
           <div className="flex items-center gap-4 text-sm">
-            <PropertyPill label="Status" value={investigation.status} valueClass="text-success" />
-            <PropertyPill label="Priority" value="Medium" valueClass="text-primary" />
             <PropertyPill
-              label="Updated"
+              label={t('Status')}
+              value={investigation.status}
+              valueClass="text-success"
+            />
+            <PropertyPill label={t('Priority')} value="Medium" valueClass="text-primary" />
+            <PropertyPill
+              label={t('Updated')}
               value={lastUpdated}
               icon={<Clock className="w-3 h-3" />}
             />
@@ -178,7 +183,7 @@ export function CaseHeader({ investigation }: CaseOverviewPageProps) {
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem onClick={handleDeleteInvestigation} className="text-destructive">
                   <Trash2 className="w-4 h-4 mr-2" />
-                  Delete
+                  {t('Delete')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -190,12 +195,13 @@ export function CaseHeader({ investigation }: CaseOverviewPageProps) {
       <div className="flex items-center gap-2">
         <AvatarGroup users={collaborators.map((c) => c.user)} size="md" />
         <span className="text-sm text-muted-foreground">
-          {collaborators.length} investigator{collaborators.length !== 1 ? 's' : ''}
+          {collaborators.length} {t('investigator')}
+          {collaborators.length !== 1 ? 's' : ''}
         </span>
         {canManage && (
           <ShareDialog investigationId={investigation.id}>
             <button className="text-xs text-muted-foreground hover:text-foreground transition-colors ml-1">
-              + Invite
+              {t('+ Invite')}
             </button>
           </ShareDialog>
         )}

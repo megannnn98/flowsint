@@ -26,6 +26,7 @@ import { useConfirm } from '@/components/use-confirm-dialog'
 import { toast } from 'sonner'
 import { usePermissions } from '@/hooks/use-can'
 
+import { t } from '@/i18n'
 const ITEM_HEIGHT = 67 // Balanced spacing between items (55px card + 12px padding)
 
 // Separate component for relationship item to avoid hook order issues
@@ -253,7 +254,7 @@ export default function RelationshipsTable() {
     if (
       !(await confirm({
         title: `You are about to delete ${count} relationship${count > 1 ? 's' : ''}?`,
-        message: 'The action is irreversible.'
+        message: t('The action is irreversible.')
       }))
     ) {
       return
@@ -296,7 +297,7 @@ export default function RelationshipsTable() {
         {/* Header with stats */}
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <h2 className="text-2xl font-bold tracking-tight">Relationships</h2>
+            <h2 className="text-2xl font-bold tracking-tight">{t('Relationships')}</h2>
             <p className="text-muted-foreground">
               <Skeleton className="h-4 w-32 inline-block" />
             </p>
@@ -312,7 +313,7 @@ export default function RelationshipsTable() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search relationships, nodes, or types..."
+              placeholder={t('Search relationships, nodes, or types...')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -322,10 +323,10 @@ export default function RelationshipsTable() {
           <Select value={selectedType} onValueChange={setSelectedType} disabled>
             <SelectTrigger className="w-48">
               <Filter className="h-4 w-4 mr-2 text-muted-foreground" />
-              <SelectValue placeholder="Filter by type" />
+              <SelectValue placeholder={t('Filter by type')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All types</SelectItem>
+              <SelectItem value="all">{t('All types')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -348,7 +349,7 @@ export default function RelationshipsTable() {
         <div className="text-center space-y-4">
           <Link className="mx-auto h-12 w-12 text-muted-foreground" />
           <div>
-            <h3 className="text-lg font-semibold">No relationships found</h3>
+            <h3 className="text-lg font-semibold">{t('No relationships found')}</h3>
             <p className="text-muted-foreground">
               This sketch doesn&apos;t have any relationships yet.
             </p>
@@ -363,14 +364,14 @@ export default function RelationshipsTable() {
       {/* Header with stats */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <h2 className="text-2xl font-bold tracking-tight">Relationships</h2>
+          <h2 className="text-2xl font-bold tracking-tight">{t('Relationships')}</h2>
           <p className="text-muted-foreground">
-            {filteredRelationships.length} of {relationships.length} relationships
+            {filteredRelationships.length} {t('of')} {relationships.length} {t('relationships')}
           </p>
         </div>
         <Badge variant="secondary" className="flex items-center gap-2">
           <Users className="h-4 w-4" />
-          {relationships.length} total
+          {relationships.length} {t('total')}
         </Badge>
       </div>
 
@@ -379,7 +380,7 @@ export default function RelationshipsTable() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search relationships, nodes, or types..."
+            placeholder={t('Search relationships, nodes, or types...')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
@@ -388,10 +389,10 @@ export default function RelationshipsTable() {
         <Select value={selectedType} onValueChange={setSelectedType}>
           <SelectTrigger className="w-48">
             <Filter className="h-4 w-4 mr-2 text-muted-foreground" />
-            <SelectValue placeholder="Filter by type" />
+            <SelectValue placeholder={t('Filter by type')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All types</SelectItem>
+            <SelectItem value="all">{t('All types')}</SelectItem>
             {nodeTypes.map((type) => (
               <SelectItem key={type} value={type}>
                 <span className="capitalize">{type}</span>
@@ -422,7 +423,7 @@ export default function RelationshipsTable() {
           {selectedEdges.length > 0 && (
             <Button onClick={handleDeleteSelected} variant="destructive" size="sm" className="h-8">
               <Trash2 className="h-3.5 w-3.5 mr-1" />
-              Delete {selectedEdges.length}
+              {t('Delete')} {selectedEdges.length}
             </Button>
           )}
         </div>

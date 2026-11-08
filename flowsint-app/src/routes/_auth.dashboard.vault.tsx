@@ -31,6 +31,7 @@ import { type Key as KeyType } from '@/types/key'
 import { queryKeys } from '@/api/query-keys'
 import ErrorState from '@/components/shared/error-state'
 import { PageLayout } from '@/components/layout/page-layout'
+import { t } from '@/i18n'
 export const Route = createFileRoute('/_auth/dashboard/vault')({
   component: VaultPage
 })
@@ -61,10 +62,10 @@ function VaultPage() {
       setIsAddDialogOpen(false)
       setKeyName('')
       setApiKey('')
-      toast.success('API key added successfully!')
+      toast.success(t('API key added successfully!'))
     },
     onError: (error) => {
-      toast.error('Failed to add API key. Please try again.')
+      toast.error(t('Failed to add API key. Please try again.'))
       console.error('Error creating key:', error)
     }
   })
@@ -74,17 +75,17 @@ function VaultPage() {
     mutationFn: keyService.deleteById,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.keys.list })
-      toast.success('API key deleted successfully!')
+      toast.success(t('API key deleted successfully!'))
     },
     onError: (error) => {
-      toast.error('Failed to delete API key. Please try again.')
+      toast.error(t('Failed to delete API key. Please try again.'))
       console.error('Error deleting key:', error)
     }
   })
 
   const handleAddKey = () => {
     if (!keyName.trim() || !apiKey.trim()) {
-      toast.error('Please enter both a name and an API key')
+      toast.error(t('Please enter both a name and an API key'))
       return
     }
     createKeyMutation.mutate({ name: keyName.trim(), key: apiKey })
@@ -92,7 +93,7 @@ function VaultPage() {
 
   const handleDeleteKey = async (keyId: string, keyName: string) => {
     const confirmed = await confirm({
-      title: 'Delete API Key',
+      title: t('Delete API Key'),
       message: `Are you sure you want to delete the API key "${keyName}"? This action cannot be undone.`
     })
 
@@ -103,15 +104,15 @@ function VaultPage() {
 
   return (
     <PageLayout
-      title="Vault"
-      description="Securely manage your API keys for third-party services."
+      title={t('Vault')}
+      description={t('Securely manage your API keys for third-party services.')}
       isLoading={keysLoading}
       loadingComponent={<Loader />}
       error={keysError}
       errorComponent={
         <ErrorState
-          title="Couldn't load keys"
-          description="Something went wrong while fetching data. Please try again."
+          title={t("Couldn't load keys")}
+          description={t('Something went wrong while fetching data. Please try again.')}
           error={keysError}
           onRetry={() => refetch()}
         />
@@ -121,19 +122,21 @@ function VaultPage() {
           <DialogTrigger asChild>
             <Button size="sm">
               <Plus className="w-4 h-4 mr-2" />
-              Add API Key
+              {t('Add API Key')}
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Add API Key</DialogTitle>
+              <DialogTitle>{t('Add API Key')}</DialogTitle>
               <DialogDescription>
-                Add a new API key with a custom name. Your keys are encrypted and stored securely.
+                {t(
+                  'Add a new API key with a custom name. Your keys are encrypted and stored securely.'
+                )}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="keyName">Key Name</Label>
+                <Label htmlFor="keyName">{t('Key Name')}</Label>
                 <Input
                   id="keyName"
                   placeholder="e.g., OpenAI, GitHub, Shodan..."
@@ -142,11 +145,11 @@ function VaultPage() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="apiKey">API Key</Label>
+                <Label htmlFor="apiKey">{t('API Key')}</Label>
                 <Input
                   id="apiKey"
                   type="password"
-                  placeholder="Enter your API key"
+                  placeholder={t('Enter your API key')}
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                 />
@@ -158,14 +161,14 @@ function VaultPage() {
                 onClick={() => setIsAddDialogOpen(false)}
                 disabled={createKeyMutation.isPending}
               >
-                Cancel
+                {t('Cancel')}
               </Button>
               <Button
                 onClick={handleAddKey}
                 disabled={createKeyMutation.isPending || !keyName.trim() || !apiKey.trim()}
               >
                 {createKeyMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                Add Key
+                {t('Add Key')}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -177,37 +180,38 @@ function VaultPage() {
           <div className="flex flex-col items-center justify-center py-24 gap-5">
             <KeyRound className="w-12 h-12 text-muted-foreground/40" strokeWidth={1.5} />
             <div className="text-center space-y-2">
-              <h3 className="text-xl font-bold text-foreground">No keys yet</h3>
+              <h3 className="text-xl font-bold text-foreground">{t('No keys yet')}</h3>
               <p className="text-muted-foreground max-w-xs leading-relaxed">
-                Add your first API key to use third-party services in your investigations.
+                {t('Add your first API key to use third-party services in your investigations.')}
               </p>
             </div>
             <Button onClick={() => setIsAddDialogOpen(true)}>
               <Plus className="w-4 h-4 mr-2" />
-              Add your first key
+              {t('Add your first key')}
             </Button>
           </div>
         ) : (
           <Card className="overflow-hidden">
             <CardHeader className="border-b">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base font-semibold">API Keys</CardTitle>
+                <CardTitle className="text-base font-semibold">{t('API Keys')}</CardTitle>
                 <span className="text-xs text-muted-foreground">
                   {keys.length} {keys.length === 1 ? 'key' : 'keys'}
                 </span>
               </div>
               <CardDescription>
-                Your encrypted API keys for external services. These keys will be available for your
-                investigations.
+                {t(
+                  'Your encrypted API keys for external services. These keys will be available for your investigations.'
+                )}
               </CardDescription>
             </CardHeader>
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
                   <TableRow className="border-b bg-muted/20">
-                    <TableHead className="py-3 px-6 w-2/5">Name</TableHead>
-                    <TableHead className="py-3 w-1/3">Added</TableHead>
-                    <TableHead className="py-3 px-6 text-right w-1/5">Actions</TableHead>
+                    <TableHead className="py-3 px-6 w-2/5">{t('Name')}</TableHead>
+                    <TableHead className="py-3 w-1/3">{t('Added')}</TableHead>
+                    <TableHead className="py-3 px-6 text-right w-1/5">{t('Actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

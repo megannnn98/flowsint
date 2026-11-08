@@ -7,6 +7,7 @@ import { useRef, useEffect, memo, useState } from 'react'
 import { useNodesDisplaySettings } from '@/stores/node-display-settings'
 import { ChatContextFormat } from '@/types'
 
+import { t } from '@/i18n'
 interface ChatPanelProps {
   onSend: (text: string, context?: string[]) => void
   isLoading: boolean
@@ -61,7 +62,7 @@ export const ChatPanel = ({ onSend, isLoading }: ChatPanelProps) => {
             <ContextList context={displayItems} />
             {remainingCount > 0 && (
               <Badge variant="outline" className="text-xs">
-                +{remainingCount} more
+                +{remainingCount} {t('more')}
               </Badge>
             )}
             <Button
@@ -79,7 +80,7 @@ export const ChatPanel = ({ onSend, isLoading }: ChatPanelProps) => {
             <Textarea
               ref={textareaRef}
               autoFocus
-              placeholder="Ask me anything about your investigation..."
+              placeholder={t('Ask me anything about your investigation...')}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}

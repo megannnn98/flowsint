@@ -8,6 +8,7 @@ import { LinkEditPopover } from '../link/link-edit-popover'
 import { ImageEditDialog } from '../image/image-edit-dialog'
 import { ToolbarSection } from '../toolbar-section'
 
+import { t } from '@/i18n'
 type InsertElementAction = 'codeBlock' | 'blockquote' | 'horizontalRule'
 interface InsertElement extends FormatAction {
   value: InsertElementAction
@@ -16,7 +17,7 @@ interface InsertElement extends FormatAction {
 const formatActions: InsertElement[] = [
   {
     value: 'codeBlock',
-    label: 'Code block',
+    label: t('Code block'),
     icon: <Code className="size-5" />,
     action: (editor) => editor.chain().focus().toggleCodeBlock().run(),
     isActive: (editor) => editor.isActive('codeBlock'),
@@ -25,7 +26,7 @@ const formatActions: InsertElement[] = [
   },
   {
     value: 'blockquote',
-    label: 'Blockquote',
+    label: t('Blockquote'),
     icon: <Quote className="size-5" />,
     action: (editor) => editor.chain().focus().toggleBlockquote().run(),
     isActive: (editor) => editor.isActive('blockquote'),
@@ -34,7 +35,7 @@ const formatActions: InsertElement[] = [
   },
   {
     value: 'horizontalRule',
-    label: 'Divider',
+    label: t('Divider'),
     icon: <Minus className="size-5" />,
     action: (editor) => editor.chain().focus().setHorizontalRule().run(),
     isActive: () => false,

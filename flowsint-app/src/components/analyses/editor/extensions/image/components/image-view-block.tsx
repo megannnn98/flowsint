@@ -13,6 +13,7 @@ import { ImageOverlay } from './image-overlay'
 import { Spinner } from '../../../components/spinner'
 import type { UploadReturnType } from '../image'
 
+import { t } from '@/i18n'
 const MAX_HEIGHT = 600
 const MIN_HEIGHT = 120
 const MIN_WIDTH = 120
@@ -232,7 +233,7 @@ export const ImageViewBlock: React.FC<NodeViewProps> = ({
               {imageState.error && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <Info className="size-8 text-destructive" />
-                  <p className="mt-2 text-sm text-muted-foreground">Failed to load image</p>
+                  <p className="mt-2 text-sm text-muted-foreground">{t('Failed to load image')}</p>
                 </div>
               )}
 
@@ -290,7 +291,7 @@ export const ImageViewBlock: React.FC<NodeViewProps> = ({
             <ActionWrapper>
               <ActionButton
                 icon={<Trash2 className="size-4" />}
-                tooltip="Remove image"
+                tooltip={t('Remove image')}
                 onClick={onRemoveImg}
               />
             </ActionWrapper>

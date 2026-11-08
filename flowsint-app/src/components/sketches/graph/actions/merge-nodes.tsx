@@ -19,6 +19,7 @@ import { cn, deepObjectDiff } from '@/lib/utils'
 import { sketchService } from '@/api/sketch-service'
 import { useParams } from '@tanstack/react-router'
 
+import { t } from '@/i18n'
 export function MergeDialog() {
   const { id: sketchId } = useParams({ strict: false })
   const selectedNodes = useGraphStore((state) => state.selectedNodes || [])
@@ -49,9 +50,9 @@ export function MergeDialog() {
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
-    if (!preview) return toast.error('No preview available.')
+    if (!preview) return toast.error(t('No preview available.'))
     if (!selectedNodes.every((n) => n.nodeType === selectedNodes[0].nodeType))
-      return toast.error('Cannot merge entities of different types.')
+      return toast.error(t('Cannot merge entities of different types.'))
     const entitiesToMerge = selectedNodes.map((node) => node.id)
     // Extract only id and data to avoid circular references from neighbors/links
     const body = JSON.stringify({
@@ -83,7 +84,7 @@ export function MergeDialog() {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Merge className="h-4 w-4" />
-            Merging {selectedNodes.length} entities
+            {t('Merging')} {selectedNodes.length} {t('entities')}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 w-full overflow-hidden">
@@ -91,26 +92,31 @@ export function MergeDialog() {
           <div className="space-y-2 w-full">
             <Alert className="">
               <Info />
-              <AlertTitle>Heads up!</AlertTitle>
+              <AlertTitle>{t('Heads up!')}</AlertTitle>
               <AlertDescription>
-                When merging, you can choose which entity is prioritary, simply click it in the list
-                below. Also keep in mind:
+                {t(
+                  'When merging, you can choose which entity is prioritary, simply click it in the list below. Also keep in mind:'
+                )}
                 <div>
                   <ul className="ml-2 !list-disc">
                     <li>
-                      All <span className="font-semibold">attributes</span> will be merged, and the
-                      matching ones values will be based on the prioritary entity
+                      {t('All')} <span className="font-semibold">{t('attributes')}</span>{' '}
+                      {t(
+                        'will be merged, and the matching ones values will be based on the prioritary entity'
+                      )}
                     </li>
                     <li>
-                      Only one node will be kept, and all{' '}
-                      <span className="font-semibold">relationships</span> will be merged
+                      {t('Only one node will be kept, and all')}{' '}
+                      <span className="font-semibold">{t('relationships')}</span>{' '}
+                      {t('will be merged')}
                     </li>
                   </ul>
                 </div>
               </AlertDescription>
             </Alert>
             <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Selected Nodes ({selectedNodes.length})
+              {t('Selected Nodes (')}
+              {selectedNodes.length})
             </Label>
             <RadioGroup
               className="flex overflow-x-auto w-full gap-2"
@@ -130,7 +136,7 @@ export function MergeDialog() {
           </div>
           {preview && old && (
             <div className="space-y-2 text-sm">
-              <p>Merged attributes</p>
+              <p>{t('Merged attributes')}</p>
               <div className="rounded-md border overflow-hidden">
                 <KeyValueDisplayDiff
                   oldRecord={old.nodeProperties}
@@ -146,10 +152,11 @@ export function MergeDialog() {
               size="sm"
               onClick={() => setOpenMergeDialog(false)}
             >
-              Cancel
+              {t('Cancel')}
             </Button>
             <Button type="submit" size="sm">
-              Merge ({selectedNodes.length})
+              {t('Merge (')}
+              {selectedNodes.length})
             </Button>
           </DialogFooter>
         </form>

@@ -14,6 +14,7 @@ import ErrorState from '@/components/shared/error-state'
 import { PageLayout } from '@/components/layout/page-layout'
 import type { Flow } from '@/types/flow'
 
+import { t } from '@/i18n'
 // category comes back as either a string or a string[] — normalize once.
 const categoriesOf = (flow: Flow): string[] =>
   Array.isArray(flow.category) ? flow.category : flow.category ? [flow.category] : []
@@ -48,8 +49,8 @@ function FlowPage() {
 
   return (
     <PageLayout
-      title="Flows"
-      description="Create and manage your flow flows."
+      title={t('Flows')}
+      description={t('Create and manage your flow flows.')}
       isLoading={isLoading}
       loadingComponent={
         <div className="p-2">
@@ -59,8 +60,8 @@ function FlowPage() {
       error={error}
       errorComponent={
         <ErrorState
-          title="Couldn't load flows"
-          description="Something went wrong while fetching data. Please try again."
+          title={t("Couldn't load flows")}
+          description={t('Something went wrong while fetching data. Please try again.')}
           error={error}
           onRetry={() => refetch()}
         />
@@ -69,7 +70,7 @@ function FlowPage() {
         <NewFlow>
           <Button size="sm" data-tour-id="create-flow">
             <PlusIcon className="w-4 h-4 mr-2" />
-            New flow
+            {t('New flow')}
           </Button>
         </NewFlow>
       }
@@ -80,15 +81,16 @@ function FlowPage() {
             <div className="rounded-full bg-muted/50 p-4 mb-4">
               <FileX className="w-8 h-8 text-muted-foreground" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">No flow yet</h3>
+            <h3 className="text-xl font-semibold mb-2">{t('No flow yet')}</h3>
             <p className="text-muted-foreground mb-6 max-w-md">
-              Get started by creating your first flow. You can use flows to process and manipulate
-              your data in powerful ways.
+              {t(
+                'Get started by creating your first flow. You can use flows to process and manipulate your data in powerful ways.'
+              )}
             </p>
             <NewFlow>
               <Button>
                 <PlusIcon className="w-4 h-4 mr-2" />
-                Create your first flow
+                {t('Create your first flow')}
               </Button>
             </NewFlow>
           </div>

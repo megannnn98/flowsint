@@ -19,6 +19,7 @@ import { TemplateIOBar } from './template-io-bar'
 import { TemplateTestPanel, type TestResult } from './template-test-panel'
 import { templateService } from '@/api/template-service'
 
+import { t } from '@/i18n'
 interface TemplateEditorProps {
   templateId?: string
   initialContent?: TemplateData
@@ -130,7 +131,7 @@ export function TemplateEditor({ templateId, initialContent, importedYaml }: Tem
         content: data
       }),
     onSuccess: (data) => {
-      toast.success('Template created successfully')
+      toast.success(t('Template created successfully'))
       queryClient.invalidateQueries({ queryKey: ['template', 'enrichers'] })
       navigate({ to: `/dashboard/enrichers/${data.id}` as string })
     },
@@ -142,7 +143,7 @@ export function TemplateEditor({ templateId, initialContent, importedYaml }: Tem
   const updateMutation = useMutation({
     mutationFn: (data: TemplateData) => templateService.update(templateId!, { content: data }),
     onSuccess: () => {
-      toast.success('Template saved successfully')
+      toast.success(t('Template saved successfully'))
       if (contentBeingSavedRef.current) {
         setSavedContent(contentBeingSavedRef.current)
         contentBeingSavedRef.current = null
@@ -159,7 +160,7 @@ export function TemplateEditor({ templateId, initialContent, importedYaml }: Tem
   const deleteMutation = useMutation({
     mutationFn: () => templateService.delete(templateId!),
     onSuccess: () => {
-      toast.success('Template deleted')
+      toast.success(t('Template deleted'))
       queryClient.invalidateQueries({ queryKey: ['template', 'enrichers'] })
       navigate({ to: '/dashboard/enrichers' })
     },
@@ -182,7 +183,7 @@ export function TemplateEditor({ templateId, initialContent, importedYaml }: Tem
   const handleSave = useCallback(() => {
     const { hasErrors, hasChanges, data, content } = stateRef.current
     if (hasErrors || !data) {
-      toast.error('Please fix validation errors before saving')
+      toast.error(t('Please fix validation errors before saving'))
       return
     }
     if (isEditMode) {
@@ -196,8 +197,8 @@ export function TemplateEditor({ templateId, initialContent, importedYaml }: Tem
 
   const handleDelete = useCallback(async () => {
     const confirmed = await confirm({
-      title: 'Delete template?',
-      message: 'This action cannot be undone. This will permanently delete the template.'
+      title: t('Delete template?'),
+      message: t('This action cannot be undone. This will permanently delete the template.')
     })
     if (confirmed) {
       deleteMutation.mutate()
@@ -208,10 +209,10 @@ export function TemplateEditor({ templateId, initialContent, importedYaml }: Tem
     try {
       await navigator.clipboard.writeText(content)
       setCopied(true)
-      toast.success('Copied to clipboard')
+      toast.success(t('Copied to clipboard'))
       setTimeout(() => setCopied(false), 2000)
     } catch {
-      toast.error('Failed to copy')
+      toast.error(t('Failed to copy'))
     }
   }, [content])
 
@@ -239,11 +240,11 @@ export function TemplateEditor({ templateId, initialContent, importedYaml }: Tem
 
   const handleTest = useCallback(async () => {
     if (!testInput.trim()) {
-      toast.error('Please enter a test value')
+      toast.error(t('Please enter a test value'))
       return
     }
     if (!validationResult.data) {
-      toast.error('Please fix validation errors before testing')
+      toast.error(t('Please fix validation errors before testing'))
       return
     }
     setIsTesting(true)
@@ -342,11 +343,11 @@ export function TemplateEditor({ templateId, initialContent, importedYaml }: Tem
             <TabsList className="h-10 bg-transparent p-0 gap-4">
               <TabsTrigger value="editor">
                 <FileCode2 className="h-4 w-4 opacity-60" strokeWidth={1.5} />
-                Editor
+                {t('Editor')}
               </TabsTrigger>
               <TabsTrigger value="test">
                 <FlaskConical className="h-4 w-4 opacity-60" strokeWidth={1.5} />
-                Test
+                {t('Test')}
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -381,19 +382,22 @@ export function TemplateEditor({ templateId, initialContent, importedYaml }: Tem
                         {hasErrors ? (
                           <span className="flex items-center gap-1 text-destructive">
                             <XCircle className="h-3 w-3" />
-                            {totalErrors} error{totalErrors !== 1 ? 's' : ''}
+                            {totalErrors} {t('error')}
+                            {totalErrors !== 1 ? 's' : ''}
                           </span>
                         ) : (
                           <span className="flex items-center gap-1 text-emerald-500/80">
                             <CheckCircle2 className="h-3 w-3" />
-                            Valid
+                            {t('Valid')}
                           </span>
                         )}
-                        {hasChanges && <span className="text-amber-500">Modified</span>}
+                        {hasChanges && <span className="text-amber-500">{t('Modified')}</span>}
                       </div>
                       <div className="flex items-center gap-3">
-                        <span>{content.split('\n').length} lines</span>
-                        <span>YAML</span>
+                        <span>
+                          {content.split('\n').length} {t('lines')}
+                        </span>
+                        <span>{t('YAML')}</span>
                       </div>
                     </div>
                   </div>

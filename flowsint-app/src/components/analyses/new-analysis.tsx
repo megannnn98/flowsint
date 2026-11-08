@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { analysisService } from '@/api/analysis-service'
 
+import { t } from '@/i18n'
 interface FormValues {
   title: string
 }
@@ -44,7 +45,7 @@ export default function NewAnalysis({ children }: NewAnalysisProps) {
     mutationFn: analysisService.create,
     onSuccess: (result) => {
       if ('id' in result && result.id) {
-        toast.success('New analysis created.')
+        toast.success(t('New analysis created.'))
         router.navigate({
           to: `/dashboard/investigations/${investigationId}/analysis/${result.id}`
         })
@@ -70,7 +71,7 @@ export default function NewAnalysis({ children }: NewAnalysisProps) {
 
   async function onSubmit(data: FormValues) {
     if (!investigationId) {
-      toast.error('An analysis must be related to an investigation.')
+      toast.error(t('An analysis must be related to an investigation.'))
       return
     }
 
@@ -89,11 +90,11 @@ export default function NewAnalysis({ children }: NewAnalysisProps) {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="grid gap-4 py-4">
         <div className="grid gap-2">
-          <Label htmlFor="title">Analysis name</Label>
+          <Label htmlFor="title">{t('Analysis name')}</Label>
           <Input
             id="title"
             {...register('title', { required: 'Title is required' })}
-            placeholder="Fraud suspicion"
+            placeholder={t('Fraud suspicion')}
             aria-invalid={errors.title ? 'true' : 'false'}
           />
           {errors.title && (
@@ -113,7 +114,7 @@ export default function NewAnalysis({ children }: NewAnalysisProps) {
           }}
           disabled={isSubmitting}
         >
-          Cancel
+          {t('Cancel')}
         </Button>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Saving...' : 'Save'}
@@ -129,8 +130,8 @@ export default function NewAnalysis({ children }: NewAnalysisProps) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>New analysis</DialogTitle>
-          <DialogDescription>Create a new blank analysis.</DialogDescription>
+          <DialogTitle>{t('New analysis')}</DialogTitle>
+          <DialogDescription>{t('Create a new blank analysis.')}</DialogDescription>
         </DialogHeader>
         {formContent}
       </DialogContent>
