@@ -21,7 +21,6 @@ class AnalysisRepository(BaseRepository[Analysis]):
         return (
             self._db.query(Analysis)
             .filter(Analysis.investigation_id.in_(inv_ids))
-            .distinct()
             .all()
         )
 
