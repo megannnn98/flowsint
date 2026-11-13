@@ -142,7 +142,7 @@ function VaultPage() {
                 <Label htmlFor="keyName">{t('Key Name')}</Label>
                 <Input
                   id="keyName"
-                  placeholder="e.g., OpenAI, GitHub, Shodan..."
+                  placeholder={t('e.g., OpenAI, GitHub, Shodan...')}
                   value={keyName}
                   onChange={(e) => setKeyName(e.target.value)}
                 />

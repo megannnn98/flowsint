@@ -193,7 +193,7 @@ function CustomTypesList({ types, onDelete, navigate }: CustomTypesListProps) {
                 <div className="space-y-1 flex-1">
                   <CardTitle className="text-lg">{customType.name}</CardTitle>
                   <CardDescription className="line-clamp-2">
-                    {customType.description || 'No description'}
+                    {customType.description || t('No description')}
                   </CardDescription>
                 </div>
                 {getStatusBadge(customType.status)}

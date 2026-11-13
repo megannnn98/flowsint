@@ -56,9 +56,9 @@ export function CreateRelationDialog() {
         return sketchService.addEdge(sketchId as string, JSON.stringify(newEdgeObject))
       })(),
       {
-        loading: 'Creating relation...',
-        success: 'Relation successfully added.',
-        error: 'Unexpected error during relation creation.'
+        loading: t('Creating relation...'),
+        success: t('Relation successfully added.'),
+        error: t('Unexpected error during relation creation.')
       }
     )
   }
@@ -96,7 +96,7 @@ export function CreateRelationDialog() {
             </Label>
             <Input
               id="relation-type"
-              placeholder="e.g., IS_RELATED_TO, WORKS_FOR, OWNS"
+              placeholder={t('e.g., IS_RELATED_TO, WORKS_FOR, OWNS')}
               value={relationType}
               onChange={(e) => setRelationType(e.target.value)}
               className="w-full h-9 text-sm"

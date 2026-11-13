@@ -83,9 +83,9 @@ const NodeActions = memo(
           return sketchService.deleteNodes(sketchId, JSON.stringify({ nodeIds: [node.id] }))
         })(),
         {
-          loading: `Deleting ${node.nodeProperties.label}...`,
-          success: 'Node deleted successfully.',
-          error: 'Failed to delete node.'
+          loading: t('Deleting {{label}}...', { label: node.nodeProperties.label }),
+          success: t('Node deleted successfully.'),
+          error: t('Failed to delete node.')
         }
       )
     }

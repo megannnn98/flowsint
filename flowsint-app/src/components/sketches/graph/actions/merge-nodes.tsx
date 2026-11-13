@@ -68,8 +68,8 @@ export function MergeDialog() {
         setOpenMergeDialog(false)
       })(),
       {
-        loading: 'Merging entities...',
-        success: 'Entities successfully merged.',
+        loading: t('Merging entities...'),
+        success: t('Entities successfully merged.'),
         error: (error) => {
           console.log(error)
           return 'Unexpected error during merging.'

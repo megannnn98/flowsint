@@ -105,9 +105,9 @@ const EdgeDetailsPanel = memo(() => {
         )
       })(),
       {
-        loading: 'Deleting relationship...',
-        success: 'Relationship deleted successfully.',
-        error: 'Failed to delete relationship.'
+        loading: t('Deleting relationship...'),
+        success: t('Relationship deleted successfully.'),
+        error: t('Failed to delete relationship.')
       }
     )
   }, [edge, sketchId, confirm, removeEdges, setCurrentEdgeId])
@@ -195,7 +195,7 @@ const EdgeDetailsPanel = memo(() => {
               <div className="flex-1 min-w-0 text-left">
                 <p className="text-[10px] text-muted-foreground mb-0.5">{t('Source')}</p>
                 <p className="text-xs font-medium truncate group-hover:text-primary transition-colors">
-                  {sourceNode?.nodeLabel || 'Unknown'}
+                  {sourceNode?.nodeLabel || t('Unknown')}
                 </p>
               </div>
             </button>
@@ -213,7 +213,7 @@ const EdgeDetailsPanel = memo(() => {
               <div className="flex-1 min-w-0 text-left">
                 <p className="text-[10px] text-muted-foreground mb-0.5">{t('Target')}</p>
                 <p className="text-xs font-medium truncate group-hover:text-primary transition-colors">
-                  {targetNode?.nodeLabel || 'Unknown'}
+                  {targetNode?.nodeLabel || t('Unknown')}
                 </p>
               </div>
             </button>

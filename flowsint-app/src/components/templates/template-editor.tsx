@@ -110,7 +110,7 @@ export function TemplateEditor({ templateId, initialContent, importedYaml }: Tem
 
   const hasChanges = content !== savedContent
   const hasErrors = !validationResult.valid || editorErrors.some((e) => e.severity >= 8)
-  const templateName = validationResult.data?.name || 'Untitled'
+  const templateName = validationResult.data?.name || t('Untitled')
   const templateParams = useMemo(
     () => validationResult.data?.request?.params || {},
     [validationResult.data]

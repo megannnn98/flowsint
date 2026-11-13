@@ -183,7 +183,7 @@ export function ShareDialog({ investigationId, children }: ShareDialogProps) {
       toast.success(t('Collaborator added'))
     },
     onError: (error: any) => {
-      const message = error?.message || 'Failed to add collaborator'
+      const message = error?.message || t('Failed to add collaborator')
       toast.error(message)
     }
   })

@@ -136,7 +136,7 @@ function FlowPage() {
                             <FileCode2 className="w-4 h-4 text-muted-foreground" />
                           </div>
                           <CardDescription className="line-clamp-2 mt-1">
-                            {flow.description || 'No description provided'}
+                            {flow.description || t('No description provided')}
                           </CardDescription>
                         </CardHeader>
                         <CardContent>

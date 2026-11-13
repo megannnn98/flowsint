@@ -251,7 +251,7 @@ function CustomTypeEditor() {
             </Button>
             <span className="text-muted-foreground/30">/</span>
             <span className="text-sm text-muted-foreground truncate max-w-[200px]">
-              {isNew ? t('New type') : name || 'Untitled'}
+              {isNew ? t('New type') : name || t('Untitled')}
             </span>
           </div>
           <div className="flex items-center gap-2">

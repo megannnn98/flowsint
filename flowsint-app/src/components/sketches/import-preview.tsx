@@ -546,7 +546,7 @@ export function ImportPreview({
         setTimeout(onSuccess, 2000)
         refetchGraph()
         setIsImporting(false)
-        toast(`Import successful !`, {
+        toast(t('Import successful !'), {
           duration: 6000,
           description: `${result.nodes_created} entities were imported. You can now display them with the layout commands.`,
           action: {

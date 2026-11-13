@@ -305,7 +305,7 @@ export const AnalysisEditor = ({
                         >
                           <div className="flex flex-col items-start truncate text-ellipsis">
                             <span className="font-medium truncate text-ellipsis">
-                              {analysisItem.title || 'Untitled'}
+                              {analysisItem.title || t('Untitled')}
                             </span>
                             <span className="text-xs text-muted-foreground">
                               {analysisItem.id === currentAnalysisId
@@ -347,7 +347,7 @@ export const AnalysisEditor = ({
                     className={`text-md font-medium truncate min-w-0 flex-1 ${canEdit ? 'cursor-pointer hover:text-primary' : ''}`}
                     onClick={canEdit ? () => setIsEditingTitle(true) : undefined}
                   >
-                    {titleValue || 'Untitled Analysis'}
+                    {titleValue || t('Untitled Analysis')}
                   </span>
                 )}
               </div>

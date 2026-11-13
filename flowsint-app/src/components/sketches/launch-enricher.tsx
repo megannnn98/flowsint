@@ -256,7 +256,7 @@ const LaunchEnricherOrFlowPanel = memo(
 
                               {enricher.description && (
                                 <CardDescription className="text-sm pl-7">
-                                  {enricher.description || 'No description available'}
+                                  {enricher.description || t('No description available')}
                                 </CardDescription>
                               )}
                             </div>
@@ -370,7 +370,7 @@ const LaunchEnricherOrFlowPanel = memo(
 
                               {flow.description && (
                                 <CardDescription className="text-sm pl-7">
-                                  {flow.description || 'No description available'}
+                                  {flow.description || t('No description available')}
                                 </CardDescription>
                               )}
 

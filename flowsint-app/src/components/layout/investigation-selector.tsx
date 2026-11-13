@@ -59,7 +59,7 @@ export default function InvestigationSelector() {
                 className="min-w-none !h-7 rounded-sm w-full !bg-transparent hover:bg-foreground/10 font-medium shadow-none border-none text-ellipsis truncate gap-1 inset-shadow-none justify-between"
               >
                 <span className="text-ellipsis truncate">
-                  {currentInvestigation?.name || 'Select an investigation'}
+                  {currentInvestigation?.name || t('Select an investigation')}
                 </span>
                 <ChevronDown className="w-4 h-4 shrink-0" />
               </Button>

@@ -31,7 +31,7 @@ export function SaveModal({
   initialName,
   initialDescription
 }: SaveModalProps) {
-  const [name, setName] = useState(initialName || 'My Enricher')
+  const [name, setName] = useState(initialName || t('My Enricher'))
   const [description, setDescription] = useState(initialDescription || '')
   const [nameError, setNameError] = useState('')
 
@@ -41,7 +41,7 @@ export function SaveModal({
   if (open !== prevOpen) {
     setPrevOpen(open)
     if (open) {
-      setName(initialName || 'My Enricher')
+      setName(initialName || t('My Enricher'))
       setDescription(initialDescription || '')
       setNameError('')
     }

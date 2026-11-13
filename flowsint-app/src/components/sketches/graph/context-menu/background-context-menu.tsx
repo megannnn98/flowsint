@@ -160,9 +160,9 @@ export default function BackgroundContextMenu({
         )
       })(),
       {
-        loading: `Deleting ${selectedNodes.length} node(s)...`,
-        success: 'Nodes deleted successfully.',
-        error: 'Failed to delete selected nodes.'
+        loading: t('Deleting {{count}} node(s)...', { count: selectedNodes.length }),
+        success: t('Nodes deleted successfully.'),
+        error: t('Failed to delete selected nodes.')
       }
     )
   }, [selectedNodes, confirm, removeNodes, clearSelectedNodes, sketchId])

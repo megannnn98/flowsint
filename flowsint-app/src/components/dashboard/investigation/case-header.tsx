@@ -110,9 +110,9 @@ export function CaseHeader({ investigation }: CaseOverviewPageProps) {
         })
 
       toast.promise(deletePromise, {
-        loading: 'Deleting investigation...',
-        success: () => `Investigation "${investigation.name}" has been deleted`,
-        error: 'Failed to delete investigation'
+        loading: t('Deleting investigation...'),
+        success: () => t('Investigation "{{name}}" has been deleted', { name: investigation.name }),
+        error: t('Failed to delete investigation')
       })
     }
   }

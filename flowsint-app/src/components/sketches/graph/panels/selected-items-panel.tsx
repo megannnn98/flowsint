@@ -45,7 +45,7 @@ const SelectedNodeItem = memo(({ node }: { node: GraphNode; color: string }) => 
       className="flex w-full items-center justify-between text-left border border-border gap-1.5 text-xs p-2 py-1.5"
     >
       <span className="inline-flex items-center gap-2 truncate text-ellipsis">
-        <span className="truncate text-ellipsis">{node.nodeLabel || 'Unknown'}</span>
+        <span className="truncate text-ellipsis">{node.nodeLabel || t('Unknown')}</span>
       </span>
       <TypeBadge type={node?.nodeType} />
     </Badge>
@@ -120,9 +120,9 @@ const ActionBar = () => {
         )
       })(),
       {
-        loading: `Deleting ${selectedNodes.length} node(s)...`,
-        success: 'Nodes deleted successfully.',
-        error: 'Failed to delete selected nodes.'
+        loading: t('Deleting {{count}} node(s)...', { count: selectedNodes.length }),
+        success: t('Nodes deleted successfully.'),
+        error: t('Failed to delete selected nodes.')
       }
     )
   }, [selectedNodes, confirm, removeNodes, clearSelectedNodes, sketchId])

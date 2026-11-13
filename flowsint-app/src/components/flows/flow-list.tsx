@@ -81,7 +81,7 @@ const FlowsList = () => {
                 to={`/dashboard/flows/$flowId`}
                 params={{ flowId: flow.id }}
                 className="block px-4 py-3 hover:bg-muted cursor-pointer"
-                title={flow.description || 'No description'}
+                title={flow.description || t('No description')}
               >
                 <div className="font-semibold text-sm truncate">
                   {flow.name || '(Unnamed flow)'}

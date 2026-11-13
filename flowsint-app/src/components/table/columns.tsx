@@ -276,7 +276,7 @@ export const columns: ColumnDef<GraphNode>[] = [
     },
     accessorKey: 'data.source',
     cell: ({ row }) => {
-      const source = row.original.data.source || 'Enricher'
+      const source = row.original.data.source || t('Enricher')
       return <div className="text-left font-medium text-gray-700 dark:text-gray-200">{source}</div>
     }
   },

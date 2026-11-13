@@ -151,7 +151,7 @@ export default function NewInvestigation({ children, noDropDown = false }: NewIn
           queryKey: queryKeys.investigations.list
         })
       } else {
-        toast.error(('error' in result && result.error) || 'Failed to create investigation')
+        toast.error(('error' in result && result.error) || t('Failed to create investigation'))
       }
     },
     onError: (error) => {

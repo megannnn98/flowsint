@@ -64,7 +64,7 @@ const NodeItem = memo(function NodeItem({
     try {
       return formatDistanceToNow(new Date(dateString), { addSuffix: true })
     } catch {
-      return 'Unknown'
+      return t('Unknown')
     }
   }, [])
 
@@ -120,7 +120,7 @@ const NodeItem = memo(function NodeItem({
         {/* Type */}
         <div>
           <Badge variant="outline" className="text-xs">
-            {node.nodeType || 'Unknown'}
+            {node.nodeType || t('Unknown')}
           </Badge>
         </div>
 

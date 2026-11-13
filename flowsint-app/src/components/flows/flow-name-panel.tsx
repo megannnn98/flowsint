@@ -17,7 +17,7 @@ interface FlowNamePanelProps {
 export const FlowNamePanel = ({ flow, onUpdate, disabled = false }: FlowNamePanelProps) => {
   const [isEditingName, setIsEditingName] = useState(false)
   const [isEditingDesc, setIsEditingDesc] = useState(false)
-  const [name, setName] = useState(flow?.name || 'My flow')
+  const [name, setName] = useState(flow?.name || t('My flow'))
   const [description, setDescription] = useState(flow?.description || '')
   const [isSaving, setIsSaving] = useState(false)
   const nameInputRef = useRef<HTMLInputElement>(null)
@@ -51,7 +51,7 @@ export const FlowNamePanel = ({ flow, onUpdate, disabled = false }: FlowNamePane
   if (flow !== prevFlow) {
     setPrevFlow(flow)
     if (flow) {
-      setName(flow.name || 'My flow')
+      setName(flow.name || t('My flow'))
       setDescription(flow.description || '')
     }
   }
@@ -115,7 +115,7 @@ export const FlowNamePanel = ({ flow, onUpdate, disabled = false }: FlowNamePane
     } else if (e.key === 'Escape') {
       if (field === 'name') {
         setIsEditingName(false)
-        setName(flow?.name || 'My flow')
+        setName(flow?.name || t('My flow'))
       } else {
         setIsEditingDesc(false)
         setDescription(flow?.description || '')
@@ -143,7 +143,7 @@ export const FlowNamePanel = ({ flow, onUpdate, disabled = false }: FlowNamePane
             className="text-xl font-semibold cursor-pointer hover:bg-foreground/10 px-1 py-0.5 rounded-mdtransition-colors"
             onClick={() => !disabled && setIsEditingName(true)}
           >
-            {name || 'My flow'}
+            {name || t('My flow')}
           </h1>
         )}
 

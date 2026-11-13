@@ -272,9 +272,9 @@ export default function RelationshipsTable() {
         refetch()
       })(),
       {
-        loading: `Deleting ${count} relationship${count > 1 ? 's' : ''}...`,
-        success: `Relationship${count > 1 ? 's' : ''} deleted successfully.`,
-        error: 'Failed to delete relationships.'
+        loading: t('Deleting relationships: {{count}}...', { count }),
+        success: t('Relationships deleted: {{count}}.', { count }),
+        error: t('Failed to delete relationships.')
       }
     )
   }, [selectedEdges, sketchId, confirm, removeEdges, clearSelectedEdges, refetch])

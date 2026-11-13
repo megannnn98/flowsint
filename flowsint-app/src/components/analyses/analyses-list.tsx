@@ -86,7 +86,7 @@ const AnalysisList = () => {
     },
     onSuccess: async (data) => {
       if (!('id' in data)) {
-        toast.error(data.error || 'Failed to create analysis')
+        toast.error(data.error || t('Failed to create analysis'))
         return
       }
       queryClient.invalidateQueries({

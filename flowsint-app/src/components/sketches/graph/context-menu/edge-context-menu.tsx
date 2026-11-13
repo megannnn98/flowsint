@@ -130,9 +130,9 @@ export default function EdgeContextMenu({
           return sketchService.deleteEdges(sketchId, JSON.stringify({ relationshipIds: edgeIds }))
         })(),
         {
-          loading: `Deleting ${count} relationship${count > 1 ? 's' : ''}...`,
-          success: `Relationship${count > 1 ? 's' : ''} deleted successfully.`,
-          error: 'Failed to delete relationship.'
+          loading: t('Deleting relationships: {{count}}...', { count }),
+          success: t('Relationships deleted: {{count}}.', { count }),
+          error: t('Failed to delete relationship.')
         }
       )
     },

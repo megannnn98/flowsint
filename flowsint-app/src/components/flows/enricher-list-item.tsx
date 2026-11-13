@@ -145,7 +145,7 @@ const EnricherItem = memo(({ enricher, category }: EnricherItemProps) => {
                 {t('Description')}
               </h4>
               <p className="text-sm text-muted-foreground">
-                {enricher.description || 'No description available'}
+                {enricher.description || t('No description available')}
               </p>
             </div>
             <div className="space-y-2">

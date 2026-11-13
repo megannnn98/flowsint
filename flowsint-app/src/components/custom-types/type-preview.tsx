@@ -39,7 +39,7 @@ export function TypePreview({
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <h4 className="font-semibold text-sm truncate">{name || 'Untitled type'}</h4>
+                <h4 className="font-semibold text-sm truncate">{name || t('Untitled type')}</h4>
                 {status === 'draft' && (
                   <span className="shrink-0 text-[10px] font-medium uppercase tracking-wide text-muted-foreground border border-border/60 rounded px-1.5 py-0.5">
                     {t('Draft')}
@@ -50,7 +50,7 @@ export function TypePreview({
                 <p className="text-xs text-muted-foreground/70 mt-0.5 truncate">{category}</p>
               )}
               <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
-                {description || 'No description'}
+                {description || t('No description')}
               </p>
             </div>
           </div>
@@ -87,7 +87,7 @@ export function TypePreview({
             <Icon className="text-white" size={18} />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-medium truncate">{name || 'Untitled'}</p>
+            <p className="text-xs font-medium truncate">{name || t('Untitled')}</p>
             <p className="text-[10px] text-muted-foreground">
               {validFields.length} {t('field')}
               {validFields.length !== 1 ? 's' : ''}

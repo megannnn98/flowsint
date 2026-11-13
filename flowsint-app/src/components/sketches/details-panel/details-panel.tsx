@@ -752,7 +752,7 @@ const DetailsPanel = memo(() => {
                 onClick={() => setOpenIconPicker(true)}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                {formData.nodeIcon || 'Default'}
+                {formData.nodeIcon || t('Default')}
               </button>
             </PropertyRow>
 

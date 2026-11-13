@@ -105,7 +105,7 @@ export function TemplateTestPanel({
                             </td>
                             <td className="px-1 py-1">
                               <Input
-                                placeholder={String(defaultValue) || 'Value'}
+                                placeholder={String(defaultValue) || t('Value')}
                                 value={testParams[paramKey] ?? ''}
                                 onChange={(e) =>
                                   onTestParamsChange({

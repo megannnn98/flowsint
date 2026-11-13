@@ -155,9 +155,9 @@ export function InvestigationMenu({
 
     if (confirmed) {
       toast.promise(deleteSketchMutation.mutateAsync(sketchId), {
-        loading: 'Deleting sketch...',
-        success: () => `Sketch has been deleted`,
-        error: 'Failed to delete sketch'
+        loading: t('Deleting sketch...'),
+        success: () => t('Sketch has been deleted'),
+        error: t('Failed to delete sketch')
       })
     }
   }

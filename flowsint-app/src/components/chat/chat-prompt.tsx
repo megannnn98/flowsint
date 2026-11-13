@@ -136,7 +136,7 @@ export const ContextList = memo(({ context }: { context: ChatContextFormat[] }) 
               className="flex items-center border border-border gap-1.5 text-xs"
             >
               <span style={{ background: color }} className="w-1.5 h-1.5 rounded-full" />
-              {item.nodeLabel || 'Unknown'}
+              {item.nodeLabel || t('Unknown')}
             </Badge>
           )
         }
@@ -151,9 +151,9 @@ export const ContextList = memo(({ context }: { context: ChatContextFormat[] }) 
             className="flex items-center border border-border gap-1.5 text-xs"
           >
             <span style={{ background: fromColor }} className="w-1.5 h-1.5 rounded-full" />
-            {item.fromLabel || 'Unknown'} {'->'}
+            {item.fromLabel || t('Unknown')} {'->'}
             <span style={{ background: toColor }} className="w-1.5 h-1.5 rounded-full" />
-            {item.toLabel || 'Unknown'}
+            {item.toLabel || t('Unknown')}
           </Badge>
         )
       })}

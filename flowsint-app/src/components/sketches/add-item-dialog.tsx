@@ -141,7 +141,7 @@ export default function AddItemDialog() {
     setOpenMainDialog(false)
     setOpenFormDialog(false)
     // Show optimistic success message
-    toast(`New ${type.toLowerCase()} added to sketch.`, {
+    toast(t('New {{type}} added to sketch.', { type: type.toLowerCase() }), {
       description: relatedNodeToAdd
         ? `A new ${type.toLowerCase()} "${label}" was added to relation ${relatedNodeToAdd.nodeLabel}.`
         : `A new ${type.toLowerCase()} "${label}" was added.`,
