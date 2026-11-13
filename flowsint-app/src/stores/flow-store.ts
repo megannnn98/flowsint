@@ -96,7 +96,8 @@ export const useFlowStore = create<EnricherState>((set, get) => ({
     })
   },
   onConnect: (connection: Connection) => {
-    if ([connection.targetHandle, 'Any'].includes(connection.sourceHandle)) {
+    // Handle ids are type names: allow only matching types, or a target that accepts Any.
+    if (![connection.sourceHandle, 'Any'].includes(connection.targetHandle)) {
       toast.error(
         t('Cannot connect {{from}} to {{to}}.', {
           from: connection.sourceHandle,
