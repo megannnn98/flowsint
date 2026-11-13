@@ -107,7 +107,9 @@ const EnricherNode = memo(({ data, isConnectable }: EnricherNodeProps) => {
               {Icon && <Icon size={24} />}
               <div className="font-semibold text-sm">{data.class_name}</div>
             </div>
-            <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{data.description}</p>
+            <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
+              {data.description && t(data.description)}
+            </p>
           </div>
         </div>
         <div>

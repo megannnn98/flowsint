@@ -103,7 +103,9 @@ const ParamsDialog = () => {
           </DialogTitle>
           <div className={cn('justify-start', 'flex w-full')}>
             <div className={cn('w-full', 'p-3 rounded-xl max-w-full', 'flex flex-col gap-2')}>
-              <div className="max-w-none">{selectedNode?.data.description?.toString()}</div>
+              <div className="max-w-none">
+                {selectedNode?.data.description && t(selectedNode.data.description.toString())}
+              </div>
             </div>
           </div>
         </DialogHeader>

@@ -1,4 +1,5 @@
 import { fetchWithAuth } from './api'
+import { localizeSchema } from '@/i18n'
 import type { Flow, ComputeFlowResult } from '@/types/flow'
 import type { Enricher, EnricherData } from '@/types/enricher'
 
@@ -46,15 +47,19 @@ export const flowService = {
   // Raw materials are enrichers grouped by input type — the pool a flow's
   // "type" nodes can be built from, not flows themselves.
   getRawMaterial: async (): Promise<EnricherData> => {
-    return fetchWithAuth(`/api/flows/raw_materials`, {
-      method: 'GET'
-    })
+    return localizeSchema(
+      await fetchWithAuth(`/api/flows/raw_materials`, {
+        method: 'GET'
+      })
+    )
   },
   // Unlike getRawMaterial, this endpoint already filters to one input
   // type, so it returns a flat list instead of grouping by category.
   getRawMaterialForType: async (type: string): Promise<{ items: Enricher[] }> => {
-    return fetchWithAuth(`/api/flows/input_type/${type}`, {
-      method: 'GET'
-    })
+    return localizeSchema(
+      await fetchWithAuth(`/api/flows/input_type/${type}`, {
+        method: 'GET'
+      })
+    )
   }
 }
