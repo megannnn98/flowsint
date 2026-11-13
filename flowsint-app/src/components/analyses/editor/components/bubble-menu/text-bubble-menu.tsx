@@ -20,6 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { LinkEditBlock } from '../link/link-edit-block'
 import { cn } from '@/lib/utils'
 
+import { t } from '@/i18n'
 interface TextBubbleMenuProps {
   editor: Editor
 }
@@ -177,7 +178,7 @@ export const TextBubbleMenu: React.FC<TextBubbleMenuProps> = ({ editor }) => {
                 onClick={() => editor.chain().focus().setParagraph().run()}
               >
                 <Pilcrow className="size-4" />
-                Paragraph
+                {t('Paragraph')}
               </button>
               <button
                 type="button"
@@ -186,7 +187,7 @@ export const TextBubbleMenu: React.FC<TextBubbleMenuProps> = ({ editor }) => {
                 onClick={() => editor.chain().focus().setHeading({ level: 1 }).run()}
               >
                 <Heading1 className="size-4" />
-                Heading 1
+                {t('Heading 1')}
               </button>
               <button
                 type="button"
@@ -195,7 +196,7 @@ export const TextBubbleMenu: React.FC<TextBubbleMenuProps> = ({ editor }) => {
                 onClick={() => editor.chain().focus().setHeading({ level: 2 }).run()}
               >
                 <Heading2 className="size-4" />
-                Heading 2
+                {t('Heading 2')}
               </button>
               <button
                 type="button"
@@ -204,7 +205,7 @@ export const TextBubbleMenu: React.FC<TextBubbleMenuProps> = ({ editor }) => {
                 onClick={() => editor.chain().focus().setHeading({ level: 3 }).run()}
               >
                 <Heading3 className="size-4" />
-                Heading 3
+                {t('Heading 3')}
               </button>
             </div>
           </PopoverContent>

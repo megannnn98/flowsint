@@ -1,7 +1,7 @@
 ---
-title: "Managing types"
-description: "This guide walks you through the process of creating a new data type in the Flowsint ecosystem and integrating it throughout the platform. Types in Flowsint serve as the foundation for all data modeling, providing structure, validation, and schema generation for the entire system."
-category: "Developers"
+title: "Управление типами"
+description: "Это руководство проведёт вас через создание нового типа данных в экосистеме Flowsint и его интеграцию во всю платформу. Типы во Flowsint — основа всего моделирования данных: они задают структуру, валидацию и генерацию схем для всей системы."
+category: "Разработчикам"
 order: 8
 author: "Flowsint Team"
 tags: ["tutorial", "developers", "creating-a-new-type"]
@@ -9,17 +9,17 @@ version: "1.2.8"
 last_updated_at: "2026-05-15"
 ---
 
-## Understanding the type system
+## Как устроена система типов
 
-The Flowsint type system is built on Pydantic models and lives in the `flowsint-types` package. Every type is a python class that inherits from `FlowsintType`, which itself inherits from `pydantic.BaseModel`, **and must be decorated with `@flowsint_type`** to be registered in the global type registry. This provides automatic validation, serialization, JSON schema generation, auto-discovery, and graph-specific functionality like automatic label generation. The architecture is deliberately simple with minimal inheritance hierarchies. Each type inherits from FlowsintType and defines its own fields and behavior.
+Система типов Flowsint построена на моделях Pydantic и находится в пакете `flowsint-types`. Каждый тип — это Python-класс, наследующийся от `FlowsintType`, который, в свою очередь, наследуется от `pydantic.BaseModel`, **и должен быть помечен декоратором `@flowsint_type`**, чтобы зарегистрироваться в глобальном реестре типов. Это даёт автоматическую валидацию, сериализацию, генерацию JSON-схем, автообнаружение и специфичные для графа возможности, например автоматическое формирование меток. Архитектура намеренно проста, с минимальной иерархией наследования: каждый тип наследуется от FlowsintType и определяет собственные поля и поведение.
 
-The package structure is straightforward. Inside `flowsint-types/src/flowsint_types/`, you'll find individual python files for each type. Most types get their own file, though closely related types sometimes share a file. For example, `wallet.py` contains `CryptoWallet`, `CryptoWalletTransaction`, and `CryptoNFT` because they work together as a conceptual unit.
+Структура пакета проста. В `flowsint-types/src/flowsint_types/` лежат отдельные Python-файлы для каждого типа. Большинство типов имеют собственный файл, хотя тесно связанные типы иногда делят один файл. Например, в `wallet.py` находятся `CryptoWallet`, `CryptoWalletTransaction` и `CryptoNFT`, потому что они работают как единое смысловое целое.
 
-Currently, Flowsint includes 39 built-in types covering everything from network entities like domains and IPs to identity information like individuals and organizations, security data like credentials and breaches, and financial information like bank accounts and crypto wallets.
+Сейчас во Flowsint 39 встроенных типов: от сетевых сущностей (домены, IP) до сведений о личности (физические лица, организации), данных безопасности (учётные данные, утечки) и финансовой информации (банковские счета, криптокошельки).
 
-### What is FlowsintType?
+### Что такое FlowsintType?
 
-`FlowsintType` is the base class for all Flowsint entity types. It extends Pydantic's `BaseModel` with additional functionality specific to Flowsint's graph database and UI needs:
+`FlowsintType` — базовый класс для всех типов сущностей Flowsint. Он расширяет `BaseModel` из Pydantic дополнительной функциональностью, специфичной для графовой базы данных и интерфейса Flowsint:
 
 ```python
 class FlowsintType(BaseModel):
@@ -48,17 +48,17 @@ class FlowsintType(BaseModel):
         extra = "allow"
 ```
 
-The `nodeLabel` field is automatically set by types using a `@model_validator` decorator, and this label is what appears on graph nodes in the Neo4j database and in the frontend UI. Every type should compute its own meaningful label based on its fields.
+Поле `nodeLabel` автоматически задаётся типами с помощью декоратора `@model_validator`; именно эта метка отображается на узлах графа в базе Neo4j и в интерфейсе. Каждый тип должен вычислять собственную осмысленную метку на основе своих полей.
 
-The `ConfigDict` with `extra = "allow"` means types accept additional properties beyond their defined fields, which is useful for user-provided metadata.
+`ConfigDict` с `extra = "allow"` означает, что типы принимают дополнительные свойства сверх заданных полей — это удобно для метаданных, передаваемых пользователем.
 
-### The `@flowsint_type` decorator
+### Декоратор `@flowsint_type`
 
-Every type **must** be decorated with `@flowsint_type` from `flowsint_types.registry`. This decorator registers the type in the global `TYPE_REGISTRY`, which enables:
+Каждый тип **обязан** быть помечен декоратором `@flowsint_type` из `flowsint_types.registry`. Этот декоратор регистрирует тип в глобальном `TYPE_REGISTRY`, что обеспечивает:
 
-- Auto-discovery of all types at startup via `load_all_types()`
-- Lookup by class name (e.g., `TYPE_REGISTRY.get("Domain")`)
-- Lookup by lowercase name (e.g., `TYPE_REGISTRY.get_lowercase("domain")`) for Neo4j matching
+- Автообнаружение всех типов при запуске через `load_all_types()`
+- Поиск по имени класса (например, `TYPE_REGISTRY.get("Domain")`)
+- Поиск по имени в нижнем регистре (например, `TYPE_REGISTRY.get_lowercase("domain")`) для сопоставления с Neo4j
 
 ```python
 from flowsint_types.registry import flowsint_type
@@ -69,24 +69,24 @@ class MyType(FlowsintType):
     ...
 ```
 
-Without this decorator, your type will not be discoverable by the system.
+Без этого декоратора система не сможет обнаружить ваш тип.
 
-## Creating a new type
+## Создание нового типа
 
-Let's walk through the process of creating a new type from scratch. We'll use a hypothetical `Vehicle` type as our example.
+Пройдём весь путь создания нового типа с нуля. В качестве примера возьмём гипотетический тип `Vehicle`.
 
-### Setting up the file
+### Создание файла
 
-Start by creating a new python file in the types directory. The filename should be lowercase and match your type name in snake_case. For a `Vehicle` type, you would create `vehicle.py`:
+Начните с создания нового Python-файла в каталоге типов. Имя файла должно быть в нижнем регистре и совпадать с именем типа в snake_case. Для типа `Vehicle` создайте `vehicle.py`:
 
 ```bash
 cd flowsint-types/src/flowsint_types/
 touch vehicle.py
 ```
 
-### Basic structure
+### Базовая структура
 
-Every type follows the same structural pattern. Here's what a basic type looks like:
+Все типы следуют одному структурному шаблону. Вот как выглядит базовый тип:
 
 ```python
 from pydantic import Field, model_validator
@@ -130,73 +130,73 @@ class Vehicle(FlowsintType):
         return self
 ```
 
-Let's break down the key components:
+Разберём ключевые компоненты:
 
-**Inheritance, imports, and decorator:**
-- The class inherits from `FlowsintType`
-- Import `FlowsintType` from `.flowsint_base`
-- Import `flowsint_type` from `.registry` and apply it as a decorator
-- Import `model_validator` and `Self` from Pydantic for the label computation
+**Наследование, импорты и декоратор:**
+- Класс наследуется от `FlowsintType`
+- Импортируйте `FlowsintType` из `.flowsint_base`
+- Импортируйте `flowsint_type` из `.registry` и примените его как декоратор
+- Импортируйте `model_validator` и `Self` из Pydantic для вычисления метки
 
 **Docstring:**
-- Every type starts with a clear docstring explaining what it represents
+- Каждый тип начинается с понятного docstring, объясняющего, что он представляет
 
-**Field definitions:**
-- Each field is defined as a class attribute with type hints
-- Use Pydantic's `Field()` function to provide metadata
-- Required fields use the ellipsis (`...`) as their default value
-- Optional fields use `Optional[Type]` in their type hint and `None` as the default value
-- Always provide `description` (for API docs) and `title` (for UI labels)
+**Определение полей:**
+- Каждое поле определяется как атрибут класса с подсказками типов
+- Используйте функцию Pydantic `Field()`, чтобы задать метаданные
+- Обязательные поля используют многоточие (`...`) в качестве значения по умолчанию
+- Необязательные поля используют `Optional[Type]` в подсказке типа и `None` как значение по умолчанию
+- Всегда указывайте `description` (для документации API) и `title` (для подписей в интерфейсе)
 
-**Primary field:**
-- The `json_schema_extra={"primary": True}` marks the unique identifier for this type
-- This field is used as the key when creating Neo4j nodes
-- **Critical:** Every type must have exactly one primary field
-- Choose a field that uniquely identifies instances of this type
+**Основное поле:**
+- `json_schema_extra={"primary": True}` помечает уникальный идентификатор этого типа
+- Это поле используется как ключ при создании узлов Neo4j
+- **Важно:** у каждого типа должно быть ровно одно основное поле
+- Выберите поле, которое однозначно идентифицирует экземпляры этого типа
 
-**Label computation:**
-- The `@model_validator(mode='after')` decorator runs after all field validation
-- The method must be named `compute_label` and return `self`
-- It sets `self.nodeLabel` to a human-readable string that will appear in the UI and graph
-- Handle cases where optional fields might be `None` to avoid ugly labels
-- The label should help users quickly identify what this entity is
+**Вычисление метки:**
+- Декоратор `@model_validator(mode='after')` выполняется после всей валидации полей
+- Метод должен называться `compute_label` и возвращать `self`
+- Он задаёт `self.nodeLabel` — понятную человеку строку, которая появится в интерфейсе и на графе
+- Учитывайте случаи, когда необязательные поля могут быть `None`, чтобы не получать уродливые метки
+- Метка должна помогать пользователям быстро понять, что это за сущность
 
-### Naming conventions
+### Соглашения об именовании
 
-Flowsint follows strict naming conventions to maintain consistency across the codebase. Class names use PascalCase (like `Vehicle`, `SocialAccount`, or `CryptoWallet`). Field names use snake_case (like `license_plate`, `phone_number`, or `email_address`). This matches python's standard conventions and makes the codebase more readable.
+Flowsint придерживается строгих соглашений об именовании для единообразия кодовой базы. Имена классов используют PascalCase (например, `Vehicle`, `SocialAccount` или `CryptoWallet`). Имена полей используют snake_case (например, `license_plate`, `phone_number` или `email_address`). Это соответствует стандартным соглашениям Python и делает код читаемее.
 
-### Understanding primary fields and labels
+### Основные поля и метки
 
-Two concepts are crucial for every Flowsint type: the **primary field** and the **nodeLabel**. Understanding these will help you create types that work seamlessly with the graph database and UI.
+Для каждого типа Flowsint критичны две концепции: **основное поле** и **nodeLabel**. Их понимание поможет создавать типы, которые безупречно работают с графовой базой данных и интерфейсом.
 
-**Why it matters:**
-- When creating Neo4j nodes, this field is used as the key in `MERGE` operations
-- It ensures each entity is uniquely identified in the graph
-- The graph service extracts this field to determine node uniqueness
+**Почему это важно:**
+- При создании узлов Neo4j это поле используется как ключ в операциях `MERGE`
+- Оно гарантирует однозначную идентификацию каждой сущности в графе
+- Сервис графа извлекает это поле, чтобы определить уникальность узла
 
-**Rules for primary fields:**
-- Every type must have exactly one primary field
-- The primary field should uniquely identify instances
-- It's typically a required field (using `...` as default)
-- Common choices: IDs, usernames, emails, license plates, domain names
+**Правила для основных полей:**
+- У каждого типа должно быть ровно одно основное поле
+- Основное поле должно однозначно идентифицировать экземпляры
+- Обычно это обязательное поле (с `...` по умолчанию)
+- Типичный выбор: идентификаторы, имена пользователей, email, номерные знаки, доменные имена
 
-**Examples of good primary fields:**
-- `Domain`: `domain` field (e.g., "example.com")
-- `Email`: `email` field (e.g., "user@example.com")
-- `Username`: `value` field (e.g., "john_doe")
-- `Ip`: `address` field (e.g., "192.168.1.1")
-- `SocialAccount`: `id` field (computed as "username@platform")
+**Примеры удачных основных полей:**
+- `Domain`: поле `domain` (например, "example.com")
+- `Email`: поле `email` (например, "user@example.com")
+- `Username`: поле `value` (например, "john_doe")
+- `Ip`: поле `address` (например, "192.168.1.1")
+- `SocialAccount`: поле `id` (вычисляется как "username@platform")
 
-#### The nodeLabel field and compute_label
+#### Поле nodeLabel и compute_label
 
-The `nodeLabel` is what users see in the UI and on graph nodes. It should be human-readable and help users quickly understand what an entity represents.
+`nodeLabel` — это то, что пользователи видят в интерфейсе и на узлах графа. Метка должна быть понятной и помогать быстро понять, что представляет сущность.
 
-**How it works:**
-1. `FlowsintType` provides a `nodeLabel` field (`Optional[str]`)
-2. Your type defines a `compute_label` method to set this field
-3. The method runs automatically after validation using `@model_validator(mode='after')`
+**Как это работает:**
+1. `FlowsintType` предоставляет поле `nodeLabel` (`Optional[str]`)
+2. Ваш тип определяет метод `compute_label`, который задаёт это поле
+3. Метод выполняется автоматически после валидации благодаря `@model_validator(mode='after')`
 
-**Basic pattern:**
+**Базовый шаблон:**
 
 ```python
 from pydantic import model_validator
@@ -209,9 +209,9 @@ def compute_label(self) -> Self:
     return self
 ```
 
-**Advanced patterns:**
+**Продвинутые шаблоны:**
 
-When you have optional fields, handle `None` values gracefully:
+Если есть необязательные поля, корректно обрабатывайте значения `None`:
 
 ```python
 @model_validator(mode='after')
@@ -224,7 +224,7 @@ def compute_label(self) -> Self:
     return self
 ```
 
-For types with multiple identifiers, you might compute a composite ID:
+Для типов с несколькими идентификаторами можно вычислять составной ID:
 
 ```python
 @model_validator(mode='after')
@@ -244,14 +244,14 @@ def compute_label_and_id(self) -> Self:
     return self
 ```
 
-**Best practices for labels:**
-- Keep labels concise but informative
-- Include the most identifying information first
-- Handle `None` values for optional fields
-- Use parentheses or separators to structure complex labels
-- Think about what users need to see at a glance on the graph
+**Лучшие практики для меток:**
+- Делайте метки краткими, но информативными
+- Сначала указывайте самую идентифицирующую информацию
+- Обрабатывайте значения `None` для необязательных полей
+- Используйте скобки или разделители для структурирования сложных меток
+- Думайте о том, что пользователям нужно видеть на графе с первого взгляда
 
-**Real-world examples**
+**Примеры из практики**
 
 ```python
 # Simple: just the value
@@ -277,9 +277,9 @@ else:
 self.nodeLabel = f"{self.title} ({self.breachdate.split('-')[0]}) - {self.pwncount:,} records"
 ```
 
-### Working with different field types
+### Работа с разными типами полей
 
-Pydantic supports a wide range of field types beyond simple strings and integers. Here are the most common ones you'll use:
+Pydantic поддерживает широкий набор типов полей помимо простых строк и целых чисел. Вот наиболее частые:
 
 ```python
 from pydantic import Field, HttpUrl, model_validator
@@ -333,11 +333,11 @@ class ExampleType(FlowsintType):
         return self
 ```
 
-When working with mutable types like lists and dictionaries, always use `default_factory` instead of providing a default value directly. Using `default_factory=list` is correct, while using `default=[]` would cause all instances to share the same list object, leading to subtle bugs.
+При работе с изменяемыми типами, такими как списки и словари, всегда используйте `default_factory`, а не задавайте значение по умолчанию напрямую. `default_factory=list` — правильно, а `default=[]` приведёт к тому, что все экземпляры будут делить один и тот же список, что вызывает неочевидные ошибки.
 
-### Adding validation
+### Добавление валидации
 
-Sometimes you need more sophisticated validation than just type checking. Pydantic lets you add custom validators using the `field_validator` decorator:
+Иногда нужна более сложная валидация, чем простая проверка типов. Pydantic позволяет добавлять собственные валидаторы с помощью декоратора `field_validator`:
 
 ```python
 from pydantic import Field, field_validator
@@ -368,11 +368,11 @@ class Ip(FlowsintType):
             raise ValueError(f"Invalid IP address: {v}")
 ```
 
-Validators receive the field value and can either return a (potentially modified) value or raise a `ValueError` with an error message. Note that `@field_validator` runs before `@model_validator`, so the field is validated and normalized before the label is computed.
+Валидаторы получают значение поля и могут либо вернуть (возможно, изменённое) значение, либо выбросить `ValueError` с сообщением об ошибке. Обратите внимание: `@field_validator` выполняется раньше `@model_validator`, поэтому поле проверяется и нормализуется до вычисления метки.
 
-### Referencing other types
+### Ссылки на другие типы
 
-Types often need to reference other Flowsint types. You can import and use them just like any other python type:
+Типам часто нужно ссылаться на другие типы Flowsint. Их можно импортировать и использовать как любой другой Python-тип:
 
 ```python
 from pydantic import Field, model_validator
@@ -402,7 +402,7 @@ class Contact(FlowsintType):
         return self
 ```
 
-For types with circular references or complex relationships, you may need to call `model_rebuild()` at the end of your file:
+Для типов с циклическими ссылками или сложными отношениями может понадобиться вызвать `model_rebuild()` в конце файла:
 
 ```python
 from pydantic import Field, model_validator
@@ -452,13 +452,13 @@ CryptoWallet.model_rebuild()
 CryptoWalletTransaction.model_rebuild()
 ```
 
-## Exporting your type
+## Экспорт типа
 
-Once you've created your type, the `@flowsint_type` decorator handles registration automatically. However, you also need to export it from the package for convenient imports.
+Когда тип создан, декоратор `@flowsint_type` сам выполняет регистрацию. Однако тип также нужно экспортировать из пакета для удобных импортов.
 
-### Updating the package exports
+### Обновление экспортов пакета
 
-Open `flowsint-types/src/flowsint_types/__init__.py` and add two things. First, import your new type at the top of the file with the other imports:
+Откройте `flowsint-types/src/flowsint_types/__init__.py` и добавьте две вещи. Сначала импортируйте новый тип в начале файла вместе с остальными импортами:
 
 ```python
 from .address import Location
@@ -468,7 +468,7 @@ from .alias import Alias
 from .vehicle import Vehicle  # Add your import here
 ```
 
-Second, add your type name to the `__all__` list:
+Затем добавьте имя типа в список `__all__`:
 
 ```python
 __all__ = [
@@ -480,13 +480,13 @@ __all__ = [
 ]
 ```
 
-The `__all__` list explicitly defines what gets exported when someone does `from flowsint_types import *`. While wildcard imports aren't always recommended, this ensures your type is properly exposed by the package.
+Список `__all__` явно определяет, что экспортируется при `from flowsint_types import *`. Хотя импорт через звёздочку не всегда рекомендуется, так вы гарантируете, что тип корректно доступен из пакета.
 
-Note that the `@flowsint_type` decorator already registers your type in the `TYPE_REGISTRY` automatically when the module is imported, so the explicit import in `__init__.py` ensures it gets loaded at startup alongside all other types.
+Обратите внимание: декоратор `@flowsint_type` уже автоматически регистрирует тип в `TYPE_REGISTRY` при импорте модуля, поэтому явный импорт в `__init__.py` обеспечивает загрузку типа при запуске наряду со всеми остальными типами.
 
-### Installing the package
+### Установка пакета
 
-After making these changes, you need to reinstall the package for them to take effect:
+После этих изменений пакет нужно переустановить, чтобы они вступили в силу:
 
 ```bash
 make prod
@@ -495,22 +495,22 @@ cd flowsint-types
 poetry install
 ```
 
-This updates the package in your development environment so enrichers and the API can import your new type.
+Это обновляет пакет в вашей среде разработки, чтобы обогатители и API могли импортировать новый тип.
 
-## Integrating with the API
+## Интеграция с API
 
-The final step is making your type available through the API so frontends can discover it and create instances.
+Последний шаг — сделать тип доступным через API, чтобы фронтенды могли его обнаруживать и создавать экземпляры.
 
-### Categorizing your type
+### Категоризация типа
 
-The API organizes types into logical categories that appear in the frontend. In the `TypeRegistryService._get_category_definitions()` method (located in `flowsint-core/src/flowsint_core/core/services/type_registry_service.py`), you'll find a list of category dictionaries. You need to add your type to an appropriate category or create a new one.
+API организует типы в логические категории, которые отображаются во фронтенде. В методе `TypeRegistryService._get_category_definitions()` (в `flowsint-core/src/flowsint_core/core/services/type_registry_service.py`) есть список словарей категорий. Нужно добавить свой тип в подходящую категорию или создать новую.
 
-Each category's `children` list contains tuples of `(TypeName, label_key, icon)`:
-- **TypeName**: The PascalCase class name of your type (e.g., `"Vehicle"`)
-- **label_key**: The field name used as the display key (e.g., `"license_plate"`)
-- **icon**: Optional icon override, or `None` to use the lowercase type name as icon
+Список `children` каждой категории содержит кортежи `(TypeName, label_key, icon)`:
+- **TypeName**: имя класса вашего типа в PascalCase (например, `"Vehicle"`)
+- **label_key**: имя поля, используемого как ключ отображения (например, `"license_plate"`)
+- **icon**: необязательное переопределение значка или `None`, чтобы использовать имя типа в нижнем регистре как значок
 
-You can either add to an existing category or create a new one.
+Можно добавить тип в существующую категорию или создать новую.
 
 ```python
 def _get_category_definitions(self) -> List[Dict[str, Any]]:
@@ -545,46 +545,46 @@ def _get_category_definitions(self) -> List[Dict[str, Any]]:
 ```
 
 
-### Available categories
+### Доступные категории
 
-Flowsint currently organizes types into these standard categories:
+Сейчас Flowsint организует типы в такие стандартные категории:
 
-- **Global** contains general-purpose types like Location and Phrase that don't fit neatly into other categories.
+- **Global** содержит универсальные типы, такие как Location и Phrase, которые не вписываются в другие категории.
 
-- **Identities & Entities** includes Individual, Username, and Organization for representing people and groups.
+- **Identities & Entities** включает Individual, Username и Organization для представления людей и групп.
 
-- **Organization** contains Organization for dedicated organizational lookups.
+- **Organization** содержит Organization для специализированного поиска по организациям.
 
-- **Communication & Contact** covers Phone, Email, Username, SocialAccount, and Message for communication-related data.
+- **Communication & Contact** охватывает Phone, Email, Username, SocialAccount и Message для данных, связанных со связью и контактами.
 
-- **Network** encompasses all network-related types including ASN, CIDR, Domain, Website, Ip, Port, DNSRecord, SSLCertificate, and WebTracker.
+- **Network** объединяет все сетевые типы, включая ASN, CIDR, Domain, Website, Ip, Port, DNSRecord, SSLCertificate и WebTracker.
 
-- **Security & Access** groups security-relevant types like Credential, Session, Device, Malware, and Weapon.
+- **Security & Access** группирует типы, связанные с безопасностью: Credential, Session, Device, Malware и Weapon.
 
-- **Files & Documents** contains Document and File for representing digital files.
+- **Files & Documents** содержит Document и File для представления цифровых файлов.
 
-- **Financial Data** includes BankAccount and CreditCard for financial information.
+- **Financial Data** включает BankAccount и CreditCard для финансовой информации.
 
-- **Leaks** covers data breach information with the Leak type.
+- **Leaks** охватывает данные об утечках с типом Leak.
 
-- **Crypto** contains cryptocurrency-related types including CryptoWallet, CryptoWalletTransaction, and CryptoNFT.
+- **Crypto** содержит типы, связанные с криптовалютами, включая CryptoWallet, CryptoWalletTransaction и CryptoNFT.
 
-You can add your type to any of these categories or create a new category if none fit.
+Можно добавить тип в любую из этих категорий или создать новую, если ни одна не подходит.
 
 <Alert variant="info">
-    <AlertTitle>Registered but uncategorized types</AlertTitle>
+    <AlertTitle>Зарегистрированные, но некатегоризированные типы</AlertTitle>
     <AlertDescription>
-    Some types are registered (via `@flowsint_type`) and used as enricher inputs or outputs, but are intentionally not placed in any built-in category: `Affiliation`, `Alias`, `Breach`, `Gravatar`, `ReputationScore`, `RiskProfile`, `Script`, and `Whois`. They show up in the graph as nodes produced by enrichers (e.g. `Whois` is produced by `domain_to_whois`) but they don't appear in the type picker until you add them to `_get_category_definitions()`.
+    Некоторые типы зарегистрированы (через `@flowsint_type`) и используются как входы или выходы обогатителей, но намеренно не включены ни в одну встроенную категорию: `Affiliation`, `Alias`, `Breach`, `Gravatar`, `ReputationScore`, `RiskProfile`, `Script` и `Whois`. Они отображаются в графе как узлы, создаваемые обогатителями (например, `Whois` создаётся `domain_to_whois`), но не появляются в выборе типа, пока вы не добавите их в `_get_category_definitions()`.
     </AlertDescription>
 </Alert>
 
-## Complete examples
+## Полные примеры
 
-Let' see some complete, real-world examples to illustrate different patterns.
+Рассмотрим несколько полных примеров из практики, иллюстрирующих разные шаблоны.
 
-### Simple type example
+### Пример простого типа
 
-The simplest types have just one or two required fields and minimal complexity:
+Самые простые типы содержат одно-два обязательных поля и минимум сложности:
 
 ```python
 from pydantic import Field, model_validator
@@ -610,9 +610,9 @@ class Hashtag(FlowsintType):
         return self
 ```
 
-### Type with validation
+### Тип с валидацией
 
-This example shows a Social Security Number type with format validation:
+Этот пример показывает тип «номер соцстрахования» с проверкой формата:
 
 ```python
 from pydantic import Field, field_validator, model_validator
@@ -653,9 +653,9 @@ class SocialSecurityNumber(FlowsintType):
         return self
 ```
 
-### Type with related types
+### Тип со связанными типами
 
-This example shows how types can reference other types to build rich data models:
+Этот пример показывает, как типы могут ссылаться на другие типы, чтобы строить насыщенные модели данных:
 
 ```python
 from pydantic import Field, model_validator
@@ -709,9 +709,9 @@ class Whois(FlowsintType):
         return self
 ```
 
-### Complex type with collections
+### Сложный тип с коллекциями
 
-This example demonstrates a type with lists of other types and rich metadata:
+Этот пример демонстрирует тип со списками других типов и насыщенными метаданными:
 
 ```python
 from pydantic import Field, model_validator
@@ -790,26 +790,26 @@ class Organization(FlowsintType):
         return self
 ```
 
-## Best practices and common patterns
+## Лучшие практики и типовые шаблоны
 
-### Documentation
+### Документация
 
-Keep documentation at the forefront. Every type should have:
-- A clear docstring explaining what it represents
-- A descriptive `description` parameter for each field (for API docs)
-- A meaningful `title` parameter for each field (for UI labels)
+Держите документацию на переднем плане. У каждого типа должны быть:
+- Понятный docstring, объясняющий, что он представляет
+- Описательный параметр `description` у каждого поля (для документации API)
+- Осмысленный параметр `title` у каждого поля (для подписей в интерфейсе)
 
-Future developers (including yourself) will thank you for this clarity.
+Будущие разработчики (включая вас самих) скажут вам спасибо за эту ясность.
 
-### Required vs optional fields
+### Обязательные и необязательные поля
 
-Think carefully about what should be required versus optional:
-- **Required fields** (using `...`): Only fields that uniquely identify an entity or are absolutely essential
-- **Optional fields** (using `Optional[Type]` and `None`): Most other fields should be optional since intelligence gathering is incremental and you rarely have complete information upfront
+Хорошо продумайте, что должно быть обязательным, а что нет:
+- **Обязательные поля** (с `...`): только поля, однозначно идентифицирующие сущность или абсолютно необходимые
+- **Необязательные поля** (с `Optional[Type]` и `None`): большинство остальных полей должны быть необязательными, потому что сбор информации идёт постепенно, и полной информации заранее у вас почти никогда нет
 
-### Always inherit from FlowsintType and use the decorator
+### Всегда наследуйтесь от FlowsintType и используйте декоратор
 
-Never inherit directly from Pydantic's `BaseModel`. Always use `FlowsintType` and the `@flowsint_type` decorator:
+Никогда не наследуйтесь напрямую от `BaseModel` Pydantic. Всегда используйте `FlowsintType` и декоратор `@flowsint_type`:
 
 ```python
 # Correct
@@ -833,9 +833,9 @@ class MyType(BaseModel):  # Missing FlowsintType features
     ...
 ```
 
-### Always implement compute_label
+### Всегда реализуйте compute_label
 
-Every type must implement a `compute_label` method to set the `nodeLabel` displayed in the UI and graph:
+Каждый тип обязан реализовать метод `compute_label`, задающий `nodeLabel`, отображаемый в интерфейсе и на графе:
 
 ```python
 @model_validator(mode='after')
@@ -849,21 +849,21 @@ def compute_label(self) -> Self:
     return self
 ```
 
-**Best practices for labels:**
-- Keep them concise but informative
-- Handle None values for optional fields gracefully
-- Put the most important information first
-- Think about what users need to see at a glance on the graph
+**Лучшие практики для меток:**
+- Делайте их краткими, но информативными
+- Корректно обрабатывайте None для необязательных полей
+- Ставьте самую важную информацию в начало
+- Думайте о том, что пользователям нужно видеть на графе с первого взгляда
 
-### Type hints and validation
+### Подсказки типов и валидация
 
-Use type hints everywhere. They provide:
-- Automatic validation
-- Better IDE support and autocomplete
-- Inline documentation
-- Runtime type checking via Pydantic
+Используйте подсказки типов везде. Они дают:
+- Автоматическую валидацию
+- Лучшую поддержку IDE и автодополнение
+- Встроенную документацию
+- Проверку типов во время выполнения через Pydantic
 
-For mutable default values like lists and dictionaries, always use `default_factory`:
+Для изменяемых значений по умолчанию, таких как списки и словари, всегда используйте `default_factory`:
 
 ```python
 # Correct
@@ -875,9 +875,9 @@ tags: List[str] = Field(default=[])
 metadata: Dict[str, Any] = Field(default={})
 ```
 
-### Importing other types
+### Импорт других типов
 
-When referencing other Flowsint types, use relative imports to avoid circular import issues:
+При ссылках на другие типы Flowsint используйте относительные импорты, чтобы избежать проблем с циклическими импортами:
 
 ```python
 # Correct
@@ -888,11 +888,11 @@ from .phone import Phone
 from flowsint_types import Email, Phone  # Can cause circular imports
 ```
 
-If you encounter circular import problems, you can use forward references (strings) in type hints and call `model_rebuild()` at the end of your module.
+Если возникли проблемы с циклическими импортами, можно использовать прямые ссылки (строки) в подсказках типов и вызвать `model_rebuild()` в конце модуля.
 
-### Custom validation
+### Пользовательская валидация
 
-Consider adding custom validators for complex validation logic that goes beyond simple type checking:
+Рассмотрите добавление собственных валидаторов для сложной логики проверки, выходящей за рамки простой проверки типов:
 
 ```python
 @field_validator('email')
@@ -904,22 +904,22 @@ def validate_email(cls, v: str) -> str:
     return v.lower()
 ```
 
-This keeps validation logic close to the type definition and ensures data integrity throughout the system.
+Это держит логику валидации рядом с определением типа и обеспечивает целостность данных во всей системе.
 
-### Order of execution
+### Порядок выполнения
 
-Remember the order in which Pydantic processes your type:
-1. **Field validators** (`@field_validator`) run first, validating and potentially transforming individual fields
-2. **Model validators** (`@model_validator`) run after, operating on the entire validated model
-3. Your `compute_label` method (a model validator) runs last, after all fields are validated
+Помните порядок, в котором Pydantic обрабатывает ваш тип:
+1. **Валидаторы полей** (`@field_validator`) выполняются первыми, проверяя и при необходимости преобразуя отдельные поля
+2. **Валидаторы модели** (`@model_validator`) выполняются после, работая со всей проверенной моделью
+3. Ваш метод `compute_label` (валидатор модели) выполняется последним, когда все поля уже проверены
 
-This means you can safely access validated field values in `compute_label`.
+Это значит, что в `compute_label` можно безопасно обращаться к проверенным значениям полей.
 
-## Testing your type
+## Тестирование типа
 
-Writing tests for your types ensures they work correctly and helps catch bugs early. Create a test file in `flowsint-types/tests/` that matches your type filename.
+Тесты типов гарантируют их корректную работу и помогают выявлять ошибки на ранней стадии. Создайте тестовый файл в `flowsint-types/tests/`, имя которого соответствует файлу вашего типа.
 
-### Basic test structure
+### Базовая структура теста
 
 ```python
 # flowsint_types/tests/test_vehicle.py
@@ -948,9 +948,9 @@ def test_vehicle_missing_required_field():
         Vehicle()  # Should fail - missing required field
 ```
 
-### Testing label computation
+### Тестирование вычисления метки
 
-The label is crucial for UI display, so test it thoroughly:
+Метка критична для отображения в интерфейсе, поэтому тестируйте её тщательно:
 
 ```python
 def test_vehicle_label_basic():
@@ -978,9 +978,9 @@ def test_vehicle_label_partial_details():
     assert vehicle.nodeLabel == "ABC123"
 ```
 
-### Testing field validators
+### Тестирование валидаторов полей
 
-If your type has custom validators, test both valid and invalid inputs:
+Если у вашего типа есть пользовательские валидаторы, тестируйте и корректные, и некорректные входные данные:
 
 ```python
 # tests/test_username.py
@@ -1019,9 +1019,9 @@ def test_username_validation_boundaries():
         Username(value="a" * 81)
 ```
 
-### Testing types with nested objects
+### Тестирование типов со вложенными объектами
 
-When your type contains other Flowsint types, test the relationships:
+Если ваш тип содержит другие типы Flowsint, тестируйте связи:
 
 ```python
 # tests/test_social_account.py
@@ -1063,9 +1063,9 @@ def test_social_account_label_without_display_name():
     assert account.nodeLabel == "@john_doe"
 ```
 
-### Testing serialization
+### Тестирование сериализации
 
-Verify that your types serialize correctly to JSON:
+Проверьте, что ваши типы корректно сериализуются в JSON:
 
 ```python
 def test_vehicle_serialization():
@@ -1101,9 +1101,9 @@ def test_vehicle_deserialization():
     assert vehicle.nodeLabel == "ABC123 (Toyota Camry 2020)"
 ```
 
-### Running the tests
+### Запуск тестов
 
-To run your tests:
+Чтобы запустить тесты:
 
 ```bash
 cd flowsint-types
@@ -1116,17 +1116,17 @@ poetry run pytest -v
 poetry run pytest --cov=flowsint_types tests/
 ```
 
-### Best practices for testing
+### Лучшие практики тестирования
 
-- **Test the happy path first**: Basic creation with valid data
-- **Test validation**: Both valid and invalid inputs
-- **Test edge cases**: Empty strings, very long strings, boundary values
-- **Test label computation**: With and without optional fields
-- **Test serialization**: To/from dict and JSON
-- **Use descriptive test names**: The test name should describe what it tests
-- **Use pytest fixtures** for complex setup that's reused across tests
+- **Сначала тестируйте основной сценарий**: базовое создание с корректными данными
+- **Тестируйте валидацию**: и корректные, и некорректные входные данные
+- **Тестируйте граничные случаи**: пустые строки, очень длинные строки, граничные значения
+- **Тестируйте вычисление метки**: с необязательными полями и без них
+- **Тестируйте сериализацию**: в dict и JSON и обратно
+- **Используйте описательные имена тестов**: имя теста должно описывать, что он проверяет
+- **Используйте фикстуры pytest** для сложной подготовки, которая переиспользуется в тестах
 
-Example with fixtures:
+Пример с фикстурами:
 
 ```python
 import pytest
@@ -1152,102 +1152,102 @@ def test_with_fixtures(sample_account):
     assert sample_account.platform == "twitter"
 ```
 
-## Troubleshooting common issues
+## Решение типичных проблем
 
-### Import errors
+### Ошибки импорта
 
-If you encounter import errors after creating your type, make sure you've run `poetry install` in the `flowsint-types` directory. The package needs to be reinstalled for changes to take effect:
+Если после создания типа возникают ошибки импорта, убедитесь, что вы выполнили `poetry install` в каталоге `flowsint-types`. Пакет нужно переустановить, чтобы изменения вступили в силу:
 
 ```bash
 cd flowsint-types
 poetry install
 ```
 
-### Type not appearing in the API
+### Тип не появляется в API
 
-If your type doesn't appear in the API, verify that you've:
-1. Decorated it with `@flowsint_type`
-2. Imported it in `flowsint_types/__init__.py`
-3. Added it to the `__all__` list in `flowsint_types/__init__.py`
-4. Added it to the appropriate category in `_get_category_definitions()` in `flowsint-core/src/flowsint_core/core/services/type_registry_service.py`
+Если ваш тип не появляется в API, проверьте, что вы:
+1. Пометили его декоратором `@flowsint_type`
+2. Импортировали его в `flowsint_types/__init__.py`
+3. Добавили его в список `__all__` в `flowsint_types/__init__.py`
+4. Добавили его в подходящую категорию в `_get_category_definitions()` в `flowsint-core/src/flowsint_core/core/services/type_registry_service.py`
 
-### Type not found in TYPE_REGISTRY
+### Тип не найден в TYPE_REGISTRY
 
-If `TYPE_REGISTRY.get("MyType")` returns `None`:
-- Ensure the `@flowsint_type` decorator is applied to the class
-- Ensure the module is imported (either in `__init__.py` or via `load_all_types()`)
-- Check for import errors in your type file that prevent the module from loading
+Если `TYPE_REGISTRY.get("MyType")` возвращает `None`:
+- Убедитесь, что к классу применён декоратор `@flowsint_type`
+- Убедитесь, что модуль импортируется (в `__init__.py` или через `load_all_types()`)
+- Проверьте, нет ли в файле вашего типа ошибок импорта, мешающих загрузке модуля
 
-### Validation errors
+### Ошибки валидации
 
-For validation errors, check that you're using:
-- The ellipsis (`...`) for required fields
-- `None` for optional fields
-- `Optional[Type]` in type hints for optional fields
+При ошибках валидации проверьте, что вы используете:
+- Многоточие (`...`) для обязательных полей
+- `None` для необязательных полей
+- `Optional[Type]` в подсказках типов необязательных полей
 
-### Nodes not appearing in the graph
+### Узлы не появляются в графе
 
-If your type's instances aren't appearing in Neo4j:
-- **Check the enricher**: Verify that enrichers using this type call `self.create_node(instance)`
-- **Check the created node**: Make sure the format of the created node is correct, no missing required field, etc.
+Если экземпляры вашего типа не появляются в Neo4j:
+- **Проверьте обогатитель**: убедитесь, что обогатители с этим типом вызывают `self.create_node(instance)`
+- **Проверьте созданный узел**: убедитесь, что формат созданного узла корректен, нет пропущенных обязательных полей и т. д.
 
-### Label not appearing correctly
+### Метка отображается неправильно
 
-If labels aren't displaying correctly in the UI or graph:
-- **Missing compute_label**: Ensure you've implemented the `@model_validator(mode='after')` method
-- **Wrong field name**: Make sure you set `self.nodeLabel`, not `self.label`
-- **Not returning Self**: The method must return `self`
-- **None handling**: Check that you handle None values for optional fields gracefully
-- **Method name**: The method must be named `compute_label` exactly
+Если метки отображаются в интерфейсе или графе неправильно:
+- **Нет compute_label**: убедитесь, что вы реализовали метод с `@model_validator(mode='after')`
+- **Неверное имя поля**: убедитесь, что вы задаёте `self.nodeLabel`, а не `self.label`
+- **Не возвращается Self**: метод должен возвращать `self`
+- **Обработка None**: проверьте, что вы корректно обрабатываете значения None для необязательных полей
+- **Имя метода**: метод должен называться именно `compute_label`
 
-### Circular imports
+### Циклические импорты
 
-If you're seeing issues with circular imports:
-- Use relative imports (`from .email import Email`) instead of absolute imports
-- Use forward references (string type hints) if needed
-- Call `model_rebuild()` at the end of your module to resolve forward references
+Если вы сталкиваетесь с проблемами циклических импортов:
+- Используйте относительные импорты (`from .email import Email`) вместо абсолютных
+- При необходимости используйте прямые ссылки (строковые подсказки типов)
+- Вызовите `model_rebuild()` в конце модуля, чтобы разрешить прямые ссылки
 
-### Enricher errors with your type
+### Ошибки обогатителей с вашим типом
 
-If enrichers fail when using your type:
-- **Validation failures**: Your field validators might be too strict; check validator error messages in logs
-- **Nested object issues**: When passing nested Flowsint types, pass the complete object, don't recreate it
-- **Primary key extraction**: The graph service needs to extract a primitive value from your primary field
+Если обогатители падают при использовании вашего типа:
+- **Сбои валидации**: ваши валидаторы полей могут быть слишком строгими; посмотрите сообщения об ошибках валидатора в логах
+- **Проблемы с вложенными объектами**: при передаче вложенных типов Flowsint передавайте объект целиком, не пересоздавайте его
+- **Извлечение первичного ключа**: сервису графа нужно извлечь примитивное значение из вашего основного поля
 
-## Next steps
+## Дальнейшие шаги
 
-Once you've created and registered your type, you can use it in enrichers to build intelligence gathering workflows. Types serve as the input and output specifications for enrichers, and they define the structure of nodes in the Neo4j graph database.
+Когда вы создали и зарегистрировали тип, его можно использовать в обогатителях для построения процессов сбора информации. Типы служат спецификациями входа и выхода обогатителей и определяют структуру узлов в графовой базе данных Neo4j.
 
-### Key checklist for new types
+### Контрольный список для новых типов
 
-Before considering your type complete, verify that you've:
+Прежде чем считать тип завершённым, убедитесь, что вы:
 
-- Decorated with `@flowsint_type`
-- Inherited from `FlowsintType`
-- Marked exactly one field as primary with `json_schema_extra={"primary": True}`
-- Implemented `compute_label` method that sets `self.nodeLabel` and handles None values gracefully
-- Provided `description` and `title` for all fields
-- Used `default_factory` for list and dict fields
-- Written tests for creation, validation, primary field, and label computation
-- Exported your type in `flowsint_types/__init__.py`
-- Added it to a category in `flowsint-core/src/flowsint_core/core/services/type_registry_service.py`
-- Run `poetry install` to make the type available
+- Пометили декоратором `@flowsint_type`
+- Унаследовали от `FlowsintType`
+- Пометили ровно одно поле как основное через `json_schema_extra={"primary": True}`
+- Реализовали метод `compute_label`, который задаёт `self.nodeLabel` и корректно обрабатывает None
+- Указали `description` и `title` для всех полей
+- Использовали `default_factory` для полей-списков и полей-словарей
+- Написали тесты на создание, валидацию, основное поле и вычисление метки
+- Экспортировали тип в `flowsint_types/__init__.py`
+- Добавили его в категорию в `flowsint-core/src/flowsint_core/core/services/type_registry_service.py`
+- Выполнили `poetry install`, чтобы тип стал доступен
 
-### Exploring further
+### Что изучить дальше
 
-You might also want to explore:
+Вам также может быть интересно:
 
-- **Creating enrichers**: Use your type as input/output in custom enrichers
-- **Custom types via API**: Flowsint supports runtime type creation using JSON Schema (see `flowsint-core/src/flowsint_core/core/models.py`)
-- **Graph format**: Learn about the [node and edge format](/docs/developers/graph-format) used in the frontend
-- **Type schemas**: Understand how Pydantic schemas are used for API validation
+- **Создание обогатителей**: используйте свой тип как вход/выход в собственных обогатителях
+- **Пользовательские типы через API**: Flowsint поддерживает создание типов во время работы через JSON Schema (см. `flowsint-core/src/flowsint_core/core/models.py`)
+- **Формат графа**: узнайте о [формате узлов и рёбер](/docs/developers/graph-format), используемом во фронтенде
+- **Схемы типов**: поймите, как схемы Pydantic используются для валидации API
 
-### Final thoughts
+### Итоговые мысли
 
-Remember that types are the foundation of everything in Flowsint:
-- **Well-designed types** make enrichers easier to write
-- **Clear primary fields** ensure proper node identification in the graph
-- **Meaningful labels** make the UI and graph database more intuitive
-- **Thorough validation** ensures data integrity throughout the platform
+Помните, что типы — это основа всего во Flowsint:
+- **Хорошо спроектированные типы** упрощают написание обогатителей
+- **Чёткие основные поля** обеспечивают правильную идентификацию узлов в графе
+- **Осмысленные метки** делают интерфейс и графовую базу данных интуитивнее
+- **Тщательная валидация** обеспечивает целостность данных на всей платформе
 
-With these concepts mastered, you're ready to create powerful, robust types that will make the entire Flowsint platform more effective for intelligence gathering.
+Освоив эти концепции, вы готовы создавать мощные и надёжные типы, которые сделают всю платформу Flowsint эффективнее для сбора информации.

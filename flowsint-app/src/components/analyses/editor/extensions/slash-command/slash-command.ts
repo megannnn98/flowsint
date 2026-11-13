@@ -7,6 +7,7 @@ import type { SuggestionOptions, SuggestionProps } from '@tiptap/suggestion'
 import { SlashCommandList } from './slash-command-list'
 import type { SlashCommandListRef } from './slash-command-list'
 
+import { t } from '@/i18n'
 export interface SlashCommandItem {
   title: string
   description: string
@@ -35,71 +36,71 @@ const updatePosition = (editor: Editor, element: HTMLElement) => {
 
 const slashCommandItems: SlashCommandItem[] = [
   {
-    title: 'Heading 1',
-    description: 'Large section heading',
+    title: t('Heading 1'),
+    description: t('Large section heading'),
     category: 'Hierarchy',
     icon: 'Heading1',
     command: (editor) => editor.chain().focus().setHeading({ level: 1 }).run()
   },
   {
-    title: 'Heading 2',
-    description: 'Medium section heading',
+    title: t('Heading 2'),
+    description: t('Medium section heading'),
     category: 'Hierarchy',
     icon: 'Heading2',
     command: (editor) => editor.chain().focus().setHeading({ level: 2 }).run()
   },
   {
-    title: 'Heading 3',
-    description: 'Small section heading',
+    title: t('Heading 3'),
+    description: t('Small section heading'),
     category: 'Hierarchy',
     icon: 'Heading3',
     command: (editor) => editor.chain().focus().setHeading({ level: 3 }).run()
   },
   {
-    title: 'Bullet List',
-    description: 'Create a simple bullet list',
+    title: t('Bullet List'),
+    description: t('Create a simple bullet list'),
     category: 'Lists',
     icon: 'List',
     command: (editor) => editor.chain().focus().toggleBulletList().run()
   },
   {
-    title: 'Numbered List',
-    description: 'Create a numbered list',
+    title: t('Numbered List'),
+    description: t('Create a numbered list'),
     category: 'Lists',
     icon: 'ListOrdered',
     command: (editor) => editor.chain().focus().toggleOrderedList().run()
   },
   {
-    title: 'Task List',
-    description: 'Create a task checklist',
+    title: t('Task List'),
+    description: t('Create a task checklist'),
     category: 'Lists',
     icon: 'ListTodo',
     command: (editor) => editor.chain().focus().toggleTaskList().run()
   },
   {
-    title: 'Blockquote',
-    description: 'Add a quote block',
+    title: t('Blockquote'),
+    description: t('Add a quote block'),
     category: 'Blocks',
     icon: 'Quote',
     command: (editor) => editor.chain().focus().toggleBlockquote().run()
   },
   {
-    title: 'Code Block',
-    description: 'Add a code snippet',
+    title: t('Code Block'),
+    description: t('Add a code snippet'),
     category: 'Blocks',
     icon: 'Code',
     command: (editor) => editor.chain().focus().toggleCodeBlock().run()
   },
   {
-    title: 'Divider',
-    description: 'Add a horizontal divider',
+    title: t('Divider'),
+    description: t('Add a horizontal divider'),
     category: 'Blocks',
     icon: 'Minus',
     command: (editor) => editor.chain().focus().setHorizontalRule().run()
   },
   {
-    title: 'Image',
-    description: 'Upload or embed an image',
+    title: t('Image'),
+    description: t('Upload or embed an image'),
     category: 'Media',
     icon: 'ImageIcon',
     command: (editor) => {

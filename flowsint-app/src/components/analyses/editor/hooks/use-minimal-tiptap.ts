@@ -24,6 +24,7 @@ import { fileToBase64, getOutput, randomId } from '../utils'
 import { useThrottle } from './use-throttle'
 import { toast } from 'sonner'
 
+import { t } from '@/i18n'
 export interface UseMinimalTiptapEditorProps extends UseEditorOptions {
   value?: Content
   output?: 'html' | 'json' | 'text'
@@ -99,7 +100,7 @@ const createExtensions = ({
     },
     onValidationError(errors) {
       errors.forEach((error) => {
-        toast.error('Image validation error', {
+        toast.error(t('Image validation error'), {
           position: 'bottom-right',
           description: error.reason
         })
@@ -107,22 +108,22 @@ const createExtensions = ({
     },
     onActionSuccess({ action }) {
       const mapping = {
-        copyImage: 'Copy Image',
-        copyLink: 'Copy Link',
-        download: 'Download'
+        copyImage: t('Copy Image'),
+        copyLink: t('Copy Link'),
+        download: t('Download')
       }
       toast.success(mapping[action], {
         position: 'bottom-right',
-        description: 'Image action success'
+        description: t('Image action success')
       })
     },
     onActionError(error, { action }) {
       const mapping = {
-        copyImage: 'Copy Image',
-        copyLink: 'Copy Link',
-        download: 'Download'
+        copyImage: t('Failed to copy image'),
+        copyLink: t('Failed to copy link'),
+        download: t('Failed to download')
       }
-      toast.error(`Failed to ${mapping[action]}`, {
+      toast.error(mapping[action], {
         position: 'bottom-right',
         description: error.message
       })
@@ -152,7 +153,7 @@ const createExtensions = ({
     },
     onValidationError: (errors) => {
       errors.forEach((error) => {
-        toast.error('Image validation error', {
+        toast.error(t('Image validation error'), {
           position: 'bottom-right',
           description: error.reason
         })

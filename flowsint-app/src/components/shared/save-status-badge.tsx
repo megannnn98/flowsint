@@ -3,6 +3,7 @@ import { Cloud, CloudOff, Loader2, Check, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 
+import { t } from '@/i18n'
 export type SaveStatusType = 'idle' | 'pending' | 'saving' | 'saved' | 'error' | 'unsaved'
 
 interface SaveStatusBadgeProps {
@@ -19,19 +20,19 @@ export const SaveStatusBadge = memo(({ status, className }: SaveStatusBadgeProps
       case 'idle':
         return {
           icon: Cloud,
-          text: 'All changes saved',
+          text: t('All changes saved'),
           className: 'text-muted-foreground/60 bg-muted/30 border-muted'
         }
       case 'pending':
         return {
           icon: Cloud,
-          text: 'Pending...',
+          text: t('Pending...'),
           className: 'text-muted-foreground bg-muted/50 border-muted'
         }
       case 'saving':
         return {
           icon: Loader2,
-          text: 'Saving...',
+          text: t('Saving...'),
           className:
             'text-blue-600 bg-blue-50 dark:bg-blue-950/30 dark:text-blue-400 border-blue-200 dark:border-blue-800',
           iconClassName: 'animate-spin'
@@ -39,21 +40,21 @@ export const SaveStatusBadge = memo(({ status, className }: SaveStatusBadgeProps
       case 'saved':
         return {
           icon: Check,
-          text: 'Saved',
+          text: t('Saved'),
           className:
             'text-green-600 bg-green-50 dark:bg-green-950/30 dark:text-green-400 border-green-200 dark:border-green-800'
         }
       case 'error':
         return {
           icon: AlertCircle,
-          text: 'Error saving',
+          text: t('Error saving'),
           className:
             'text-red-600 bg-red-50 dark:bg-red-950/30 dark:text-red-400 border-red-200 dark:border-red-800'
         }
       default:
         return {
           icon: CloudOff,
-          text: 'Unknown',
+          text: t('Unknown'),
           className: 'text-muted-foreground bg-muted/50 border-muted'
         }
     }

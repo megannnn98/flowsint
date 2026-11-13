@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
+import { t } from '@/i18n'
 // Shape shared by every entry under a settings category (general/graph).
 // `value` is number|boolean because that's every value that exists today —
 // widen this union if a string- or array-valued setting is ever added.
@@ -23,31 +24,31 @@ const DEFAULT_SETTINGS = {
       name: 'Show Flow Assistant',
       type: 'boolean',
       value: false,
-      description: 'Display Flo, your AI assistant.'
+      description: t('Display Flo, your AI assistant.')
     },
     autoZoomOnCurrentNode: {
       name: 'Auto-zoom on Node Selection',
       type: 'boolean',
       value: true,
-      description: 'Automatically zoom to the current node when it changes.'
+      description: t('Automatically zoom to the current node when it changes.')
     },
     showMinimap: {
       name: 'Show Minimap',
       type: 'boolean',
       value: true,
-      description: 'Display the minimap overview of the graph.'
+      description: t('Display the minimap overview of the graph.')
     },
     showBackground: {
       name: 'Show Background',
       type: 'boolean',
       value: true,
-      description: 'Display the dotted background pattern on the graph.'
+      description: t('Display the dotted background pattern on the graph.')
     },
     autoColorLinksByNodeType: {
       name: 'Auto Color Links by Node Type',
       type: 'boolean',
       value: true,
-      description: 'Automatically color links based on their target node type.'
+      description: t('Automatically color links based on their target node type.')
     }
   },
   graph: {
@@ -55,13 +56,13 @@ const DEFAULT_SETTINGS = {
       name: 'Node style (outlined/fill)',
       type: 'boolean',
       value: false,
-      description: 'Node style, filled by default.'
+      description: t('Node style, filled by default.')
     },
     dotStyle: {
       name: 'Node style (dot/card)',
       type: 'boolean',
       value: true,
-      description: 'Node style, dot or card.'
+      description: t('Node style, dot or card.')
     },
     nodeSize: {
       name: 'Node Size',
@@ -70,7 +71,7 @@ const DEFAULT_SETTINGS = {
       min: 0.2,
       max: 100,
       step: 0.1,
-      description: 'Defines the width of the link between two nodes.'
+      description: t('Defines the width of the link between two nodes.')
     },
     nodeWeightMultiplierSize: {
       name: 'Node Weight Multiplier',
@@ -79,7 +80,9 @@ const DEFAULT_SETTINGS = {
       min: 0.1,
       max: 8.0,
       step: 0.01,
-      description: 'Defines how a node size varies depending on the weight (number of relations).'
+      description: t(
+        'Defines how a node size varies depending on the weight (number of relations).'
+      )
     },
     linkWidth: {
       name: 'Link Width',
@@ -88,7 +91,7 @@ const DEFAULT_SETTINGS = {
       min: 0.3,
       max: 10,
       step: 0.05,
-      description: 'Defines the width of the link between two nodes.'
+      description: t('Defines the width of the link between two nodes.')
     },
     nodeLabelFontSize: {
       name: 'Node Label Font Size',
@@ -97,8 +100,9 @@ const DEFAULT_SETTINGS = {
       min: 10,
       max: 200,
       step: 5,
-      description:
+      description: t(
         'Adjusts the font size of node labels (percentage of base size, scales with zoom)'
+      )
     },
     linkLabelFontSize: {
       name: 'Link Label Font Size',
@@ -107,14 +111,15 @@ const DEFAULT_SETTINGS = {
       min: 10,
       max: 200,
       step: 5,
-      description:
+      description: t(
         'Adjusts the font size of link labels (percentage of base size, scales with zoom)'
+      )
     },
     linkLabelHorizontal: {
       name: 'Horizontal Link Labels',
       type: 'boolean',
       value: false,
-      description: 'Display link labels horizontally instead of following the edge angle.'
+      description: t('Display link labels horizontally instead of following the edge angle.')
     },
     dagLevelDistance: {
       name: 'DAG Level Distance',
@@ -123,8 +128,9 @@ const DEFAULT_SETTINGS = {
       min: 0,
       max: 100,
       step: 1,
-      description:
+      description: t(
         'Distance between different graph depths when using DAG (directed acyclic graph) layout mode'
+      )
     },
     d3ForceChargeStrength: {
       name: 'Force Charge Strength',
@@ -143,7 +149,7 @@ const DEFAULT_SETTINGS = {
       min: 10,
       max: 200,
       step: 1,
-      description: 'Target distance between connected nodes (higher = nodes further apart)'
+      description: t('Target distance between connected nodes (higher = nodes further apart)')
     },
     d3ForceLinkStrength: {
       name: 'Force Link Strength',
@@ -152,8 +158,9 @@ const DEFAULT_SETTINGS = {
       min: 0,
       max: 2,
       step: 0.1,
-      description:
+      description: t(
         'Strength of links to maintain their target distance (higher = stronger cluster cohesion, lower = weaker clusters)'
+      )
     },
     linkDirectionalArrowRelPos: {
       name: 'Arrow Relative Position',
@@ -162,8 +169,9 @@ const DEFAULT_SETTINGS = {
       min: 0,
       max: 1,
       step: 0.01,
-      description:
+      description: t(
         'Position of directional arrows along the link line (0 = source node, 1 = target node, 0.5 = middle)'
+      )
     },
     linkDirectionalArrowLength: {
       name: 'Arrow Length',
@@ -172,7 +180,7 @@ const DEFAULT_SETTINGS = {
       min: 1,
       max: 10,
       step: 0.1,
-      description: 'Length of the arrow heads that indicate link direction'
+      description: t('Length of the arrow heads that indicate link direction')
     },
     linkDirectionalParticleSpeed: {
       name: 'Particle Speed',
@@ -181,7 +189,7 @@ const DEFAULT_SETTINGS = {
       min: 0,
       max: 0.05,
       step: 0.001,
-      description: 'Speed of moving particles along links (higher = faster movement)'
+      description: t('Speed of moving particles along links (higher = faster movement)')
     },
     cooldownTicks: {
       name: 'Cooldown Ticks',
@@ -190,7 +198,9 @@ const DEFAULT_SETTINGS = {
       min: 50,
       max: 1000,
       step: 10,
-      description: 'Number of simulation frames to render before stopping and freezing the layout'
+      description: t(
+        'Number of simulation frames to render before stopping and freezing the layout'
+      )
     },
     cooldownTime: {
       name: 'Cooldown Time',
@@ -199,8 +209,9 @@ const DEFAULT_SETTINGS = {
       min: 1000,
       max: 60000,
       step: 1000,
-      description:
+      description: t(
         'Maximum time in milliseconds to run the simulation before stopping (15000 = 15 seconds)'
+      )
     },
     d3AlphaDecay: {
       name: 'Alpha Decay',
@@ -209,8 +220,9 @@ const DEFAULT_SETTINGS = {
       min: 0,
       max: 0.3,
       step: 0.005,
-      description:
+      description: t(
         'Rate at which the simulation intensity decays (higher = faster convergence, lower = longer simulation)'
+      )
     },
     d3AlphaMin: {
       name: 'Alpha Minimum',
@@ -219,8 +231,9 @@ const DEFAULT_SETTINGS = {
       min: 0,
       max: 0.1,
       step: 0.001,
-      description:
+      description: t(
         'Minimum simulation intensity threshold - simulation stops when reaching this value'
+      )
     },
     d3VelocityDecay: {
       name: 'Velocity Decay',
@@ -239,8 +252,9 @@ const DEFAULT_SETTINGS = {
       min: 10,
       max: 50,
       step: 1,
-      description:
+      description: t(
         'Radius of collision detection around nodes (prevents node overlap and improves readability)'
+      )
     },
     collisionStrength: {
       name: 'Collision Strength',
@@ -249,7 +263,7 @@ const DEFAULT_SETTINGS = {
       min: 0,
       max: 1,
       step: 0.05,
-      description: 'Strength of collision force (1 = fully rigid collision, 0 = no collision)'
+      description: t('Strength of collision force (1 = fully rigid collision, 0 = no collision)')
     },
     centerGravity: {
       name: 'Center Gravity',
@@ -258,8 +272,9 @@ const DEFAULT_SETTINGS = {
       min: 0,
       max: 1,
       step: 0.05,
-      description:
+      description: t(
         'Gravity force pulling all nodes toward the center (prevents clusters from drifting apart, higher = stronger pull to center)'
+      )
     }
     // warmupTicks: {
     //   type: 'number',

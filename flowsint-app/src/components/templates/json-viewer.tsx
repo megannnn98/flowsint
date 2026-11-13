@@ -1,6 +1,7 @@
 import MonacoEditor from '@monaco-editor/react'
 import { useTheme } from '@/components/theme-provider'
 
+import { t } from '@/i18n'
 interface JsonViewerProps {
   data: unknown
   height?: string | number
@@ -58,7 +59,7 @@ export function JsonViewer({ data, height = '100%', className }: JsonViewerProps
         }}
         loading={
           <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-            Loading...
+            {t('Loading...')}
           </div>
         }
       />

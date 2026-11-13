@@ -13,6 +13,7 @@ import { Button } from '../ui/button'
 import { ButtonHandle } from '../xyflow/button-handle'
 import { useIcon } from '@/hooks/use-icon'
 
+import { t } from '@/i18n'
 // Custom equality function to prevent unnecessary re-renders
 function areEqual(prevProps: EnricherNodeProps, nextProps: EnricherNodeProps) {
   return (
@@ -106,7 +107,9 @@ const EnricherNode = memo(({ data, isConnectable }: EnricherNodeProps) => {
               {Icon && <Icon size={24} />}
               <div className="font-semibold text-sm">{data.class_name}</div>
             </div>
-            <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{data.description}</p>
+            <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
+              {data.description && t(data.description)}
+            </p>
           </div>
         </div>
         <div>
@@ -170,7 +173,7 @@ const EnricherNode = memo(({ data, isConnectable }: EnricherNodeProps) => {
                   <TriangleAlert className="h-4 w-4 text-yellow-500" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Configuration required</p>
+                  <p>{t('Configuration required')}</p>
                 </TooltipContent>
               </Tooltip>
             </div>

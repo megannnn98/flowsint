@@ -1,7 +1,7 @@
 ---
-title: "Managing enrichers"
-description: "Quick start guide to creating Enricher for your OSINT investigations."
-category: "Developers"
+title: "Управление обогатителями"
+description: "Краткое руководство по созданию обогатителей (Enrichers) для OSINT-расследований."
+category: "Разработчикам"
 order: 10
 author: "Flowsint Team"
 tags: ["tutorial", "developers", "creating-a-new-enricher"]
@@ -9,21 +9,21 @@ version: "1.2.8"
 last_updated_at: "2026-05-15"
 ---
 
-## Understanding Enrichers
+## Что такое обогатители
 
-Enrichers are the high-level business logic layer in Flowsint. While types define data structures and tools wrap external utilities, enrichers orchestrate the entire intelligence gathering workflow. An enricher takes input data of one type, processes it through various tools or APIs, validates and enriches the results, creates graph database nodes and relationships, and returns structured output.
+Обогатители — это слой высокоуровневой бизнес-логики во Flowsint. Если типы описывают структуры данных, а инструменты оборачивают внешние утилиты, то обогатители оркеструют весь процесс сбора информации. Обогатитель принимает входные данные одного типа, обрабатывает их через различные инструменты или API, проверяет и обогащает результаты, создаёт узлы и связи в графовой базе данных и возвращает структурированный результат.
 
-Every enricher in Flowsint follows a two-phase execution model. The scan phase contains the core enriching logic where tools are executed, APIs are called, and data is gathered. Then, the postprocessing phase creates Neo4j graph nodes and relationships while returning the processed results. Input validation and normalization happens automatically through Pydantic type validation.
+Каждый обогатитель во Flowsint следует двухфазной модели выполнения. Фаза сканирования (scan) содержит основную логику обогащения: здесь запускаются инструменты, вызываются API и собираются данные. Затем фаза постобработки (postprocess) создаёт узлы и связи в графе Neo4j и возвращает обработанные результаты. Проверка и нормализация входных данных выполняются автоматически через валидацию типов Pydantic.
 
-Enrichers differ from tools in several fundamental ways. Tools are low-level wrappers that return raw data without knowledge of the Flowsint ecosystem. Enrichers are high-level workflows that understand types, create graph nodes, handle parameters, and orchestrate multiple tools. When you want to add a new data source, you create a tool. When you want to add a new intelligence workflow, you create an enricher.
+Обогатители принципиально отличаются от инструментов. Инструменты — низкоуровневые обёртки, возвращающие сырые данные без знания об экосистеме Flowsint. Обогатители — высокоуровневые процессы, которые понимают типы, создают узлы графа, обрабатывают параметры и оркеструют несколько инструментов. Когда нужно добавить новый источник данных, вы создаёте инструмент. Когда нужно добавить новый процесс сбора информации — создаёте обогатитель.
 
-## Enricher architecture
+## Архитектура обогатителей
 
-The enricher system is built around an abstract base class that defines the interface and execution flow. Every enricher you create inherits from this base class and implements specific methods.
+Система обогатителей построена вокруг абстрактного базового класса, который определяет интерфейс и ход выполнения. Каждый создаваемый вами обогатитель наследуется от этого базового класса и реализует определённые методы.
 
-### The Enricher base class
+### Базовый класс Enricher
 
-The base class lives at `flowsint-core/src/flowsint_core/core/enricher_base.py` and provides the framework for all enrichers. Here's what a minimal enricher looks like:
+Базовый класс находится в `flowsint-core/src/flowsint_core/core/enricher_base.py` и обеспечивает каркас для всех обогатителей. Вот как выглядит минимальный обогатитель:
 
 ```python
 from typing import List
@@ -67,36 +67,36 @@ InputType = MyEnricher.InputType
 OutputType = MyEnricher.OutputType
 ```
 
-The `InputType` and `OutputType` class attributes define what data the enricher accepts and returns. These should be Pydantic types from the `flowsint-types` package defined as base types (e.g., `Domain`, not `List[Domain]`). The base class uses these type definitions to automatically generate JSON schemas for the API and handle validation automatically.
+Атрибуты класса `InputType` и `OutputType` определяют, какие данные обогатитель принимает и возвращает. Это должны быть типы Pydantic из пакета `flowsint-types`, заданные как базовые типы (например, `Domain`, а не `List[Domain]`). Базовый класс использует эти определения типов, чтобы автоматически генерировать JSON-схемы для API и выполнять валидацию.
 
-At the end of the file, you should export the types for easy access by other modules.
+В конце файла нужно экспортировать типы, чтобы они были удобно доступны другим модулям.
 
-### The two phases
+### Две фазы
 
-Understanding the two execution phases is crucial for writing effective enrichers.
+Понимание двух фаз выполнения крайне важно для написания эффективных обогатителей.
 
-**Scanning** is where the real work happens. This async method receives validated input data as a list of `InputType` instances and executes your intelligence gathering logic. You might instantiate tools, call external APIs, process results, and build up your output data. This phase should focus purely on gathering and processing data without worrying about the graph database. The base class automatically handles input validation through Pydantic before the scan phase begins.
+**Сканирование (scan)** — здесь выполняется основная работа. Этот асинхронный метод получает проверенные входные данные в виде списка экземпляров `InputType` и выполняет вашу логику сбора информации. Вы можете создавать экземпляры инструментов, вызывать внешние API, обрабатывать результаты и формировать выходные данные. Эта фаза должна заниматься исключительно сбором и обработкой данных, не заботясь о графовой базе. Базовый класс автоматически выполняет проверку входных данных через Pydantic до начала фазы сканирования.
 
-**Postprocessing** creates the graph database structure. After scanning completes, this method receives both the results and the original input. It creates Neo4j nodes for each entity, establishes relationships between them, and returns the final results. This separation keeps graph logic separate from business logic.
+**Постобработка (postprocess)** создаёт структуру в графовой базе данных. После завершения сканирования этот метод получает и результаты, и исходные входные данные. Он создаёт узлы Neo4j для каждой сущности, устанавливает связи между ними и возвращает итоговые результаты. Такое разделение отделяет логику графа от бизнес-логики.
 
-## Creating a simple enricher
+## Создание простого обогатителя
 
-Let's walk through creating a complete enricher from scratch. We'll build an enricher that converts domains to IP addresses using DNS resolution.
+Пройдём весь путь создания полноценного обогатителя с нуля. Мы построим обогатитель, который преобразует домены в IP-адреса с помощью DNS-разрешения.
 
-### Setting up the file structure
+### Подготовка структуры файлов
 
-Enrichers are organized by their input type. Create a new file in the appropriate directory under `flowsint-enrichers/src/flowsint_enrichers/`:
+Обогатители организованы по входному типу. Создайте новый файл в подходящем каталоге внутри `flowsint-enrichers/src/flowsint_enrichers/`:
 
 ```bash
 cd flowsint-enrichers/src/flowsint_enrichers/domain/
 touch to_ip.py
 ```
 
-If you're creating an enricher for a new input type, you may need to create a new directory first.
+Если вы создаёте обогатитель для нового входного типа, возможно, сначала придётся создать новый каталог.
 
-### Implementing the basic structure
+### Реализация базовой структуры
 
-Start with the imports and class definition:
+Начните с импортов и определения класса:
 
 ```python
 import socket
@@ -139,11 +139,11 @@ InputType = DomainToIpEnricher.InputType
 OutputType = DomainToIpEnricher.OutputType
 ```
 
-The `name()` method returns a unique identifier for this enricher. Use lowercase with underscores, following the pattern `inputtype_to_outputtype`. The `category()` groups related enrichers together in the UI. The `key()` specifies which field serves as the primary identifier, typically matching the input type.
+Метод `name()` возвращает уникальный идентификатор обогатителя. Используйте нижний регистр и подчёркивания по шаблону `inputtype_to_outputtype`. Метод `category()` группирует связанные обогатители в интерфейсе. Метод `key()` указывает, какое поле служит основным идентификатором — как правило, оно совпадает с входным типом.
 
-### Implementing the scan logic
+### Реализация логики сканирования
 
-The scan method contains your core intelligence gathering logic. It receives a list of validated `InputType` instances and returns a list of `OutputType` instances.
+Метод scan содержит основную логику сбора информации. Он получает список проверенных экземпляров `InputType` и возвращает список экземпляров `OutputType`.
 
 ```python
     async def scan(self, data: List[InputType]) -> List[OutputType]:
@@ -187,13 +187,13 @@ The scan method contains your core intelligence gathering logic. It receives a l
         return results
 ```
 
-This implementation iterates through each domain, performs DNS resolution, creates an IP object for successful resolutions, and logs both successes and failures. The error handling ensures that failures don't crash the entire enricher, which is important when processing many domains.
+Эта реализация перебирает домены, выполняет DNS-разрешение, создаёт объект IP для успешных разрешений и логирует и успехи, и неудачи. Обработка ошибок гарантирует, что сбои не обрушат весь обогатитель, что важно при обработке многих доменов.
 
-The input data has already been validated by Pydantic before reaching the scan method, so you can trust that all items are proper `Domain` objects.
+Входные данные уже проверены Pydantic до попадания в метод scan, поэтому можно быть уверенным, что все элементы — корректные объекты `Domain`.
 
-### Implementing postprocessing
+### Реализация постобработки
 
-The postprocess method creates graph database nodes and relationships using the new simplified API:
+Метод postprocess создаёт узлы и связи в графовой базе данных с помощью нового упрощённого API:
 
 ```python
     def postprocess(self, results: List[OutputType], input_data: List[InputType] = None) -> List[OutputType]:
@@ -224,17 +224,17 @@ The postprocess method creates graph database nodes and relationships using the 
         return results
 ```
 
-You can pass Pydantic objects directly to `create_node()` and `create_relationship()`. The methods automatically infer the node types, primary keys, and property values from the Pydantic models.
+Объекты Pydantic можно передавать напрямую в `create_node()` и `create_relationship()`. Эти методы автоматически определяют типы узлов, первичные ключи и значения свойств по моделям Pydantic.
 
-The `create_node()` method accepts a Pydantic object and automatically creates a Neo4j node with the correct label and properties. The `create_relationship()` method takes two Pydantic objects and a relationship type string, inferring all necessary information from the objects.
+Метод `create_node()` принимает объект Pydantic и автоматически создаёт узел Neo4j с правильной меткой и свойствами. Метод `create_relationship()` принимает два объекта Pydantic и строку типа связи, определяя всю необходимую информацию по самим объектам.
 
-## Creating an enricher with tools
+## Создание обогатителя с инструментами
 
-Most enrichers use external tools for data gathering. Let's create an enricher that uses the Subfinder tool for subdomain enumeration.
+Большинство обогатителей используют внешние инструменты для сбора данных. Создадим обогатитель, использующий инструмент Subfinder для перебора поддоменов.
 
-### Importing the tool
+### Импорт инструмента
 
-Start by importing the tool along with your other dependencies:
+Начните с импорта инструмента вместе с остальными зависимостями:
 
 ```python
 from typing import List
@@ -269,9 +269,9 @@ InputType = SubdomainEnricher.InputType
 OutputType = SubdomainEnricher.OutputType
 ```
 
-### Using the tool in scan
+### Использование инструмента в scan
 
-The scan method instantiates and uses the tool:
+Метод scan создаёт экземпляр инструмента и использует его:
 
 ```python
     async def scan(self, data: List[InputType]) -> List[OutputType]:
@@ -310,11 +310,11 @@ The scan method instantiates and uses the tool:
         return results
 ```
 
-Notice how the tool returns raw strings, and the enricher converts them into proper Domain objects. This separation of concerns keeps tools simple while enrichers handle type conversion.
+Обратите внимание: инструмент возвращает сырые строки, а обогатитель преобразует их в полноценные объекты Domain. Такое разделение ответственности делает инструменты простыми, а преобразование типов остаётся за обогатителями.
 
-### Creating graph nodes and relationships
+### Создание узлов и связей графа
 
-The postprocess phase creates parent-child relationships between domains and subdomains:
+Фаза postprocess создаёт связи «родитель — потомок» между доменами и поддоменами:
 
 ```python
     def postprocess(self, results: List[OutputType], input_data: List[InputType]) -> List[OutputType]:
@@ -358,13 +358,13 @@ The postprocess phase creates parent-child relationships between domains and sub
         return subdomain
 ```
 
-## Adding parameters to enrichers
+## Добавление параметров в обогатители
 
-Many enrichers need user-configurable parameters. Let's create an enricher that scans ports with configurable options.
+Многим обогатителям нужны настраиваемые пользователем параметры. Создадим обогатитель, который сканирует порты с настраиваемыми опциями.
 
-### Defining the parameter schema
+### Определение схемы параметров
 
-The `get_params_schema()` class method defines what parameters your enricher accepts:
+Метод класса `get_params_schema()` определяет, какие параметры принимает ваш обогатитель:
 
 ```python
 from typing import List, Dict, Any, Optional
@@ -437,11 +437,11 @@ InputType = IpToPortsEnricher.InputType
 OutputType = IpToPortsEnricher.OutputType
 ```
 
-The parameter schema defines the type, description, whether it's required, default values, and for select parameters, the available options. The `vaultSecret` type integrates with Flowsint's encrypted credential storage.
+Схема параметров определяет тип, описание, обязательность, значения по умолчанию, а для параметров-списков — доступные варианты. Тип `vaultSecret` интегрируется с зашифрованным хранилищем учётных данных Flowsint.
 
-### Using parameters in your enricher
+### Использование параметров в обогатителе
 
-Parameters are accessed through `self.params` in your scan method:
+Параметры доступны через `self.params` в методе scan:
 
 ```python
     async def scan(self, data: List[InputType]) -> List[OutputType]:
@@ -495,9 +495,9 @@ Parameters are accessed through `self.params` in your scan method:
         return results
 ```
 
-## Handling multiple output types
+## Несколько типов результата
 
-Some enrichers produce multiple types of results. You can define a custom return type using Pydantic:
+Некоторые обогатители выдают результаты нескольких типов. Можно определить собственный возвращаемый тип с помощью Pydantic:
 
 ```python
 from pydantic import BaseModel
@@ -576,9 +576,9 @@ InputType = WebsiteToCrawlerEnricher.InputType
 OutputType = WebsiteToCrawlerEnricher.OutputType
 ```
 
-## Registering your enricher
+## Регистрация обогатителя
 
-You don't need to register your enricher anywhere, adding the decorator `@flowsint_enricher` to your enricher class triggers the auto discovery.
+Регистрировать обогатитель где-либо не нужно: достаточно добавить к классу декоратор `@flowsint_enricher`, и автоматическое обнаружение подхватит его.
 
 ```python
 from flowsint_enrichers.registry import flowsint_enricher
@@ -589,9 +589,9 @@ class MyEnricher(Enricher):
 ...
 ```
 
-## Testing your enricher
+## Тестирование обогатителя
 
-Creating tests helps ensure your enricher works correctly and makes debugging easier. Create a test file in `flowsint-enrichers/tests/`:
+Тесты помогают убедиться, что обогатитель работает правильно, и упрощают отладку. Создайте тестовый файл в `flowsint-enrichers/tests/`:
 
 ```python
 # tests/test_domain_to_ip.py
@@ -624,35 +624,35 @@ async def test_scan():
     assert results[0].address  # Should have an IP address
 ```
 
-These tests verify that your enricher's metadata is correct, type definitions are properly set, and the scan logic produces expected results. Input validation is handled automatically by Pydantic, so you don't need to test preprocessing separately.
+Эти тесты проверяют корректность метаданных обогатителя, правильность определений типов и то, что логика сканирования даёт ожидаемые результаты. Проверку входных данных автоматически выполняет Pydantic, поэтому предобработку отдельно тестировать не нужно.
 
-## Best practices
+## Лучшие практики
 
-When creating enrichers, think carefully about error handling. Intelligence gathering involves many external systems that can fail in unpredictable ways. Your enricher should handle errors gracefully, log failures clearly, and continue processing remaining items rather than crashing entirely.
+При создании обогатителей тщательно продумывайте обработку ошибок. Сбор информации затрагивает множество внешних систем, которые могут отказать непредсказуемым образом. Обогатитель должен корректно обрабатывать ошибки, чётко логировать сбои и продолжать обработку оставшихся элементов, а не падать целиком.
 
-Always use the Logger utility for tracking progress and errors. The logger integrates with Flowsint's monitoring system and helps users understand what's happening during long-running enrichers. Log successful operations at the info level and errors at the error level.
+Всегда используйте утилиту Logger для отслеживания хода работы и ошибок. Логгер интегрируется с системой мониторинга Flowsint и помогает пользователям понимать, что происходит во время долгих обогатителей. Успешные операции логируйте на уровне info, а ошибки — на уровне error.
 
-Define InputType and OutputType as base types (e.g., `Domain`, not `List[Domain]`). The base class automatically handles the list wrapping and validation. This makes the type definitions cleaner and more intuitive.
+Определяйте InputType и OutputType как базовые типы (например, `Domain`, а не `List[Domain]`). Базовый класс сам выполняет оборачивание в список и валидацию. Так определения типов получаются чище и понятнее.
 
-Always export your types at the end of the file using:
+Всегда экспортируйте типы в конце файла так:
 ```python
 InputType = YourEnricher.InputType
 OutputType = YourEnricher.OutputType
 ```
 
-Use the simplified graph API by passing Pydantic objects directly to `create_node()` and `create_relationship()`. This eliminates boilerplate code and reduces errors. The methods automatically infer node types, primary keys, and properties from your Pydantic models.
+Используйте упрощённый API графа: передавайте объекты Pydantic напрямую в `create_node()` и `create_relationship()`. Это устраняет шаблонный код и снижает число ошибок. Методы сами определяют типы узлов, первичные ключи и свойства по моделям Pydantic.
 
-Separate concerns between the two phases. Scanning should focus on gathering and processing data. Postprocessing should create graph structures. Input validation happens automatically through Pydantic, so you don't need to handle it manually.
+Разделяйте ответственность между двумя фазами. Сканирование должно заниматься сбором и обработкой данных. Постобработка должна создавать структуры графа. Проверка входных данных выполняется автоматически через Pydantic, поэтому вручную заниматься ею не нужно.
 
-Use type hints everywhere. They provide automatic validation, better IDE support, and serve as inline documentation. The InputType and OutputType class attributes should always be Pydantic types from the flowsint-types package.
+Используйте подсказки типов везде. Они обеспечивают автоматическую валидацию, лучшую поддержку в IDE и служат встроенной документацией. Атрибуты класса InputType и OutputType всегда должны быть типами Pydantic из пакета flowsint-types.
 
-When working with tools, remember that they return raw data structures. Your enricher is responsible for converting tool output into proper Flowsint types. This type conversion is typically done in the scan phase.
+При работе с инструментами помните, что они возвращают сырые структуры данных. За преобразование вывода инструмента в корректные типы Flowsint отвечает обогатитель. Обычно это преобразование выполняется на фазе scan.
 
-Document your enricher thoroughly. The class docstring, documentation method, and parameter descriptions all appear in the UI. Clear documentation helps users understand what your enricher does and how to configure it.
+Подробно документируйте обогатитель. Docstring класса, метод documentation и описания параметров отображаются в интерфейсе. Понятная документация помогает пользователям понять, что делает ваш обогатитель и как его настроить.
 
-### Handling API Rate Limits
+### Работа с ограничениями частоты запросов API
 
-When working with rate-limited APIs, add delays between requests:
+При работе с API, у которых есть ограничения на частоту запросов, добавляйте задержки между запросами:
 
 ```python
     async def scan(self, data: InputType) -> OutputType:
@@ -669,9 +669,9 @@ When working with rate-limited APIs, add delays between requests:
         return results
 ```
 
-### Fallback data sources
+### Запасные источники данных
 
-Implement fallback logic when primary sources fail:
+Реализуйте запасную логику на случай, если основные источники недоступны:
 
 ```python
     async def scan(self, data: InputType) -> OutputType:
@@ -696,20 +696,20 @@ Implement fallback logic when primary sources fail:
         return results
 ```
 
-## Troubleshooting
+## Устранение неполадок
 
-If your enricher doesn't appear in the API, verify that you've applied the `@flowsint_enricher` decorator to your class, that the file lives under `flowsint-enrichers/src/flowsint_enrichers/`, and that you've restarted the API server. Auto-discovery via `load_all_enrichers()` runs at startup, so file additions require a restart.
+Если ваш обогатитель не появляется в API, убедитесь, что вы применили к классу декоратор `@flowsint_enricher`, что файл лежит в `flowsint-enrichers/src/flowsint_enrichers/` и что вы перезапустили API-сервер. Автообнаружение через `load_all_enrichers()` выполняется при запуске, поэтому после добавления файлов нужен перезапуск.
 
-For import errors, make sure all your dependencies are installed and the enricher file has no syntax errors. Check that you're importing from the correct packages.
+При ошибках импорта убедитесь, что все зависимости установлены, а в файле обогатителя нет синтаксических ошибок. Проверьте, что вы импортируете из правильных пакетов.
 
-If the scan method isn't finding any results, add logging statements to debug what's happening. Verify that tools are installed and accessible, API keys are valid if required, and input data is in the expected format.
+Если метод scan не находит результатов, добавьте логирование, чтобы понять, что происходит. Проверьте, что инструменты установлены и доступны, API-ключи действительны (если они нужны) и входные данные имеют ожидаемый формат.
 
-When graph relationships aren't appearing, check that you're creating both nodes and relationships in the postprocess method. Verify that the relationship type name is correct and that you're passing the right node objects to `create_relationship()`.
+Если связи в графе не появляются, проверьте, что в методе postprocess вы создаёте и узлы, и связи. Убедитесь, что имя типа связи указано верно и в `create_relationship()` передаются правильные объекты узлов.
 
-## Next steps
+## Дальнейшие шаги
 
-Once you've created and registered your enricher, it becomes available through the API for users to run. Enrichers can be chained together into Flows where the output of one enricher feeds into the input of another. This enables complex intelligence gathering sequences.
+Когда вы создали и зарегистрировали обогатитель, он становится доступным через API для запуска пользователями. Обогатители можно объединять в потоки (Flows), где результат одного обогатителя подаётся на вход другого. Это позволяет строить сложные последовательности сбора информации.
 
-Remember that enrichers are the heart of Flowsint's intelligence gathering capabilities. Well-designed enrichers that handle errors gracefully, log progress clearly, and create meaningful graph relationships make the entire platform more powerful and user-friendly.
+Помните, что обогатители — это сердце возможностей Flowsint по сбору информации. Хорошо спроектированные обогатители, которые корректно обрабатывают ошибки, чётко логируют ход работы и создают осмысленные связи в графе, делают всю платформу мощнее и удобнее.
 
-If you create new enrichers that you think can help the community, it's highly appreciated that you open-source them. Help the community as much as it helps you !
+Если вы создали новые обогатители, которые, по вашему мнению, могут помочь сообществу, будем очень признательны, если вы сделаете их открытыми. Помогайте сообществу так же, как оно помогает вам!

@@ -1,13 +1,18 @@
-from typing import AsyncIterator, List
+from typing import AsyncIterator, List, Optional
 
 from ..types import ChatMessage
 
 
 class OpenAIProvider:
-    def __init__(self, api_key: str, model: str = "gpt-4o-mini"):
+    def __init__(
+        self,
+        api_key: str,
+        model: str = "gpt-4o-mini",
+        base_url: Optional[str] = None,
+    ):
         from openai import AsyncOpenAI
 
-        self._client = AsyncOpenAI(api_key=api_key)
+        self._client = AsyncOpenAI(api_key=api_key, base_url=base_url)
         self._model = model
 
     def _build_messages(self, messages: List[ChatMessage]):

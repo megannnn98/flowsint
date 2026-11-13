@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { useCallback } from 'react'
 import { sketchService } from '@/api/sketch-service'
 
+import { t } from '@/i18n'
 export function useCreateOnPaste(sketchId: string) {
   const addNode = useGraphStore((s) => s.addNode)
   const replaceNode = useGraphStore((s) => s.replaceNode)
@@ -92,6 +93,6 @@ const createNode = async (
       replaceNode(node.id, newNode.id, newNode.nodeProperties)
     }
   } catch {
-    toast.error('Could not create node.')
+    toast.error(t('Could not create node.'))
   }
 }

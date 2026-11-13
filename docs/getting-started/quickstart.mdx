@@ -1,7 +1,7 @@
 ---
-title: "Installation"
-description: "Quick start guide to using Flowsint for your OSINT investigations."
-category: "Getting started"
+title: "Установка"
+description: "Краткое руководство по началу работы с Flowsint в OSINT-расследованиях."
+category: "Начало работы"
 order: 3
 author: "Flowsint Team"
 tags: ["tutorial", "quickstart", "installation"]
@@ -9,17 +9,17 @@ version: "1.2.8"
 last_updated_at: "2026-05-15"
 ---
 
-### Prerequisites
+### Требования
 
-Before installing Flowsint, ensure you have the following installed on your system:
+Перед установкой Flowsint убедитесь, что в системе установлены:
 
-- **Docker** and **Docker Compose**
-- **Make** (for build automation)
+- **Docker** и **Docker Compose**
+- **Make** (для автоматизации сборки)
 - **Git**
 
-### Installation
+### Установка
 
-Clone the repo and run the start command.
+Клонируйте репозиторий и выполните команду запуска.
 
 ```bash
 git clone https://github.com/reconurge/flowsint.git
@@ -27,16 +27,22 @@ cd flowsint
 make prod
 ```
 
-Some enrichers require API keys. Check out [this section](/docs/getting-started/enrichers#api-keys) to learn more.
+Некоторым обогатителям нужны API-ключи. Подробнее — в [этом разделе](/docs/getting-started/enrichers#api-keys).
 
-The application should automatically open at http://localhost:5173.
+Приложение должно автоматически открыться по адресу http://localhost:5173.
 
-### Create your first investigation
+> Образы, которые скачивает `make prod`, собраны из оригинального репозитория и показывают английский интерфейс. Русский интерфейс этого форка собирается из исходников:
+>
+> ```bash
+> docker compose -f docker-compose.prod.yml -f docker-compose.ru.yml up -d --build
+> ```
 
-Start by logging in or registering from the home page. From your dashboard, create a new investigation by clicking "New investigation." Add your first entity—such as a domain name—to the canvas. Right-click the entity to open the context menu and run an enricher. As results appear, explore the newly discovered entities and relationships directly in the graph.
+### Создайте первое расследование
 
-### Running your first enricher
+Начните со входа или регистрации на главной странице. На панели управления создайте новое расследование, нажав «Новое расследование». Добавьте на холст первую сущность — например, доменное имя. Щёлкните сущность правой кнопкой мыши, чтобы открыть контекстное меню, и запустите обогатитель. По мере появления результатов изучайте найденные сущности и связи прямо на графе.
 
-You could start by discovering subdomains for a domain for example.
+### Запуск первого обогатителя
 
-Add a domain entity like `example.com` to your investigation, then right-click the domain node and select the "domain_to_subdomains" enricher. Wait for the enricher to complete; newly discovered subdomains will be added to your graph for you to review.
+Для начала можно найти поддомены домена.
+
+Добавьте в расследование сущность-домен, например `example.com`, затем щёлкните правой кнопкой мыши по узлу домена и выберите обогатитель «domain_to_subdomains». Дождитесь завершения работы обогатителя: найденные поддомены будут добавлены на граф, и вы сможете их просмотреть.

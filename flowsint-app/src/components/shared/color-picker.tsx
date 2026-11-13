@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Check } from 'lucide-react'
 
+import { t } from '@/i18n'
 const PRESET_COLORS = [
   // Row 1 - Muted naturals
   '#9B8E7E',
@@ -89,7 +90,7 @@ export function ColorPicker({
       </PopoverTrigger>
       <PopoverContent className="w-[280px] p-3" align={align}>
         <div className="space-y-3">
-          <p className="text-xs font-medium text-muted-foreground">Color</p>
+          <p className="text-xs font-medium text-muted-foreground">{t('Color')}</p>
           <div className="grid grid-cols-10 gap-1.5">
             {PRESET_COLORS.map((color) => (
               <button

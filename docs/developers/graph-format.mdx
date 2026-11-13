@@ -1,7 +1,7 @@
 ---
-title: "Graph format"
-description: "Reference for the GraphNode and GraphEdge types used to represent entities and relationships in the Flowsint graph. Understanding these structures is essential for working with the frontend visualization and the graph database layer."
-category: "Developers"
+title: "Формат графа"
+description: "Справочник по типам GraphNode и GraphEdge, которыми в графе Flowsint представлены сущности и связи. Понимание этих структур необходимо для работы с визуализацией во фронтенде и со слоем графовой базы данных."
+category: "Разработчикам"
 order: 11
 author: "Flowsint Team"
 tags: ["tutorial", "developers", "graph", "nodes", "edges"]
@@ -9,19 +9,19 @@ version: "1.2.8"
 last_updated_at: "2026-05-15"
 ---
 
-## Overview
+## Обзор
 
-Flowsint's graph visualization is built on two core data structures: **GraphNode** (representing entities) and **GraphEdge** (representing relationships between entities). These types are defined in `flowsint-app/src/types/graph.ts` and are used throughout the frontend for rendering, interaction, and data management.
+Визуализация графа во Flowsint построена на двух основных структурах данных: **GraphNode** (представляет сущности) и **GraphEdge** (представляет связи между сущностями). Эти типы определены в `flowsint-app/src/types/graph.ts` и используются во всём фронтенде для отрисовки, взаимодействия и управления данными.
 
-Understanding these structures is important when:
-- Building enrichers that create nodes and relationships
-- Working on the frontend visualization
-- Debugging graph rendering issues
-- Extending the graph with new visual features
+Понимать эти структуры важно, когда вы:
+- Создаёте обогатители, которые добавляют узлы и связи
+- Работаете над визуализацией во фронтенде
+- Отлаживаете проблемы отрисовки графа
+- Расширяете граф новыми визуальными возможностями
 
 ## GraphNode
 
-A `GraphNode` represents a single entity in the graph (e.g., a domain, an IP address, a person). Every node created by an enricher's `create_node()` method ends up as a `GraphNode` in the frontend.
+`GraphNode` представляет одну сущность в графе (например, домен, IP-адрес, человека). Каждый узел, созданный методом `create_node()` обогатителя, во фронтенде становится `GraphNode`.
 
 ```typescript
 type GraphNode = {
@@ -44,26 +44,26 @@ type GraphNode = {
 }
 ```
 
-### Field reference
+### Справочник полей
 
-| Field | Type | Description |
+| Поле | Тип | Описание |
 |-------|------|-------------|
-| `id` | `string` | Unique identifier for the node. Derived from the type's primary field value. |
-| `nodeType` | `string` | The entity type (e.g., `"Domain"`, `"Ip"`, `"Email"`). Maps to the Pydantic type class name. |
-| `nodeLabel` | `string` | Human-readable label displayed on the node. Set by the type's `compute_label()` method. |
-| `nodeProperties` | `NodeProperties` | All properties of the entity as key-value pairs. Contains the serialized fields from the Pydantic type. |
-| `nodeSize` | `number` | Visual size of the node in the graph. |
-| `nodeColor` | `string \| null` | Custom color override for the node (CSS color string), or `null` for default. |
-| `nodeIcon` | `keyof LucideIcons \| null` | Icon to display on the node, from the [Lucide icon set](https://lucide.dev/icons/), or `null` for default. |
-| `nodeImage` | `string \| null` | URL to an image to display on the node (e.g., a profile picture), or `null`. |
-| `nodeFlag` | `flagColor \| null` | Color flag for visual tagging (see Flag colors below), or `null`. |
-| `nodeShape` | `NodeShape \| null` | Shape of the node (see Node shapes below), or `null` for default circle. |
-| `nodeMetadata` | `NodeMetadata` | Additional metadata as key-value pairs. Used for internal tracking and extended features. |
-| `x` | `number` | X coordinate position in the graph canvas. |
-| `y` | `number` | Y coordinate position in the graph canvas. |
-| `val` | `number` (optional) | Value used by the force-graph engine for sizing calculations. |
-| `neighbors` | `any[]` (optional) | Adjacent nodes, populated by the graph engine at runtime. |
-| `links` | `any[]` (optional) | Connected edges, populated by the graph engine at runtime. |
+| `id` | `string` | Уникальный идентификатор узла. Берётся из значения основного поля типа. |
+| `nodeType` | `string` | Тип сущности (например, `"Domain"`, `"Ip"`, `"Email"`). Соответствует имени класса типа Pydantic. |
+| `nodeLabel` | `string` | Понятная человеку метка, отображаемая на узле. Задаётся методом `compute_label()` типа. |
+| `nodeProperties` | `NodeProperties` | Все свойства сущности в виде пар «ключ — значение». Содержит сериализованные поля типа Pydantic. |
+| `nodeSize` | `number` | Визуальный размер узла на графе. |
+| `nodeColor` | `string \| null` | Пользовательский цвет узла (CSS-строка цвета) или `null` для значения по умолчанию. |
+| `nodeIcon` | `keyof LucideIcons \| null` | Значок на узле из [набора Lucide](https://lucide.dev/icons/) или `null` для значения по умолчанию. |
+| `nodeImage` | `string \| null` | URL изображения для отображения на узле (например, фото профиля) или `null`. |
+| `nodeFlag` | `flagColor \| null` | Цветной флаг для визуальной пометки (см. «Цвета флагов» ниже) или `null`. |
+| `nodeShape` | `NodeShape \| null` | Форма узла (см. «Формы узлов» ниже) или `null` для круга по умолчанию. |
+| `nodeMetadata` | `NodeMetadata` | Дополнительные метаданные в виде пар «ключ — значение». Используются для внутреннего учёта и расширенных возможностей. |
+| `x` | `number` | Координата X на холсте графа. |
+| `y` | `number` | Координата Y на холсте графа. |
+| `val` | `number` (необязательно) | Значение, которое движок силовой раскладки использует для расчёта размеров. |
+| `neighbors` | `any[]` (необязательно) | Соседние узлы; заполняются движком графа во время работы. |
+| `links` | `any[]` (необязательно) | Связанные рёбра; заполняются движком графа во время работы. |
 
 ### NodeProperties
 
@@ -73,7 +73,7 @@ type NodeProperties = {
 }
 ```
 
-A flexible key-value object containing all the entity's properties. When a Pydantic type is serialized into a node, its fields become entries in `nodeProperties`. For example, a `Domain` node would have `nodeProperties.domain`, `nodeProperties.root`, etc.
+Гибкий объект «ключ — значение», содержащий все свойства сущности. Когда тип Pydantic сериализуется в узел, его поля становятся записями в `nodeProperties`. Например, у узла `Domain` будут `nodeProperties.domain`, `nodeProperties.root` и т. д.
 
 ### NodeMetadata
 
@@ -83,34 +83,34 @@ type NodeMetadata = {
 }
 ```
 
-Similar to `nodeProperties` but used for system-level metadata rather than entity data. This can include information like creation timestamps, source enricher, or other tracking data.
+Похож на `nodeProperties`, но предназначен для системных метаданных, а не для данных сущности. Здесь могут быть, например, время создания, обогатитель-источник или другие служебные данные.
 
-### Node shapes
+### Формы узлов
 
-Nodes can be rendered in four shapes:
+Узлы могут отображаться в одной из четырёх форм:
 
 ```typescript
 type NodeShape = 'circle' | 'square' | 'hexagon' | 'triangle'
 ```
 
-| Shape | Use case |
+| Форма | Назначение |
 |-------|----------|
-| `circle` | Default shape for most entity types |
-| `square` | Often used for infrastructure entities |
-| `hexagon` | Used for grouped or aggregate entities |
-| `triangle` | Used for alert or warning-related entities |
+| `circle` | Форма по умолчанию для большинства типов сущностей |
+| `square` | Часто используется для сущностей инфраструктуры |
+| `hexagon` | Используется для сгруппированных или агрегированных сущностей |
+| `triangle` | Используется для сущностей, связанных с тревогами и предупреждениями |
 
-### Flag colors
+### Цвета флагов
 
-Flags provide a visual tagging system for nodes. Users can flag nodes to highlight them during an investigation.
+Флаги — система визуальных пометок для узлов. Пользователи могут помечать узлы флагами, чтобы выделять их в ходе расследования.
 
 ```typescript
 type flagColor = 'red' | 'orange' | 'blue' | 'green' | 'yellow'
 ```
 
-Each flag color maps to specific Tailwind CSS classes for consistent styling:
+Каждому цвету флага соответствуют определённые классы Tailwind CSS для единообразного оформления:
 
-| Flag | Style |
+| Флаг | Стиль |
 |------|-------|
 | `red` | `text-red-400 fill-red-200` |
 | `orange` | `text-orange-400 fill-orange-200` |
@@ -120,7 +120,7 @@ Each flag color maps to specific Tailwind CSS classes for consistent styling:
 
 ## GraphEdge
 
-A `GraphEdge` represents a relationship between two nodes (e.g., "RESOLVES_TO", "HAS_SUBDOMAIN", "FOUND_IN_BREACH"). Every relationship created by an enricher's `create_relationship()` method ends up as a `GraphEdge` in the frontend.
+`GraphEdge` представляет связь между двумя узлами (например, "RESOLVES_TO", "HAS_SUBDOMAIN", "FOUND_IN_BREACH"). Каждая связь, созданная методом `create_relationship()` обогатителя, во фронтенде становится `GraphEdge`.
 
 ```typescript
 type GraphEdge = {
@@ -136,70 +136,70 @@ type GraphEdge = {
 }
 ```
 
-### Field reference
+### Справочник полей
 
-| Field | Type | Description |
+| Поле | Тип | Описание |
 |-------|------|-------------|
-| `source` | `string` | ID of the source node (the "from" node in the relationship). |
-| `target` | `string` | ID of the target node (the "to" node in the relationship). |
-| `id` | `string` | Unique identifier for this edge. |
-| `label` | `string` | Display label for the edge (e.g., `"RESOLVES_TO"`, `"HAS_EMAIL"`). This is the relationship type string passed to `create_relationship()`. |
-| `date` | `string` (optional) | Timestamp associated with the relationship (ISO 8601 format). |
-| `caption` | `string` (optional) | Additional descriptive text displayed on or near the edge. |
-| `type` | `string` (optional) | Relationship classification type for filtering or styling. |
-| `weight` | `number` (optional) | Numerical weight of the relationship, can be used for visual thickness or importance ranking. |
-| `confidence_level` | `number \| string` (optional) | Confidence score for the relationship, indicating how reliable the connection is. |
+| `source` | `string` | ID исходного узла (узла «from» в связи). |
+| `target` | `string` | ID целевого узла (узла «to» в связи). |
+| `id` | `string` | Уникальный идентификатор этого ребра. |
+| `label` | `string` | Отображаемая метка ребра (например, `"RESOLVES_TO"`, `"HAS_EMAIL"`). Это строка типа связи, переданная в `create_relationship()`. |
+| `date` | `string` (необязательно) | Время, связанное со связью (формат ISO 8601). |
+| `caption` | `string` (необязательно) | Дополнительный поясняющий текст на ребре или рядом с ним. |
+| `type` | `string` (необязательно) | Тип классификации связи для фильтрации или оформления. |
+| `weight` | `number` (необязательно) | Числовой вес связи; может использоваться для толщины линии или ранжирования по важности. |
+| `confidence_level` | `number \| string` (необязательно) | Оценка достоверности связи — насколько надёжна эта связь. |
 
-## How enrichers map to the graph
+## Как обогатители отображаются на граф
 
-When you write an enricher and call graph methods in `postprocess()`, here's how the data flows:
+Когда вы пишете обогатитель и вызываете методы графа в `postprocess()`, данные проходят такой путь:
 
-### Creating nodes
+### Создание узлов
 
 ```python
-# In your enricher's postprocess method
-self.create_node(domain)  # domain is a Pydantic Domain object
+# В методе postprocess вашего обогатителя
+self.create_node(domain)  # domain — объект Pydantic Domain
 ```
 
-The graph service automatically:
-1. Extracts the **type name** from the Pydantic class (e.g., `"Domain"`) -> `nodeType`
-2. Reads the **primary field** value (e.g., `domain.domain`) -> used for `id`
-3. Reads the **nodeLabel** field (set by `compute_label()`) -> `nodeLabel`
-4. Serializes all fields into `nodeProperties`
-5. Sets defaults for visual properties (`nodeSize`, `nodeColor`, etc.)
+Сервис графа автоматически:
+1. Извлекает **имя типа** из класса Pydantic (например, `"Domain"`) -> `nodeType`
+2. Читает значение **основного поля** (например, `domain.domain`) -> используется для `id`
+3. Читает поле **nodeLabel** (задаётся `compute_label()`) -> `nodeLabel`
+4. Сериализует все поля в `nodeProperties`
+5. Задаёт значения по умолчанию для визуальных свойств (`nodeSize`, `nodeColor` и т. д.)
 
-### Creating relationships
+### Создание связей
 
 ```python
-# In your enricher's postprocess method
+# В методе postprocess вашего обогатителя
 self.create_relationship(domain, ip, "RESOLVES_TO")
 ```
 
-The graph service automatically:
-1. Identifies the **source node** from `domain`'s type and primary field -> `source`
-2. Identifies the **target node** from `ip`'s type and primary field -> `target`
-3. Uses the relationship label `"RESOLVES_TO"` -> `label`
-4. Generates a unique `id` for the edge
+Сервис графа автоматически:
+1. Определяет **исходный узел** по типу и основному полю `domain` -> `source`
+2. Определяет **целевой узел** по типу и основному полю `ip` -> `target`
+3. Использует метку связи `"RESOLVES_TO"` -> `label`
+4. Генерирует уникальный `id` для ребра
 
-### Relationship naming conventions
+### Соглашения об именовании связей
 
-Relationship labels follow these conventions:
-- Use **UPPER_SNAKE_CASE** (e.g., `"RESOLVES_TO"`, `"HAS_SUBDOMAIN"`)
-- Use **verb phrases** that describe the relationship direction (source -> target)
-- The default relationship label is `"IS_RELATED_TO"` if none is specified
-- Common patterns:
-  - `HAS_*` for ownership/containment (e.g., `"HAS_EMAIL"`, `"HAS_SUBDOMAIN"`)
-  - `RESOLVES_TO` for DNS-type lookups
-  - `FOUND_IN_*` for breach/leak associations
-  - `REGISTERED_BY` for WHOIS data
+Метки связей подчиняются таким соглашениям:
+- Используйте **UPPER_SNAKE_CASE** (например, `"RESOLVES_TO"`, `"HAS_SUBDOMAIN"`)
+- Используйте **глагольные обороты**, описывающие направление связи (источник -> цель)
+- Если метка не указана, по умолчанию используется `"IS_RELATED_TO"`
+- Типовые шаблоны:
+  - `HAS_*` для владения и вхождения (например, `"HAS_EMAIL"`, `"HAS_SUBDOMAIN"`)
+  - `RESOLVES_TO` для DNS-запросов
+  - `FOUND_IN_*` для связей с утечками
+  - `REGISTERED_BY` для данных WHOIS
 
-## Graph settings
+## Настройки графа
 
-The graph visualization is configurable through settings types:
+Визуализация графа настраивается через типы настроек:
 
 ### ForceGraphSetting
 
-Controls the physics simulation of the force-directed graph layout:
+Управляет физической симуляцией силовой раскладки графа:
 
 ```typescript
 type ForceGraphSetting = {
@@ -214,7 +214,7 @@ type ForceGraphSetting = {
 
 ### ExtendedSetting
 
-General-purpose settings with richer type information:
+Универсальные настройки с более подробной информацией о типе:
 
 ```typescript
 type ExtendedSetting = {
@@ -228,17 +228,17 @@ type ExtendedSetting = {
 }
 ```
 
-These settings allow users to customize graph behavior like node repulsion, link distance, simulation speed, and visual preferences.
+Эти настройки позволяют пользователям менять поведение графа: отталкивание узлов, длину связей, скорость симуляции и визуальные предпочтения.
 
-## Reserved properties
+## Зарезервированные свойства
 
-When creating nodes, certain property names are reserved by the system and should not be used as field names in your custom types:
+При создании узлов некоторые имена свойств зарезервированы системой, и их нельзя использовать как имена полей в ваших собственных типах:
 
-- `id` - Node identifier
-- `x`, `y` - Position coordinates
-- `nodeLabel` - Display label (set by `compute_label()`)
-- `label` - Legacy label field
-- `nodeType`, `type` - Entity type identifiers
-- `nodeImage`, `nodeIcon`, `nodeColor`, `nodeSize` - Visual properties
-- `created_at` - Creation timestamp
-- `sketch_id` - Investigation sketch association
+- `id` — идентификатор узла
+- `x`, `y` — координаты позиции
+- `nodeLabel` — отображаемая метка (задаётся `compute_label()`)
+- `label` — устаревшее поле метки
+- `nodeType`, `type` — идентификаторы типа сущности
+- `nodeImage`, `nodeIcon`, `nodeColor`, `nodeSize` — визуальные свойства
+- `created_at` — время создания
+- `sketch_id` — привязка к скетчу расследования

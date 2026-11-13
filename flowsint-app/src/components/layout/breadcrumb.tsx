@@ -15,6 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Home } from 'lucide-react'
 import { flowService } from '@/api/flow-service'
 
+import { t } from '@/i18n'
 export function PathBreadcrumb() {
   const { investigationId, id, type, flowId } = useParams({ strict: false })
   const location = useLocation()
@@ -56,7 +57,7 @@ export function PathBreadcrumb() {
               <BreadcrumbItem className="min-w-0">
                 <BreadcrumbLink asChild>
                   <Link to="/dashboard/flows" className="truncate block font-medium">
-                    Flows
+                    {t('Flows')}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>

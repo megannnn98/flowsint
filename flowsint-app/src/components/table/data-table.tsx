@@ -13,6 +13,7 @@ import React from 'react'
 import { Row as RowItem } from '@/types/table'
 import { cn } from '@/lib/utils'
 
+import { t } from '@/i18n'
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
@@ -154,8 +155,8 @@ const TableBody = ({
           <td colSpan={table.getHeaderGroups()[0]?.headers.length || 1}>
             <div className="flex items-center justify-center h-32 text-muted-foreground">
               <div className="text-center">
-                <div className="text-md font-medium">No data found yet.</div>
-                <div className="text-xs">No nodes to display</div>
+                <div className="text-md font-medium">{t('No data found yet.')}</div>
+                <div className="text-xs">{t('No nodes to display')}</div>
               </div>
             </div>
           </td>

@@ -11,6 +11,7 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import * as LucideIcons from 'lucide-react'
 import { cn } from '@/lib/utils'
 
+import { t } from '@/i18n'
 // Curated list of popular and useful Lucide icons
 const AVAILABLE_ICONS = [
   'User',
@@ -299,20 +300,20 @@ export default function IconPicker({ iconType, open, setOpen, onIconChange }: Ic
           <DialogTitle>
             {iconType ? (
               <>
-                Change icon for <span className="text-primary">{iconType}</span>
+                {t('Change icon for')} <span className="text-primary">{iconType}</span>
               </>
             ) : (
-              <>Select an icon</>
+              <>{t('Select an icon')}</>
             )}
           </DialogTitle>
           <DialogDescription>
-            Choose from {AVAILABLE_ICONS.length} available Lucide icons
+            {t('Choose from')} {AVAILABLE_ICONS.length} {t('available Lucide icons')}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <Input
-            placeholder="Search icons..."
+            placeholder={t('Search icons...')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full"
@@ -321,12 +322,14 @@ export default function IconPicker({ iconType, open, setOpen, onIconChange }: Ic
           <div ref={parentRef} className="h-[400px] overflow-auto rounded-md border border-border">
             {!isReady ? (
               <div className="flex h-full items-center justify-center">
-                <div className="text-muted-foreground text-sm">Loading icons...</div>
+                <div className="text-muted-foreground text-sm">{t('Loading icons...')}</div>
               </div>
             ) : filteredIcons.length === 0 ? (
               <div className="flex h-full items-center justify-center">
                 <div className="text-muted-foreground text-sm">
-                  No icons found matching &quot;{search}&quot;
+                  {t('No icons found matching "')}
+                  {search}
+                  {t('"')}
                 </div>
               </div>
             ) : (

@@ -17,6 +17,7 @@ import { useParams } from '@tanstack/react-router'
 import { useGraphSettingsStore } from '@/stores/graph-settings-store'
 import { usePermissions } from '@/hooks/use-can'
 
+import { t } from '@/i18n'
 const SelectedItemsPanel = () => {
   const selectedNodes = useGraphStore((s) => s.selectedNodes)
 
@@ -24,7 +25,7 @@ const SelectedItemsPanel = () => {
     <div className="w-full flex flex-col h-full">
       <div className="p-2 flex items-center justify-between border-b">
         <div className="ml-2 text-sm truncate text-ellipsis">
-          <span className="font-semibold">{selectedNodes.length}</span> selected items
+          <span className="font-semibold">{selectedNodes.length}</span> {t('selected items')}
         </div>
         <ActionBar />
       </div>
@@ -44,7 +45,7 @@ const SelectedNodeItem = memo(({ node }: { node: GraphNode; color: string }) => 
       className="flex w-full items-center justify-between text-left border border-border gap-1.5 text-xs p-2 py-1.5"
     >
       <span className="inline-flex items-center gap-2 truncate text-ellipsis">
-        <span className="truncate text-ellipsis">{node.nodeLabel || 'Unknown'}</span>
+        <span className="truncate text-ellipsis">{node.nodeLabel || t('Unknown')}</span>
       </span>
       <TypeBadge type={node?.nodeType} />
     </Badge>
@@ -68,7 +69,10 @@ export const SelectedList = () => {
           className="flex w-full items-center justify-between text-left border border-border gap-1.5 text-xs p-2 py-1.5"
         >
           <span className="flex items-center gap-2 truncate text-ellipsis">
-            <span className="truncate text-ellipsis">{remainingCount}+ other</span>
+            <span className="truncate text-ellipsis">
+              {remainingCount}
+              {t('+ other')}
+            </span>
           </span>
         </Badge>
       )}
@@ -100,8 +104,8 @@ const ActionBar = () => {
     if (!selectedNodes.length || !sketchId) return
     if (
       !(await confirm({
-        title: `You are about to delete ${selectedNodes.length} node(s).`,
-        message: 'The action is irreversible.'
+        title: t('You are about to delete nodes: {{n}}.', { n: selectedNodes.length }),
+        message: t('The action is irreversible.')
       }))
     )
       return
@@ -116,9 +120,9 @@ const ActionBar = () => {
         )
       })(),
       {
-        loading: `Deleting ${selectedNodes.length} node(s)...`,
-        success: 'Nodes deleted successfully.',
-        error: 'Failed to delete selected nodes.'
+        loading: t('Deleting {{count}} node(s)...', { count: selectedNodes.length }),
+        success: t('Nodes deleted successfully.'),
+        error: t('Failed to delete selected nodes.')
       }
     )
   }, [selectedNodes, confirm, removeNodes, clearSelectedNodes, sketchId])
@@ -146,7 +150,7 @@ const ActionBar = () => {
               </div>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Ask AI</p>
+              <p>{t('Ask AI')}</p>
             </TooltipContent>
           </Tooltip>
         )}
@@ -171,7 +175,9 @@ const ActionBar = () => {
               </div>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Delete {selectedNodes.length} nodes</p>
+              <p>
+                {t('Delete')} {selectedNodes.length} {t('nodes')}
+              </p>
             </TooltipContent>
           </Tooltip>
         )}
@@ -188,9 +194,9 @@ const ActionBar = () => {
             </TooltipTrigger>
             <TooltipContent>
               {!shareSameType ? (
-                <p>All selected items are not the same type</p>
+                <p>{t('All selected items are not the same type')}</p>
               ) : (
-                <p>Launch enricher</p>
+                <p>{t('Launch enricher')}</p>
               )}
             </TooltipContent>
           </Tooltip>
@@ -210,7 +216,7 @@ const ActionBar = () => {
             </div>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Clear selection</p>
+            <p>{t('Clear selection')}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

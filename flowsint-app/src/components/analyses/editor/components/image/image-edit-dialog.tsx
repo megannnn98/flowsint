@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog'
 import { ImageEditBlock } from './image-edit-block'
 
+import { t } from '@/i18n'
 interface ImageEditDialogProps extends VariantProps<typeof toggleVariants> {
   editor: Editor
 }
@@ -26,8 +27,8 @@ const ImageEditDialog = ({ editor, size, variant }: ImageEditDialogProps) => {
       <DialogTrigger asChild>
         <ToolbarButton
           isActive={editor.isActive('image')}
-          tooltip="Image"
-          aria-label="Image"
+          tooltip={t('Image')}
+          aria-label={t('Image')}
           size={size}
           variant={variant}
         >
@@ -36,9 +37,9 @@ const ImageEditDialog = ({ editor, size, variant }: ImageEditDialogProps) => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Select image</DialogTitle>
+          <DialogTitle>{t('Select image')}</DialogTitle>
           <DialogDescription className="sr-only">
-            Upload an image from your computer
+            {t('Upload an image from your computer')}
           </DialogDescription>
         </DialogHeader>
         <ImageEditBlock editor={editor} close={() => setOpen(false)} />

@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/api/query-keys'
 import { useLayoutStore } from '@/stores/layout-store'
 
+import { t } from '@/i18n'
 export function useLaunchFlow(askUser: boolean = false) {
   const { confirm } = useConfirm()
   const queryClient = useQueryClient()
@@ -33,11 +34,14 @@ export function useLaunchFlow(askUser: boolean = false) {
     flow_id: string,
     sketch_id: string | null | undefined
   ) => {
-    if (!sketch_id) return toast.error('Could not find the graph.')
+    if (!sketch_id) return toast.error(t('Could not find the graph.'))
     if (askUser) {
       const confirmed = await confirm({
         title: `${flow_id} scan`,
-        message: `You're about to launch ${flow_id} flow on ${node_ids.length} items.`
+        message: t("You're about to launch {{name}} flow on {{n}} items.", {
+          name: flow_id,
+          n: node_ids.length
+        })
       })
       if (!confirmed) return
     }

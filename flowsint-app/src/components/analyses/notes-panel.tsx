@@ -7,6 +7,7 @@ import { AnalysisEditor } from './analysis-editor'
 import { useEffect, memo } from 'react'
 import AnalysisSkeleton from './analysis-skeleton'
 
+import { t } from '@/i18n'
 export const AnalysisPanel = memo(() => {
   const { investigationId } = useParams({ strict: false }) as { investigationId: string }
   const currentAnalysisId = useAnalysisPanelStore((s) => s.currentAnalysisId)
@@ -68,7 +69,7 @@ export const AnalysisPanel = memo(() => {
   }
 
   if (isError) {
-    return <div className="text-sm text-destructive">Error loading analyses.</div>
+    return <div className="text-sm text-destructive">{t('Error loading analyses.')}</div>
   }
 
   return (

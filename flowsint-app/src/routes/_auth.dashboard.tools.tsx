@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 
+import { t } from '@/i18n'
 export const Route = createFileRoute('/_auth/dashboard/tools')({
   component: ToolsPage
 })
@@ -20,7 +21,7 @@ const toolCategories: ToolCategory = {
     Maigret: {
       name: 'Maigret',
       path: '/tools/maigret',
-      description: 'Search for profiles across more than 500 sites based on a username.',
+      description: t('Search for profiles across more than 500 sites based on a username.'),
       active: true,
       link: 'https://github.com/soxoj/maigret',
       avatar: 'https://raw.githubusercontent.com/soxoj/maigret/main/static/maigret.png'
@@ -28,7 +29,7 @@ const toolCategories: ToolCategory = {
     Sherlock: {
       name: 'Sherlock',
       path: '/tools/sherlock',
-      description: 'Search for user accounts across social networks.',
+      description: t('Search for user accounts across social networks.'),
       active: true,
       link: 'https://github.com/sherlock-project/sherlock',
       avatar: 'https://avatars.githubusercontent.com/u/48293496?s=200&v=4'
@@ -38,7 +39,7 @@ const toolCategories: ToolCategory = {
     Holehe: {
       name: 'Holehe',
       path: '/tools/holehe',
-      description: 'Check if an email address is associated with accounts on various websites.',
+      description: t('Check if an email address is associated with accounts on various websites.'),
       active: true,
       link: 'https://github.com/megadose/holehe',
       avatar:
@@ -47,7 +48,7 @@ const toolCategories: ToolCategory = {
     EmailRep: {
       name: 'EmailRep',
       path: '/tools/emailrep',
-      description: 'Analyze the reputation of an email address (scam, social, etc.).',
+      description: t('Analyze the reputation of an email address (scam, social, etc.).'),
       active: false,
       link: 'https://github.com/sublime-security/emailrep.io',
       avatar:
@@ -56,14 +57,14 @@ const toolCategories: ToolCategory = {
     theHarvester: {
       name: 'theHarvester',
       path: '/tools/theharvester',
-      description: 'Collect emails, domain names, IPs from public sources.',
+      description: t('Collect emails, domain names, IPs from public sources.'),
       active: false,
       link: 'https://github.com/laramies/theHarvester'
     },
     Epios: {
       name: 'Epios',
       path: '/tools/epios',
-      description: 'Search engine to find emails, phone numbers, and more.',
+      description: t('Search engine to find emails, phone numbers, and more.'),
       active: false,
       link: 'https://epieos.com/',
       avatar:
@@ -75,7 +76,7 @@ const toolCategories: ToolCategory = {
     Subfinder: {
       name: 'Subfinder',
       path: '/tools/subfinder',
-      description: 'Fast passive subdomain enumeration tool.',
+      description: t('Fast passive subdomain enumeration tool.'),
       active: true,
       link: 'https://github.com/projectdiscovery/subfinder',
       avatar: 'https://avatars.githubusercontent.com/u/50994705?s=280&v=4'
@@ -83,14 +84,14 @@ const toolCategories: ToolCategory = {
     DnsDumpster: {
       name: 'DnsDumpster',
       path: '/tools/dnsdumpster',
-      description: 'DNS reconnaissance and network mapping from a domain.',
+      description: t('DNS reconnaissance and network mapping from a domain.'),
       active: false,
       link: 'https://github.com/PaulSec/API-dnsdumpster.com'
     },
     ASNMap: {
       name: 'ASNMap',
       path: '/tools/asnmap',
-      description: 'ASN mapping and network reconnaissance tool.',
+      description: t('ASN mapping and network reconnaissance tool.'),
       active: true,
       link: 'https://github.com/projectdiscovery/asnmap',
       avatar: 'https://avatars.githubusercontent.com/u/50994705?s=280&v=4'
@@ -100,7 +101,7 @@ const toolCategories: ToolCategory = {
     Etherscan: {
       name: 'Etherscan',
       path: '/tools/etherscan',
-      description: 'Blockchain explorer and analytics platform for Ethereum.',
+      description: t('Blockchain explorer and analytics platform for Ethereum.'),
       active: true,
       link: 'https://etherscan.io/apis',
       avatar: 'https://cdn.worldvectorlogo.com/logos/etherscan-1.svg',
@@ -111,7 +112,7 @@ const toolCategories: ToolCategory = {
     GHunt: {
       name: 'GHunt',
       path: '/tools/ghunt',
-      description: 'Analyze Google metadata (Gmail, Docs, Photos, etc.).',
+      description: t('Analyze Google metadata (Gmail, Docs, Photos, etc.).'),
       active: true,
       link: 'https://github.com/mxrch/GHunt',
       avatar:
@@ -120,7 +121,7 @@ const toolCategories: ToolCategory = {
     ExifTool: {
       name: 'ExifTool',
       path: '/tools/exiftool',
-      description: 'Extract metadata from files (images, documents, etc.).',
+      description: t('Extract metadata from files (images, documents, etc.).'),
       active: false,
       link: 'https://github.com/exiftool/exiftool',
       avatar: 'https://avatars.githubusercontent.com/u/8656631?s=200&v=4'
@@ -130,8 +131,9 @@ const toolCategories: ToolCategory = {
     'API Sirene': {
       name: 'API Sirene open data',
       path: '/tools/api-sirene-open-data',
-      description:
-        'The Sirene API allows you to query the Sirene directory of businesses and establishments, managed by Insee.',
+      description: t(
+        'The Sirene API allows you to query the Sirene directory of businesses and establishments, managed by Insee.'
+      ),
       active: true,
       link: 'https://www.data.gouv.fr/fr/dataservices/api-sirene-open-data/',
       avatar: 'https://www.portlarochelle.com/wp-content/uploads/2020/11/logo-Marianne.jpg'
@@ -141,7 +143,7 @@ const toolCategories: ToolCategory = {
     PhoneInfoga: {
       name: 'PhoneInfoga',
       path: '/tools/phoneinfoga',
-      description: 'Gather information from phone numbers.',
+      description: t('Gather information from phone numbers.'),
       active: false,
       link: 'https://github.com/sundowndev/phoneinfoga'
     }
@@ -173,15 +175,15 @@ function ToolsPage() {
     <div className="h-full w-full px-12 py-12 bg-background overflow-auto">
       <div className="max-w-7xl mx-auto flex flex-col gap-12 items-center justify-start">
         <div className="w-full">
-          <h1 className="font-semibold text-2xl">Tools</h1>
-          <p className="opacity-60 mt-3">Here are the tools used to gather informations.</p>
+          <h1 className="font-semibold text-2xl">{t('Tools')}</h1>
+          <p className="opacity-60 mt-3">{t('Here are the tools used to gather informations.')}</p>
         </div>
 
         <div className="w-full flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <Input
               type="text"
-              placeholder="Search tools..."
+              placeholder={t('Search tools...')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -189,10 +191,10 @@ function ToolsPage() {
           <div className="w-full md:w-64">
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
               <SelectTrigger className="h-10 w-full">
-                <SelectValue placeholder="Select category" />
+                <SelectValue placeholder={t('Select category')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="all">{t('All Categories')}</SelectItem>
                 {Object.keys(toolCategories).map((category) => (
                   <SelectItem key={category} value={category}>
                     {category}

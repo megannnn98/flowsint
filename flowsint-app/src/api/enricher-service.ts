@@ -1,12 +1,15 @@
 import { fetchWithAuth } from './api'
+import { localizeSchema } from '@/i18n'
 import type { Enricher } from '@/types/enricher'
 
 export const enricherService = {
   get: async (type?: string): Promise<Enricher[]> => {
     const url = type ? `/api/enrichers?category=${type}` : '/api/enrichers'
-    return fetchWithAuth(url, {
-      method: 'GET'
-    })
+    return localizeSchema(
+      await fetchWithAuth(url, {
+        method: 'GET'
+      })
+    )
   },
   // No current callers — kept for API parity, typed honestly rather than
   // guessed since nothing here reads the shape.

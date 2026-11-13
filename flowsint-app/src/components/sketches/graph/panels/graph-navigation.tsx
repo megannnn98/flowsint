@@ -8,6 +8,7 @@ import { useLayoutStore } from '@/stores/layout-store'
 import SelectedItemsPanel from './selected-items-panel'
 import { usePermissions } from '@/hooks/use-can'
 
+import { t } from '@/i18n'
 const GraphNavigation = () => {
   const { canEdit } = usePermissions()
   const nodes = useGraphStore((s) => s.nodes)
@@ -25,11 +26,11 @@ const GraphNavigation = () => {
       >
         <TabsList className="w-full p-0 rounded-none my-0 border-b">
           <TabsTrigger value="entities">
-            <Users className="h-3 w-3 opacity-60" /> Entities
+            <Users className="h-3 w-3 opacity-60" /> {t('Entities')}
           </TabsTrigger>
           {canEdit && (
             <TabsTrigger value="items">
-              <UserPlus className="h-3 w-3 opacity-60" /> Add
+              <UserPlus className="h-3 w-3 opacity-60" /> {t('Add')}
             </TabsTrigger>
           )}
         </TabsList>

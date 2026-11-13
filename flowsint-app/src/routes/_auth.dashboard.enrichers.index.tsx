@@ -15,6 +15,7 @@ import { PageLayout } from '@/components/layout/page-layout'
 import { templateService, type Template } from '@/api/template-service'
 import { CONFIG } from '@/config'
 
+import { t } from '@/i18n'
 export const Route = createFileRoute('/_auth/dashboard/enrichers/')({
   beforeLoad: async () => {
     if (!CONFIG.ENRICHER_TEMPLATES_FEATURE_FLAG) {
@@ -50,7 +51,7 @@ function TemplatesPage() {
     if (!file) return
 
     if (!file.name.endsWith('.yaml') && !file.name.endsWith('.yml')) {
-      toast.error('Only YAML files (.yaml, .yml) are supported')
+      toast.error(t('Only YAML files (.yaml, .yml) are supported'))
       if (fileInputRef.current) fileInputRef.current.value = ''
       return
     }
@@ -64,7 +65,7 @@ function TemplatesPage() {
       })
     }
     reader.onerror = () => {
-      toast.error('Failed to read file')
+      toast.error(t('Failed to read file'))
     }
     reader.readAsText(file)
 
@@ -85,8 +86,8 @@ function TemplatesPage() {
 
   return (
     <PageLayout
-      title="Enricher Templates"
-      description="Create and manage your enricher templates."
+      title={t('Enricher Templates')}
+      description={t('Create and manage your enricher templates.')}
       isLoading={isLoading}
       loadingComponent={
         <div className="p-2">
@@ -96,8 +97,8 @@ function TemplatesPage() {
       error={error}
       errorComponent={
         <ErrorState
-          title="Couldn't load templates"
-          description="Something went wrong while fetching data. Please try again."
+          title={t("Couldn't load templates")}
+          description={t('Something went wrong while fetching data. Please try again.')}
           error={error}
           onRetry={() => refetch()}
         />
@@ -113,11 +114,11 @@ function TemplatesPage() {
           />
           <Button size="sm" variant="outline" onClick={() => fileInputRef.current?.click()}>
             <Upload className="w-4 h-4 mr-2" />
-            Import
+            {t('Import')}
           </Button>
           <Button size="sm" onClick={() => navigate({ to: '/dashboard/enrichers/new' as string })}>
             <PlusIcon className="w-4 h-4 mr-2" />
-            New template
+            {t('New template')}
           </Button>
         </div>
       }
@@ -126,21 +127,22 @@ function TemplatesPage() {
         <div className="mb-6 flex items-center gap-3 rounded-lg border border-primary/30 bg-primary/10 px-4 py-3">
           <FlaskConical className="h-4 w-4 shrink-0 text-primary" />
           <p className="flex-1 text-sm text-primary">
-            Template enrichers are currently in <strong>beta</strong>. Feel free to{' '}
+            {t('Template enrichers are currently in')} <strong>{t('beta')}</strong>
+            {t('. Feel free to')}{' '}
             <a
               href="https://github.com/reconurge/flowsint/issues"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium underline underline-offset-2"
             >
-              raise an issue
+              {t('raise an issue')}
             </a>{' '}
-            if you encounter any problems.
+            {t('if you encounter any problems.')}
           </p>
           <button
             onClick={dismissBanner}
             className="shrink-0 rounded p-1 text-primary hover:bg-primary/20 transition-colors"
-            aria-label="Dismiss"
+            aria-label={t('Dismiss')}
           >
             <X className="h-4 w-4" />
           </button>
@@ -153,14 +155,15 @@ function TemplatesPage() {
             <div className="rounded-full bg-muted/50 p-4 mb-4">
               <FileX className="w-8 h-8 text-muted-foreground" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">No templates yet</h3>
+            <h3 className="text-xl font-semibold mb-2">{t('No templates yet')}</h3>
             <p className="text-muted-foreground mb-6 max-w-md">
-              Get started by creating your first enricher template. Templates allow you to define
-              custom enrichers using YAML configuration.
+              {t(
+                'Get started by creating your first enricher template. Templates allow you to define custom enrichers using YAML configuration.'
+              )}
             </p>
             <Button onClick={() => navigate({ to: '/dashboard/enrichers/new' as string })}>
               <PlusIcon className="w-4 h-4 mr-2" />
-              Create your first template
+              {t('Create your first template')}
             </Button>
           </div>
         ) : (
@@ -196,7 +199,8 @@ function TemplatesPage() {
                               {template.name || '(Unnamed template)'}
                             </CardTitle>
                             <Badge variant="outline">
-                              <FileCode2 className="w-4 h-4 text-muted-foreground" />v
+                              <FileCode2 className="w-4 h-4 text-muted-foreground" />
+                              {t('v')}
                               {template.version}
                             </Badge>
                           </div>

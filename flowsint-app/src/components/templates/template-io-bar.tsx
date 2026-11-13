@@ -11,6 +11,7 @@ import {
 import { useActionItems } from '@/hooks/use-action-items'
 import type { ActionItem } from '@/lib/action-items'
 
+import { t } from '@/i18n'
 interface TemplateIOBarProps {
   inputType: string | undefined
   outputType: string | undefined
@@ -61,7 +62,7 @@ export function TemplateIOBar({
         onValueChange={onInputTypeChange}
         groups={groups}
         flat={flat}
-        placeholder="Input type"
+        placeholder={t('Input type')}
       />
 
       <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0" />
@@ -71,7 +72,7 @@ export function TemplateIOBar({
         onValueChange={onOutputTypeChange}
         groups={groups}
         flat={flat}
-        placeholder="Output type"
+        placeholder={t('Output type')}
       />
     </div>
   )

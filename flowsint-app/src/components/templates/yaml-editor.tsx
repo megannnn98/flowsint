@@ -3,6 +3,7 @@ import MonacoEditor, { OnMount, OnChange } from '@monaco-editor/react'
 import type { editor, Uri } from 'monaco-editor'
 import { useTheme } from '@/components/theme-provider'
 
+import { t } from '@/i18n'
 interface YamlEditorProps {
   value: string
   onChange: (value: string) => void
@@ -96,7 +97,7 @@ export function YamlEditor({ value, onChange, onValidate, readOnly = false }: Ya
           }}
           loading={
             <div className="flex items-center justify-center h-full text-muted-foreground">
-              Loading editor...
+              {t('Loading editor...')}
             </div>
           }
         />

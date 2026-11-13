@@ -22,6 +22,7 @@ import { GraphNode } from '@/types'
 import { Checkbox } from '@/components/ui/checkbox'
 import { usePermissions } from '@/hooks/use-can'
 
+import { t } from '@/i18n'
 const ITEM_HEIGHT = 40
 // Mémoiser le composant NodeRenderer
 const NodeRenderer = memo(
@@ -253,13 +254,13 @@ const NodesPanel = memo(({ nodes, isLoading }: { nodes: GraphNode[]; isLoading?:
                 ? `${filteredNodes?.length} / ${nodes?.length || 0}`
                 : nodes?.length || 0}
             </span>{' '}
-            <span className="font-normal opacity-60">nodes</span>
+            <span className="font-normal opacity-60">{t('nodes')}</span>
           </Badge>
           <div className="relative grow">
             <Search className="absolute left-2.5 top-1.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search..."
+              placeholder={t('Search...')}
               className="pl-8 h-7 border-border"
               value={searchQuery}
               onChange={handleSearchChange}
@@ -291,7 +292,7 @@ const NodesPanel = memo(({ nodes, isLoading }: { nodes: GraphNode[]; isLoading?:
               <DropdownMenuLabel>
                 {filters ? (
                   <Badge variant={'outline'} className="flex items-center gap-1 pr-1">
-                    {filters?.length} filter(s)
+                    {filters?.length} {t('filter(s)')}
                     <Button
                       size={'icon'}
                       variant={'ghost'}
@@ -310,7 +311,7 @@ const NodesPanel = memo(({ nodes, isLoading }: { nodes: GraphNode[]; isLoading?:
                 className={cn(filters == null && 'bg-primary')}
                 onClick={() => toggleFilter(null)}
               >
-                All
+                {t('All')}
               </DropdownMenuItem>
               {types.map((type: string) => (
                 <DropdownMenuItem
@@ -331,7 +332,7 @@ const NodesPanel = memo(({ nodes, isLoading }: { nodes: GraphNode[]; isLoading?:
         {!isLoading && filteredNodes?.length === 0 && searchQuery === '' && (
           <div className="text-sm p-4 text-center">
             <p className="border rounded-md border-dashed p-4 text-center">
-              Drag and drop you first node in the &quot;items&quot; section.
+              {t('Drag and drop you first node in the "items" section.')}
             </p>
           </div>
         )}
@@ -340,7 +341,9 @@ const NodesPanel = memo(({ nodes, isLoading }: { nodes: GraphNode[]; isLoading?:
                 )} */}
 
         {filteredNodes?.length === 0 && searchQuery && (
-          <div className="p-4 text-center text-muted-foreground">No nodes match your search</div>
+          <div className="p-4 text-center text-muted-foreground">
+            {t('No nodes match your search')}
+          </div>
         )}
 
         {/* Liste virtualisée */}

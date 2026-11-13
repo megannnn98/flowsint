@@ -1,7 +1,7 @@
 ---
-title: "Vault"
-description: "Quick start guide to using the Vault to secure your services API keys and secrets."
-category: "Getting started"
+title: "Хранилище (Vault)"
+description: "Краткое руководство по использованию хранилища (Vault) для защиты API-ключей и секретов ваших сервисов."
+category: "Начало работы"
 order: 6
 author: "Flowsint Team"
 tags: ["tutorial", "getting-started", "vault"]
@@ -9,20 +9,20 @@ version: "1.2.8"
 last_updated_at: "2026-05-15"
 ---
 
-## What is the Vault
+## Что такое Vault
 
-A good amount of the tools you'll be using in Flowsint require third party API keys.
+Многим инструментам, которыми вы будете пользоваться во Flowsint, нужны API-ключи сторонних сервисов.
 
-The **Vault** (*"Coffre fort"* in french) is the place to centralize and securely store those API keys. 
-Weither you have a local instance of Flowsint or one fully deployed on a distributed system, you need to have your keys securely stored.
+**Хранилище (Vault)** (по-французски *«Coffre fort»*) — это место, где такие API-ключи собираются и надёжно хранятся.
+Работаете ли вы с локальным экземпляром Flowsint или с полностью развёрнутым в распределённой системе, ключи должны храниться безопасно.
 
-## Adding a key
+## Добавление ключа
 
-In the Flowsint enricher ecosystem, the API keys follow a specific format, being in uppercase letters, and with a declarative name that follows `<service>_API_KEY`.
+В экосистеме обогатителей Flowsint API-ключи подчиняются определённому формату: они пишутся заглавными буквами и имеют говорящее имя вида `<service>_API_KEY`.
 
-## Current limitations
+## Текущие ограничения
 
-For now, we cannot match a particular key from the Vault to an enricher **directly from the UI**. The enricher declares the API key variable name it requires, like the following in the core of the Enricher:
+Пока что сопоставить конкретный ключ из хранилища с обогатителем **прямо в интерфейсе** нельзя. Обогатитель сам объявляет имя нужной ему переменной с API-ключом, например так (в ядре обогатителя):
 
 ```python
 @classmethod
@@ -38,9 +38,9 @@ For now, we cannot match a particular key from the Vault to an enricher **direct
         ]
 ```
 
-This is a known limitation and we are working on improving this. 
+Это известное ограничение, мы работаем над его устранением.
 
-In the meanwhile, here is a list of the needed keys to run Flowsint at it's full potential:
+А пока вот список ключей, необходимых, чтобы Flowsint работал в полную силу:
 
 ```bash
 # for enrichers
@@ -53,6 +53,6 @@ MISTRAL_API_KEY
 # but other providers will be supported soon (ChatGPT, etc.)
 ```
 
-There are also some other tools that could need a bunch of other API keys like [Subfinder](https://github.com/projectdiscovery/subfinder). Configuring them is not possible for now, but will be soon.
+Есть и другие инструменты, которым могут понадобиться иные API-ключи, например [Subfinder](https://github.com/projectdiscovery/subfinder). Настроить их пока нельзя, но скоро это станет возможным.
 
-Stay tuned for updates as those mechanisms may vary in the future, as the goal is to keep the user experience as smooth as possible.
+Следите за обновлениями: эти механизмы могут измениться, ведь цель — сделать работу с программой максимально удобной.

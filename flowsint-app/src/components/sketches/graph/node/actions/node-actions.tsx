@@ -22,6 +22,7 @@ import { useGraphSettingsStore } from '@/stores/graph-settings-store'
 import { cn } from '@/lib/utils'
 import { usePermissions } from '@/hooks/use-can'
 
+import { t } from '@/i18n'
 const flagColors = {
   red: 'text-red-400 fill-red-200',
   orange: 'text-orange-400 fill-orange-200',
@@ -71,8 +72,8 @@ const NodeActions = memo(
       if (!node.id || !sketchId) return
       if (
         !(await confirm({
-          title: `You are about to delete this node ?`,
-          message: 'The action is irreversible.'
+          title: t('You are about to delete this node ?'),
+          message: t('The action is irreversible.')
         }))
       )
         return
@@ -82,9 +83,9 @@ const NodeActions = memo(
           return sketchService.deleteNodes(sketchId, JSON.stringify({ nodeIds: [node.id] }))
         })(),
         {
-          loading: `Deleting ${node.nodeProperties.label}...`,
-          success: 'Node deleted successfully.',
-          error: 'Failed to delete node.'
+          loading: t('Deleting {{label}}...', { label: node.nodeProperties.label }),
+          success: t('Node deleted successfully.'),
+          error: t('Failed to delete node.')
         }
       )
     }
@@ -119,18 +120,18 @@ const NodeActions = memo(
         <DropdownMenuContent align="end" className="min-w-[140px]">
           <DropdownMenuItem onClick={handleOpenMainDialog}>
             <Plus className="h-3.5 w-3.5 mr-2" />
-            Add relation
+            {t('Add relation')}
           </DropdownMenuItem>
           {Boolean(settings?.general?.showFlow?.value) && (
             <DropdownMenuItem onClick={handleAskAI}>
               <Sparkles className="h-3.5 w-3.5 mr-2" />
-              Ask AI
+              {t('Ask AI')}
             </DropdownMenuItem>
           )}
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               <Flag className={cn('h-3.5 w-3.5 mr-2', flagValue ? flagColors[flagValue] : '')} />
-              Flag
+              {t('Flag')}
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
               <div className="flex gap-1 p-1">
@@ -158,7 +159,7 @@ const NodeActions = memo(
             className="text-destructive focus:text-destructive"
           >
             <Trash2 className="h-3.5 w-3.5 mr-2" />
-            Delete
+            {t('Delete')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

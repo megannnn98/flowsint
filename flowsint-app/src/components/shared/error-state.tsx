@@ -2,6 +2,7 @@ import { AlertTriangle, RefreshCw } from 'lucide-react'
 import { Button } from '../ui/button'
 import { cn } from '@/lib/utils'
 
+import { t } from '@/i18n'
 type ErrorStateProps = {
   title?: string
   description?: string
@@ -42,7 +43,7 @@ export function ErrorState({
         {onRetry && (
           <Button size="sm" variant="outline" onClick={onRetry}>
             <RefreshCw className="w-4 h-4 mr-2" />
-            Retry
+            {t('Retry')}
           </Button>
         )}
         {message && <p className="text-[11px] leading-relaxed opacity-60 break-words">{message}</p>}

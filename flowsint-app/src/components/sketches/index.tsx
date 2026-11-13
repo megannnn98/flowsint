@@ -20,6 +20,7 @@ import { type GraphNode, type GraphEdge } from '@/types'
 import { MergeDialog } from './graph/actions/merge-nodes'
 import { useGraphRefresh } from '@/hooks/use-graph-refresh'
 import { usePermissions } from '@/hooks/use-can'
+import { t } from '@/i18n'
 const RelationshipsTable = lazy(() => import('@/components/table/relationships-view'))
 
 // Separate component for the drag overlay
@@ -31,7 +32,7 @@ const DragOverlay = memo(({ isDragging }: { isDragging: boolean }) => (
       isDragging && 'opacity-100 pointer-events-auto'
     )}
   >
-    <p className="font-medium">Drop here to add node</p>
+    <p className="font-medium">{t('Drop here to add node')}</p>
     <ArrowDownToLineIcon className="opacity-60" />
   </div>
 ))
@@ -93,7 +94,7 @@ const GraphPanel = ({ graphData, isLoading }: GraphPanelProps) => {
     e.preventDefault()
     setIsDraggingOver(false)
     if (isLoadingActionItems || !actionItems) {
-      toast.error('Sorry, an error occured. Please try again.')
+      toast.error(t('Sorry, an error occured. Please try again.'))
       return
     }
     const data = e.dataTransfer.getData('text/plain')
@@ -114,8 +115,12 @@ const GraphPanel = ({ graphData, isLoading }: GraphPanelProps) => {
     return (
       <div className="h-full w-full flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-lg font-semibold text-destructive mb-2">Error loading graph</h2>
-          <p className="text-muted-foreground">Could not load graph data. Please try again.</p>
+          <h2 className="text-lg font-semibold text-destructive mb-2">
+            {t('Error loading graph')}
+          </h2>
+          <p className="text-muted-foreground">
+            {t('Could not load graph data. Please try again.')}
+          </p>
         </div>
       </div>
     )

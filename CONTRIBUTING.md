@@ -1,51 +1,51 @@
-# Contributing
+# Участие в разработке
 
-Setup instructions live in the [README](./README.md#development-setup). This file covers what to run before committing.
+Инструкции по настройке находятся в [README](./README.md#настройка-среды-разработки). Этот файл описывает, что нужно запускать перед коммитом.
 
-## Before every commit
+## Перед каждым коммитом
 
-Run the checks for whatever you touched, not just the file you think is affected. mypy and eslint both regularly surface issues in neighboring files once you touch something they import.
+Запускайте проверки для всего, что вы затронули, а не только для файла, который, по вашему мнению, пострадал. mypy и eslint регулярно находят проблемы в соседних файлах, когда вы меняете то, что они импортируют.
 
 ### Python (`flowsint-core`, `flowsint-types`, `flowsint-enrichers`, `flowsint-api`)
 
-From the repo root:
+Из корня репозитория:
 
 ```bash
-make lint        # ruff format --check + ruff check (whole repo) + frontend prettier/eslint check
-make typecheck    # mypy, ratcheted to files this branch touches vs origin/main
+make lint        # ruff format --check + ruff check (весь репозиторий) + проверка prettier/eslint для фронтенда
+make typecheck    # mypy, храповик на файлах, изменённых в этой ветке относительно origin/main
 ```
 
-Then, for whichever package(s) you changed:
+Затем для тех пакетов, которые вы изменили:
 
 ```bash
 cd <package> && uv run pytest -q
 ```
 
-`make lint-fix` applies ruff's safe autofixes, plus `yarn format`/`yarn lint` for the frontend, if `make lint` complains.
+`make lint-fix` применяет безопасные автоисправления ruff, а также `yarn format`/`yarn lint` для фронтенда, если `make lint` выдаёт замечания.
 
 ### Frontend (`flowsint-app`)
 
-`make lint`/`make lint-fix` from the repo root already cover prettier + eslint for `flowsint-app`. The rest, from `flowsint-app/`:
+`make lint`/`make lint-fix` из корня репозитория уже покрывают prettier и eslint для `flowsint-app`. Остальное — из каталога `flowsint-app/`:
 
 ```bash
-npx tsc --noEmit                    # types
-npx vitest run                      # unit tests
-yarn build                          # full build
+npx tsc --noEmit                    # типы
+npx vitest run                      # unit-тесты
+yarn build                          # полная сборка
 ```
 
-## What the pre-commit hook does for you
+## Что за вас делает pre-commit hook
 
-`lint-staged` runs automatically on `git commit` and handles:
+`lint-staged` автоматически запускается при `git commit` и обрабатывает:
 
 - `**/*.py` → `ruff format` + `ruff check --fix`
 - `flowsint-app/**/*.{ts,tsx,js,jsx}` → `prettier --write`
 
-It does **not** run mypy, eslint, or any test suite. Those are on you before pushing.
+Он **не** запускает mypy, eslint и какие-либо наборы тестов. Их нужно прогнать самостоятельно до отправки изменений.
 
-## Why the ratchets
+## Зачем нужны «храповики»
 
-`make typecheck` and the frontend eslint CI job only gate files your branch actually changed, not the whole repo. Both codebases have a real pre-existing backlog (mypy: workspace-wide cross-package imports aren't fully typed yet; eslint: ~100 pre-existing `no-explicit-any` warnings). Gating everything from day one would make every unrelated PR red. Touch a file, and it's expected to pass strict checks; untouched files stay as they are until someone gets to them.
+`make typecheck` и CI-задача eslint для фронтенда проверяют только файлы, которые ваша ветка действительно изменила, а не весь репозиторий. В обеих кодовых базах есть реальный накопленный долг (mypy: сквозные импорты между пакетами пока типизированы не полностью; eslint: около 100 старых предупреждений `no-explicit-any`). Если требовать полного прохождения с первого дня, каждый посторонний PR будет красным. Затронули файл — он должен проходить строгие проверки; нетронутые файлы остаются как есть, пока до них не дойдут руки.
 
-## Commit style
+## Стиль коммитов
 
-Atomic commits please. one logical change per commit, not a single "fix everything" dump. Write commit messages that explain *why*, not just what changed line-by-line.
+Пожалуйста, делайте атомарные коммиты: одно логическое изменение на коммит, а не один «исправил всё». Пишите сообщения коммитов так, чтобы они объясняли *почему*, а не просто построчно перечисляли, что изменилось.

@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useKeyboardShortcut } from '@/hooks/use-keyboard-shortcut'
 
+import { t } from '@/i18n'
 interface SaveModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -30,7 +31,7 @@ export function SaveModal({
   initialName,
   initialDescription
 }: SaveModalProps) {
-  const [name, setName] = useState(initialName || 'My Enricher')
+  const [name, setName] = useState(initialName || t('My Enricher'))
   const [description, setDescription] = useState(initialDescription || '')
   const [nameError, setNameError] = useState('')
 
@@ -40,7 +41,7 @@ export function SaveModal({
   if (open !== prevOpen) {
     setPrevOpen(open)
     if (open) {
-      setName(initialName || 'My Enricher')
+      setName(initialName || t('My Enricher'))
       setDescription(initialDescription || '')
       setNameError('')
     }
@@ -66,15 +67,15 @@ export function SaveModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Save Flow</DialogTitle>
+          <DialogTitle>{t('Save Flow')}</DialogTitle>
           <DialogDescription>
-            Give your flow a name and description before saving.
+            {t('Give your flow a name and description before saving.')}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Label htmlFor="name" className="flex items-center justify-between">
-              Name
+              {t('Name')}
               {nameError && <span className="text-xs text-destructive">{nameError}</span>}
             </Label>
             <Input
@@ -84,17 +85,17 @@ export function SaveModal({
                 setName(e.target.value)
                 if (e.target.value.trim()) setNameError('')
               }}
-              placeholder="Enter flow name"
+              placeholder={t('Enter flow name')}
               className={nameError ? 'border-destructive' : ''}
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t('Description')}</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Enter a description (optional)"
+              placeholder={t('Enter a description (optional)')}
               className="resize-none"
               rows={3}
             />
@@ -102,10 +103,10 @@ export function SaveModal({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t('Cancel')}
           </Button>
           <Button onClick={handleSave} disabled={isLoading}>
-            {isLoading ? 'Saving...' : 'Save flow'}
+            {isLoading ? t('Saving...') : t('Save flow')}
           </Button>
         </DialogFooter>
       </DialogContent>

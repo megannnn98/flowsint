@@ -3,6 +3,7 @@ import { Pencil, Trash } from 'lucide-react'
 import BaseContextMenu from '@/components/xyflow/context-menu'
 import { FlowNode, useFlowStore } from '@/stores/flow-store'
 
+import { t } from '@/i18n'
 interface GraphContextMenuProps {
   node: FlowNode
   top?: number
@@ -63,13 +64,13 @@ export default function ContextMenu({
           onClick={handleOpenParamsModal}
           className="w-full flex items-center gap-2 p-2 rounded-sm hover:bg-muted text-left transition-colors"
         >
-          <Pencil className="h-4 w-4 opacity-60" /> Edit
+          <Pencil className="h-4 w-4 opacity-60" /> {t('Edit')}
         </button>
         <button
           onClick={handleDeleteFlow}
           className="w-full flex items-center gap-2 p-2 rounded-sm hover:bg-muted text-left transition-colors"
         >
-          <Trash className="h-4 w-4 text-red-500 opacity-60" /> Delete
+          <Trash className="h-4 w-4 text-red-500 opacity-60" /> {t('Delete')}
         </button>
       </div>
     </BaseContextMenu>

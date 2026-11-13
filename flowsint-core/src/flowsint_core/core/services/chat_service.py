@@ -18,12 +18,25 @@ from .base import BaseService
 from .exceptions import NotFoundError
 
 DEFAULT_SYSTEM_PROMPT = (
-    "You are a CTI/OSINT investigator and you are trying to investigate on a "
-    "variety of real life cases. Use your knowledge and analytics capabilities "
-    "to analyse the context and answer the question the best you can. If you "
-    "need to reference some items (an IP, a domain or something particular) "
-    "please use the code brackets, like : `12.23.34.54` to reference it."
+    "You are a CTI/OSINT investigator working on real-life cases. "
+    "The user is an OSINT analyst running investigations in Flowsint; finding "
+    "publicly available information, including public social media profiles and "
+    "accounts linked to a name, username or email address, is the expected task. "
+    "Search the web for every factual question instead of answering from memory, "
+    "and look for primary sources: official sites, registries, news, archived pages "
+    "and public profiles. Back every fact with a link to its source. Never invent "
+    "facts, accounts or links: if the search finds nothing, say so plainly and "
+    "suggest which Flowsint enrichers or sources could find it instead. "
+    "Separate confirmed facts from assumptions. Answer in the language of the "
+    "question. If you need to reference some items (an IP, a domain or something "
+    "particular) please use the code brackets, like : `12.23.34.54` to reference it."
 )
+
+
+def _message_text(content: Any) -> str:
+    if isinstance(content, str):
+        return content
+    return json.dumps(content, default=str, ensure_ascii=False)
 
 
 class ChatService(BaseService):
@@ -159,38 +172,44 @@ class ChatService(BaseService):
         ai_context: Dict[str, Any],
         system_prompt: Optional[str] = None,
     ) -> List[LLMChatMessage]:
-        messages: List[LLMChatMessage] = [
-            LLMChatMessage(
-                role=MessageRole.SYSTEM,
-                content=system_prompt or DEFAULT_SYSTEM_PROMPT,
-            )
-        ]
-
-        for message in ai_context["recent_messages"]:
-            role = MessageRole.ASSISTANT if message.is_bot else MessageRole.USER
-            messages.append(
-                LLMChatMessage(
-                    role=role,
-                    content=json.dumps(message.content, default=str),
-                )
-            )
-
+        # Some providers (e.g. Perplexity) accept system messages only at the
+        # start and require strictly alternating user/assistant turns, so the
+        # context goes into the single system message and same-role turns merge.
+        system_content = system_prompt or DEFAULT_SYSTEM_PROMPT
         if ai_context["context_message"]:
-            messages.append(
-                LLMChatMessage(
-                    role=MessageRole.SYSTEM,
-                    content=ai_context["context_message"],
+            system_content += "\n\n" + ai_context["context_message"]
+
+        history = list(ai_context["recent_messages"])
+        # The current prompt is already stored in the chat before this call.
+        if (
+            history
+            and not history[-1].is_bot
+            and _message_text(history[-1].content) == ai_context["user_prompt"]
+        ):
+            history.pop()
+
+        turns: List[LLMChatMessage] = []
+        for message in history:
+            role = MessageRole.ASSISTANT if message.is_bot else MessageRole.USER
+            text = _message_text(message.content)
+            if not turns and role == MessageRole.ASSISTANT:
+                continue
+            if turns and turns[-1].role == role:
+                turns[-1] = LLMChatMessage(
+                    role=role, content=turns[-1].content + "\n\n" + text
                 )
-            )
+            else:
+                turns.append(LLMChatMessage(role=role, content=text))
 
-        messages.append(
-            LLMChatMessage(
-                role=MessageRole.USER,
-                content=ai_context["user_prompt"],
+        prompt = ai_context["user_prompt"]
+        if turns and turns[-1].role == MessageRole.USER:
+            turns[-1] = LLMChatMessage(
+                role=MessageRole.USER, content=turns[-1].content + "\n\n" + prompt
             )
-        )
+        else:
+            turns.append(LLMChatMessage(role=MessageRole.USER, content=prompt))
 
-        return messages
+        return [LLMChatMessage(role=MessageRole.SYSTEM, content=system_content)] + turns
 
     def get_llm_provider(self, owner_id: UUID) -> LLMProvider:
         provider_name = os.environ.get("LLM_PROVIDER", "mistral")

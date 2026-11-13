@@ -5,6 +5,7 @@ import { Button } from '../ui/button'
 import { RotateCcw, Trash2 } from 'lucide-react'
 import { EventLevel } from '@/types'
 
+import { t } from '@/i18n'
 interface LogEntry {
   type: EventLevel
   payload: {
@@ -129,7 +130,7 @@ export const TerminalLogViewer = ({ logs, onRefresh, onClear }: TerminalLogViewe
           size="icon"
           onClick={handleRefresh}
           className="h-7 w-7 bg-background/80 backdrop-blur-sm hover:bg-background/90 border border-border/50"
-          title="Refresh logs"
+          title={t('Refresh logs')}
         >
           <RotateCcw className="w-3.5 h-3.5 opacity-60" strokeWidth={1.7} />
         </Button>
@@ -138,7 +139,7 @@ export const TerminalLogViewer = ({ logs, onRefresh, onClear }: TerminalLogViewe
           size="icon"
           onClick={handleClearTerminal}
           className="h-7 w-7 bg-background/80 backdrop-blur-sm hover:bg-background/90 border border-border/50"
-          title="Clear terminal"
+          title={t('Clear terminal')}
         >
           <Trash2 className="w-3.5 h-3.5 opacity-60" strokeWidth={1.7} />
         </Button>

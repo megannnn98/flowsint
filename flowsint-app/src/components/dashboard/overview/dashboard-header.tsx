@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import NewInvestigation from '@/components/investigations/new-investigation'
 import { Input } from '@/components/ui/input'
 
+import { t } from '@/i18n'
 interface DashboardHeaderProps {
   view: 'grid' | 'list'
   setView: (view: 'grid' | 'list') => void
@@ -15,15 +16,15 @@ export function DashboardHeader({ view, setView, search, setSearch }: DashboardH
     <div className="space-y-8">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">Investigations</h1>
+          <h1 className="text-2xl font-semibold text-foreground">{t('Investigations')}</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Manage and track your OSINT investigations
+            {t('Manage and track your OSINT investigations')}
           </p>
         </div>
         <NewInvestigation noDropDown>
           <Button size="sm" className="gap-1.5">
             <Plus className="w-4 h-4" />
-            New Investigation
+            {t('New Investigation')}
           </Button>
         </NewInvestigation>
       </div>
@@ -35,7 +36,7 @@ export function DashboardHeader({ view, setView, search, setSearch }: DashboardH
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             type="text"
-            placeholder="Search investigations..."
+            placeholder={t('Search investigations...')}
             className="w-72 h-9 pl-9 pr-3 text-sm bg-muted/50 border border-border rounded-md focus:outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground/60"
           />
         </div>

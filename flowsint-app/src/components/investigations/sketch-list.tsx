@@ -12,6 +12,7 @@ import { queryKeys } from '@/api/query-keys'
 import ErrorState from '../shared/error-state'
 import { cn } from '@/lib/utils'
 
+import { t } from '@/i18n'
 const SketchList = () => {
   const { investigationId } = useParams({ strict: false })
   const {
@@ -38,8 +39,8 @@ const SketchList = () => {
   if (error)
     return (
       <ErrorState
-        title="Couldn't load sketches"
-        description="Something went wrong while fetching data. Please try again."
+        title={t("Couldn't load sketches")}
+        description={t('Something went wrong while fetching data. Please try again.')}
         error={error}
         onRetry={() => refetch()}
       />
@@ -55,7 +56,7 @@ const SketchList = () => {
         <Input
           type="search"
           className="!border border-border h-7"
-          placeholder="Search..."
+          placeholder={t('Search...')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -103,18 +104,20 @@ const SketchList = () => {
             <Waypoints className="h-10 w-10 text-yellow-500" />
             <div className="space-y-1">
               <h3 className="text-sm font-semibold text-foreground">
-                {searchQuery ? 'No matching sketches' : 'No sketches yet'}
+                {searchQuery ? t('No matching sketches') : t('No sketches yet')}
               </h3>
               <p className="text-xs opacity-70 max-w-xs">
                 {searchQuery
-                  ? "Try adjusting your search query to find what you're looking for."
-                  : "This investigation doesn't contain any sketch. Sketches let you organize and visualize your data as graphs."}
+                  ? t("Try adjusting your search query to find what you're looking for.")
+                  : t(
+                      "This investigation doesn't contain any sketch. Sketches let you organize and visualize your data as graphs."
+                    )}
               </p>
             </div>
             <NewSketch>
               <Button size="sm" variant="outline">
                 <PlusIcon className="w-4 h-4 mr-2" />
-                Create your first sketch
+                {t('Create your first sketch')}
               </Button>
             </NewSketch>
           </div>

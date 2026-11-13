@@ -1,5 +1,6 @@
 import { Network, FileText, Upload, AlertCircle, CheckCircle } from 'lucide-react'
 
+import { t } from '@/i18n'
 const activities = [
   {
     id: 1,
@@ -46,7 +47,7 @@ const activities = [
 export function ActivityTimeline() {
   return (
     <section>
-      <h3 className="text-sm font-medium text-foreground mb-3">Activity</h3>
+      <h3 className="text-sm font-medium text-foreground mb-3">{t('Activity')}</h3>
       <div className="space-y-2">
         {activities.map((activity) => (
           <div key={activity.id} className="flex items-start gap-3 py-2 text-sm">

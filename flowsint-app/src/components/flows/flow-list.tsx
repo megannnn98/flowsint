@@ -11,6 +11,7 @@ import NewFlow from './new-flow'
 import ErrorState from '../shared/error-state'
 import { Flow } from '@/types'
 
+import { t } from '@/i18n'
 const FlowsList = () => {
   const {
     data: flows,
@@ -48,8 +49,8 @@ const FlowsList = () => {
   if (error)
     return (
       <ErrorState
-        title="Couldn't load flows"
-        description="Something went wrong while fetching data. Please try again."
+        title={t("Couldn't load flows")}
+        description={t('Something went wrong while fetching data. Please try again.')}
         error={error}
         onRetry={() => refetch()}
       />
@@ -66,7 +67,7 @@ const FlowsList = () => {
         <Input
           type="search"
           className="h-7"
-          placeholder="Search flows..."
+          placeholder={t('Search flows...')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -80,7 +81,7 @@ const FlowsList = () => {
                 to={`/dashboard/flows/$flowId`}
                 params={{ flowId: flow.id }}
                 className="block px-4 py-3 hover:bg-muted cursor-pointer"
-                title={flow.description || 'No description'}
+                title={flow.description || t('No description')}
               >
                 <div className="font-semibold text-sm truncate">
                   {flow.name || '(Unnamed flow)'}
@@ -107,7 +108,7 @@ const FlowsList = () => {
         </ul>
       ) : (
         <div className="flex-1 flex items-center justify-center p-4 text-center text-muted-foreground">
-          {searchQuery ? 'No matching flows found' : 'No flows found'}
+          {searchQuery ? t('No matching flows found') : t('No flows found')}
         </div>
       )}
     </div>

@@ -5,6 +5,7 @@ import type { Tool } from '@/types'
 import { cn } from '@/lib/utils'
 import { Avatar, AvatarImage } from './ui/avatar'
 
+import { t } from '@/i18n'
 interface ToolCardProps {
   tool: Tool
 }
@@ -49,16 +50,16 @@ export function ToolCard({ tool }: ToolCardProps) {
             }
           >
             <Key className="h-3 w-3 mr-1" />
-            {tool.apiKeyRequired === 'paid' ? 'Paid API Key' : 'Free API Key'}
+            {tool.apiKeyRequired === 'paid' ? t('Paid API Key') : t('Free API Key')}
           </Badge>
         )}
         {tool.active ? (
           <Badge className="bg-green-500/15 text-green-500 text-xs shadow-none border-green-500/30">
-            Active
+            {t('Active')}
           </Badge>
         ) : (
           <Badge className="bg-orange-500/15 text-orange-500 text-xs shadow-none border-orange-500/30">
-            Coming soon
+            {t('Coming soon')}
           </Badge>
         )}
       </div>

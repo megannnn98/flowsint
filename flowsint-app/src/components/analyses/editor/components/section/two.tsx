@@ -6,6 +6,7 @@ import type { VariantProps } from 'class-variance-authority'
 import { Code, MoreHorizontal, Bold, Italic, Strikethrough, Type, Underline } from 'lucide-react'
 import { ToolbarSection } from '../toolbar-section'
 
+import { t } from '@/i18n'
 type TextStyleAction =
   | 'bold'
   | 'italic'
@@ -21,7 +22,7 @@ interface TextStyle extends FormatAction {
 const formatActions: TextStyle[] = [
   {
     value: 'bold',
-    label: 'Bold',
+    label: t('Bold'),
     icon: <Bold className="size-5" />,
     action: (editor) => editor.chain().focus().toggleBold().run(),
     isActive: (editor) => editor.isActive('bold'),
@@ -31,7 +32,7 @@ const formatActions: TextStyle[] = [
   },
   {
     value: 'italic',
-    label: 'Italic',
+    label: t('Italic'),
     icon: <Italic className="size-5" />,
     action: (editor) => editor.chain().focus().toggleItalic().run(),
     isActive: (editor) => editor.isActive('italic'),
@@ -41,7 +42,7 @@ const formatActions: TextStyle[] = [
   },
   {
     value: 'underline',
-    label: 'Underline',
+    label: t('Underline'),
     icon: <Underline className="size-5" />,
     action: (editor) => editor.chain().focus().toggleUnderline().run(),
     isActive: (editor) => editor.isActive('underline'),
@@ -51,7 +52,7 @@ const formatActions: TextStyle[] = [
   },
   {
     value: 'strikethrough',
-    label: 'Strikethrough',
+    label: t('Strikethrough'),
     icon: <Strikethrough className="size-5" />,
     action: (editor) => editor.chain().focus().toggleStrike().run(),
     isActive: (editor) => editor.isActive('strike'),
@@ -61,7 +62,7 @@ const formatActions: TextStyle[] = [
   },
   {
     value: 'code',
-    label: 'Code',
+    label: t('Code'),
     icon: <Code className="size-5" />,
     action: (editor) => editor.chain().focus().toggleCode().run(),
     isActive: (editor) => editor.isActive('code'),
@@ -71,7 +72,7 @@ const formatActions: TextStyle[] = [
   },
   {
     value: 'clearFormatting',
-    label: 'Clear formatting',
+    label: t('Clear formatting'),
     icon: <Type className="size-5" />,
     action: (editor) => editor.chain().focus().unsetAllMarks().run(),
     isActive: () => false,

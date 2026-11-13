@@ -1,6 +1,7 @@
 import { Checkbox } from '@/components/ui/checkbox'
 import { TypeFilter, Filters } from '@/types/filter'
 
+import { t } from '@/i18n'
 type TypeFiltersProps = {
   filters: Filters
   toggleTypeFilter: (filter: TypeFilter) => void
@@ -8,9 +9,9 @@ type TypeFiltersProps = {
 const TypeFilters = ({ filters, toggleTypeFilter }: TypeFiltersProps) => {
   return (
     <div className="space-y-2">
-      <p className="opacity-90 text-sm">Filter by entity type</p>
+      <p className="opacity-90 text-sm">{t('Filter by entity type')}</p>
       {filters.types.length === 0 ? (
-        <p className="text-muted-foreground text-xs">No filter to display.</p>
+        <p className="text-muted-foreground text-xs">{t('No filter to display.')}</p>
       ) : (
         <ul className="grid grid-cols-3 gap-2">
           {filters.types.map((filter) => (

@@ -23,6 +23,7 @@ import { keyService } from '@/api/key-service'
 import type { Key } from '@/types/key'
 import type { EnricherParamSchemaItem } from '@/types'
 
+import { t } from '@/i18n'
 /**
  * A launch the user started but that is waiting on parameter values. Node ids
  * are captured here at click time because the graph selection can change while
@@ -161,9 +162,11 @@ function EnricherParamsForm({
     <form onSubmit={handleSubmit(onSubmit)} className="flex min-h-0 flex-1 flex-col">
       <SheetHeader>
         <SheetTitle>
-          Configure <span className="text-primary">{enricherName}</span>
+          {t('Configure')} <span className="text-primary">{enricherName}</span>
         </SheetTitle>
-        <SheetDescription>Set the parameters for this enricher, then launch it.</SheetDescription>
+        <SheetDescription>
+          {t('Set the parameters for this enricher, then launch it.')}
+        </SheetDescription>
       </SheetHeader>
 
       <div className="grow space-y-4 overflow-auto px-4">
@@ -186,9 +189,9 @@ function EnricherParamsForm({
 
       <SheetFooter>
         <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
+          {t('Cancel')}
         </Button>
-        <Button type="submit">Launch enricher</Button>
+        <Button type="submit">{t('Launch enricher')}</Button>
       </SheetFooter>
     </form>
   )

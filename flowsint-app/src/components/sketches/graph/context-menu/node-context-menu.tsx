@@ -29,6 +29,7 @@ import { CopyButton } from '@/components/copy'
 import { usePermissions } from '@/hooks/use-can'
 import type { PendingEnricherLaunch } from '@/components/sketches/enricher-params-sheet'
 
+import { t } from '@/i18n'
 interface GraphContextMenuProps {
   node: GraphNode
   top?: number
@@ -143,7 +144,7 @@ export default function ContextMenu({
       <div className="px-3 py-1 border-b gap-1 border-border flex items-center justify-between shrink-0">
         <div className="flex text-xs items-center gap-1 truncate">
           <span className="block truncate">{node.nodeLabel}</span> -{' '}
-          <span className="block">{node.nodeType}</span>
+          <span className="block">{t(node.nodeType)}</span>
         </div>
         <div className="flex items-center gap-1">
           <SubActions node={node} handleOpenNodeDetails={handleOpenNodeDetails} />
@@ -162,11 +163,11 @@ export default function ContextMenu({
                 onClick={(e) => e.stopPropagation()}
               >
                 <Zap className="h-3 w-3 mr-1" />
-                Enrichers
+                {t('Enrichers')}
               </TabsTrigger>
               <TabsTrigger value="flows" className="flex-1" onClick={(e) => e.stopPropagation()}>
                 <FileCode2 className="h-3 w-3 mr-1" />
-                Flows
+                {t('Flows')}
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -184,7 +185,7 @@ export default function ContextMenu({
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Search enrichers..."
+                  placeholder={t('Search enrichers...')}
                   value={enrichersSearchQuery}
                   onChange={(e) => {
                     e.stopPropagation()
@@ -230,7 +231,7 @@ export default function ContextMenu({
                           </span>{' '}
                           {enricher.name || '(Unnamed enricher)'}
                           {enricher.params_schema?.length ? (
-                            <span title="Requires configuration">
+                            <span title={t('Requires configuration')}>
                               <Settings className="h-3 w-3 text-muted-foreground shrink-0" />
                             </span>
                           ) : null}
@@ -251,7 +252,7 @@ export default function ContextMenu({
               ) : (
                 <div className="p-4 text-center">
                   <p className="text-sm text-muted-foreground">
-                    {enrichersSearchQuery ? 'No enrichers found' : 'No enrichers available'}
+                    {enrichersSearchQuery ? t('No enrichers found') : t('No enrichers available')}
                   </p>
                 </div>
               )}
@@ -266,7 +267,7 @@ export default function ContextMenu({
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Search flows..."
+                  placeholder={t('Search flows...')}
                   value={flowsSearchQuery}
                   onChange={(e) => {
                     e.stopPropagation()
@@ -328,7 +329,7 @@ export default function ContextMenu({
               ) : (
                 <div className="p-4 text-center">
                   <p className="text-sm text-muted-foreground">
-                    {flowsSearchQuery ? 'No flows found' : 'No flows available'}
+                    {flowsSearchQuery ? t('No flows found') : t('No flows available')}
                   </p>
                 </div>
               )}

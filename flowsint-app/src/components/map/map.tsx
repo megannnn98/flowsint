@@ -14,6 +14,7 @@ import { Label } from '../ui/label'
 import type { MapRef } from 'react-map-gl/maplibre'
 import type { StyleSpecification } from 'maplibre-gl'
 
+import { t } from '@/i18n'
 export type LocationPoint = {
   nodeId?: string
   lat?: number
@@ -338,7 +339,7 @@ export const MapFromAddress: React.FC<MapFromAddressProps> = ({
       <div className="h-full w-full flex items-center justify-center">
         <div className="text-center space-y-3">
           <LoadingSpinner size="lg" className="mx-auto" />
-          <p className="text-muted-foreground">Loading map data...</p>
+          <p className="text-muted-foreground">{t('Loading map data...')}</p>
         </div>
       </div>
     )
@@ -365,8 +366,8 @@ export const MapFromAddress: React.FC<MapFromAddressProps> = ({
             </svg>
           </div>
           <div>
-            <p className="font-medium text-foreground">Unable to load map</p>
-            <p className="text-sm text-muted-foreground">Could not find some addresses.</p>
+            <p className="font-medium text-foreground">{t('Unable to load map')}</p>
+            <p className="text-sm text-muted-foreground">{t('Could not find some addresses.')}</p>
           </div>
         </div>
       </div>
@@ -380,8 +381,10 @@ export const MapFromAddress: React.FC<MapFromAddressProps> = ({
         <div className="text-center space-y-4">
           <MapPin className="mx-auto h-12 w-12 text-muted-foreground" />
           <div>
-            <h3 className="text-lg font-semibold">No location to display</h3>
-            <p className="text-muted-foreground">This sketch doesn&apos;t have any location yet.</p>
+            <h3 className="text-lg font-semibold">{t('No location to display')}</h3>
+            <p className="text-muted-foreground">
+              {t("This sketch doesn't have any location yet.")}
+            </p>
           </div>
         </div>
       </div>
@@ -412,7 +415,7 @@ export const MapFromAddress: React.FC<MapFromAddressProps> = ({
             htmlFor="globe-toggle"
             className="text-xs text-muted-foreground cursor-pointer select-none"
           >
-            Globe
+            {t('Globe')}
           </Label>
           <Switch
             id="globe-toggle"

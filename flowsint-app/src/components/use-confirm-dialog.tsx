@@ -19,6 +19,7 @@ import React, {
   useState
 } from 'react'
 
+import { t } from '@/i18n'
 // Define a default function for the confirm dialog
 const defaultFunction = (): Promise<boolean> => Promise.resolve(true)
 
@@ -129,11 +130,11 @@ const ConfirmDialog = ({
           <DialogClose asChild>
             <div>
               <Button onClick={onCancel} variant="secondary">
-                Cancel
+                {t('Cancel')}
               </Button>
             </div>
           </DialogClose>
-          <Button onClick={onConfirm}>Continue</Button>
+          <Button onClick={onConfirm}>{t('Continue')}</Button>
         </div>
       </DialogContent>
     </Dialog>

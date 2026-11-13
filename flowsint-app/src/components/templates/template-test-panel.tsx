@@ -9,6 +9,7 @@ import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/componen
 import { JsonViewer } from './json-viewer'
 import type { TemplateData } from './template-schema'
 
+import { t } from '@/i18n'
 export interface TestResult {
   success: boolean
   data?: unknown
@@ -53,16 +54,16 @@ export function TemplateTestPanel({
       <ResizablePanel defaultSize={30} minSize={20}>
         <div className="h-full p-6 flex flex-col gap-6 overflow-y-auto">
           <div>
-            <h3 className="text-lg font-semibold mb-1">Test your template</h3>
+            <h3 className="text-lg font-semibold mb-1">{t('Test your template')}</h3>
             <p className="text-sm text-muted-foreground">
-              Enter a test value to simulate the enricher request.
+              {t('Enter a test value to simulate the enricher request.')}
             </p>
           </div>
 
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="test-input">
-                Input Value
+                {t('Input Value')}
                 {validationData?.input?.key && (
                   <span className="text-muted-foreground ml-1">({validationData.input.key})</span>
                 )}
@@ -78,16 +79,16 @@ export function TemplateTestPanel({
 
             {paramKeys.length > 0 && (
               <div className="space-y-2">
-                <Label className="text-muted-foreground">Query Parameters</Label>
+                <Label className="text-muted-foreground">{t('Query Parameters')}</Label>
                 <div className="border rounded-md overflow-hidden">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="bg-muted/50 border-b">
                         <th className="text-left px-3 py-1.5 text-xs font-medium text-muted-foreground w-1/3">
-                          Key
+                          {t('Key')}
                         </th>
                         <th className="text-left px-3 py-1.5 text-xs font-medium text-muted-foreground">
-                          Value
+                          {t('Value')}
                         </th>
                       </tr>
                     </thead>
@@ -104,7 +105,7 @@ export function TemplateTestPanel({
                             </td>
                             <td className="px-1 py-1">
                               <Input
-                                placeholder={String(defaultValue) || 'Value'}
+                                placeholder={String(defaultValue) || t('Value')}
                                 value={testParams[paramKey] ?? ''}
                                 onChange={(e) =>
                                   onTestParamsChange({
@@ -126,7 +127,7 @@ export function TemplateTestPanel({
 
             {validationData?.request?.url && (
               <div className="space-y-2">
-                <Label className="text-muted-foreground">Request URL</Label>
+                <Label className="text-muted-foreground">{t('Request URL')}</Label>
                 <code className="block text-xs bg-muted p-2 rounded break-all">
                   {buildPreviewUrl()}
                 </code>
@@ -141,12 +142,12 @@ export function TemplateTestPanel({
               {isTesting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Testing...
+                  {t('Testing...')}
                 </>
               ) : (
                 <>
                   <Play className="h-4 w-4" />
-                  Run test
+                  {t('Run test')}
                 </>
               )}
             </Button>
@@ -154,7 +155,9 @@ export function TemplateTestPanel({
 
           {hasErrors && (
             <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-              <p className="text-sm text-destructive">Fix validation errors before testing.</p>
+              <p className="text-sm text-destructive">
+                {t('Fix validation errors before testing.')}
+              </p>
             </div>
           )}
         </div>
@@ -167,7 +170,8 @@ export function TemplateTestPanel({
             <div className="shrink-0 flex items-center justify-between mb-4">
               {testResult?.duration !== undefined && testResult.duration > 0 && (
                 <Badge variant="secondary" className="text-xs">
-                  {testResult.duration}ms
+                  {testResult.duration}
+                  {t('ms')}
                 </Badge>
               )}
             </div>
@@ -176,7 +180,7 @@ export function TemplateTestPanel({
               <div className="flex-1 flex items-center justify-center">
                 <div className="text-center text-muted-foreground">
                   <FlaskConical className="h-12 w-12 mx-auto mb-4 opacity-20" />
-                  <p className="text-sm">Run a test to see the response here.</p>
+                  <p className="text-sm">{t('Run a test to see the response here.')}</p>
                 </div>
               </div>
             ) : (
@@ -192,12 +196,14 @@ export function TemplateTestPanel({
                     {testResult.success ? (
                       <>
                         <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                        <span className="font-medium text-emerald-600">Request Successful</span>
+                        <span className="font-medium text-emerald-600">
+                          {t('Request Successful')}
+                        </span>
                       </>
                     ) : (
                       <>
                         <XCircle className="h-5 w-5 text-destructive" />
-                        <span className="font-medium text-destructive">Request Failed</span>
+                        <span className="font-medium text-destructive">{t('Request Failed')}</span>
                       </>
                     )}
                   </div>
@@ -211,7 +217,7 @@ export function TemplateTestPanel({
                       <>
                         <ResizablePanel defaultSize={50} minSize={20}>
                           <div className="h-full flex flex-col">
-                            <Label className="shrink-0 mb-2 block">Raw response</Label>
+                            <Label className="shrink-0 mb-2 block">{t('Raw response')}</Label>
                             <div className="flex-1 min-h-0 rounded-md border overflow-hidden">
                               <JsonViewer data={testResult.data.raw_results} />
                             </div>
@@ -225,7 +231,7 @@ export function TemplateTestPanel({
                     {testResult?.data?.results != null && (
                       <ResizablePanel defaultSize={50} minSize={20}>
                         <div className="h-full flex flex-col">
-                          <Label className="shrink-0 mb-2 block">Inserted nodes</Label>
+                          <Label className="shrink-0 mb-2 block">{t('Inserted nodes')}</Label>
                           <div className="flex-1 min-h-0 rounded-md border overflow-hidden">
                             <JsonViewer data={testResult.data.results} />
                           </div>

@@ -7,9 +7,11 @@
 [![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2?logo=discord&logoColor=white)](https://discord.gg/aST9HMQr)
 
 
-Flowsint is an open-source OSINT graph exploration tool designed for ethical investigation, transparency, and verification.
+Flowsint — это open-source инструмент для исследования графов в OSINT, созданный для этичных расследований, прозрачности и проверки фактов.
 
-**Ethics:** Please read [ETHICS.md](./ETHICS.md) for responsible use guidelines.
+> **Русская локализация.** Это форк [reconurge/flowsint](https://github.com/reconurge/flowsint): интерфейс и документация переведены на русский язык. Исходный (английский) текст остаётся в истории git и в оригинальном репозитории.
+
+**Этика:** пожалуйста, прочитайте [ETHICS.md](./ETHICS.md) ([справочный перевод на русский](./ETHICS.ru.md)) — там изложены правила ответственного использования.
 
 <img width="1439" height="899" alt="hero-dark" src="https://github.com/user-attachments/assets/01eb128e-bef4-486e-9276-c4da58f829ae" />
 
@@ -23,22 +25,22 @@ https://github.com/user-attachments/assets/7457d94a-cf1d-4a97-949f-f9b1d8d92644
 https://github.com/user-attachments/assets/65c3f26e-7132-4853-be45-21b8933688bd
 
 
-## Contributing
+## Участие в разработке
 
-Flowsint is still in early development and definetly needs the help of the community! Feel free to raise issues, propose features, etc.
+Flowsint пока находится на ранней стадии разработки и очень нуждается в помощи сообщества! Создавайте issue, предлагайте новые возможности и так далее.
 
-## Get started
+## Быстрый старт
 
-Don't want to read ? Got it. Here's your install instructions:
+Не хотите читать? Понятно. Вот инструкции по установке:
 
 ### Linux / macOS
 
-#### 1. Install pre-requisites
+#### 1. Установите необходимые программы
 
 - Docker
 - Make
 
-#### 2. Run install command
+#### 2. Выполните команду установки
 
 ```bash
 git clone https://github.com/reconurge/flowsint.git
@@ -46,16 +48,24 @@ cd flowsint
 make prod
 ```
 
+> **Важно про язык интерфейса.** `make prod` скачивает готовые образы с GitHub Container Registry, а они собраны из оригинального репозитория и показывают **английский** интерфейс. Чтобы запустить русский интерфейс из этого форка, соберите frontend из исходников:
+>
+> ```bash
+> docker compose -f docker-compose.prod.yml -f docker-compose.ru.yml up -d --build
+> ```
+>
+> Файл [`docker-compose.ru.yml`](./docker-compose.ru.yml) заменяет только образ `app`; API, celery и базы остаются на готовых образах. На Windows (cmd/PowerShell) команда та же.
+
 ### Windows
 
-No Make needed. Works in both **Command Prompt (cmd)** and **PowerShell**.
+Make не нужен. Работает и в **командной строке (cmd)**, и в **PowerShell**.
 
-#### 1. Install pre-requisites
+#### 1. Установите необходимые программы
 
-- [Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/) (make sure it is **running** before the next step)
+- [Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/) (перед следующим шагом убедитесь, что он **запущен**)
 - Git
 
-#### 2. Clone and set up environment files
+#### 2. Клонируйте репозиторий и подготовьте файлы окружения
 
 ```bat
 git clone https://github.com/reconurge/flowsint.git
@@ -67,48 +77,48 @@ copy .env.example flowsint-core\.env
 copy .env.example flowsint-app\.env
 ```
 
-#### 3. Start
+#### 3. Запустите
 
 ```bat
 docker compose -f docker-compose.prod.yml up -d
 ```
 
-This pulls the pre-built images from GitHub Container Registry — no local build needed.
+Команда скачивает готовые образы с GitHub Container Registry — локальная сборка не нужна.
 
-### First login
+### Первый вход
 
-Then go to [http://localhost:5173/register](http://localhost:5173/register) and create an account. There are no credentials or account by default.
+Затем откройте [http://localhost:5173/register](http://localhost:5173/register) и создайте аккаунт. Учётных записей и паролей по умолчанию нет.
 
 
-> ✅ OSINT investigations need a high level of privacy. Everything is stored on your machine.
+> ✅ OSINT-расследования требуют высокого уровня приватности. Все данные хранятся на вашем компьютере.
 
-### Deploy on a network (team / server)
+### Развёртывание в сети (команда / сервер)
 
-The same setup works out of the box on a server: the frontend serves the UI **and** proxies all API calls internally, so no extra configuration is needed for clients.
+Та же схема работает на сервере без доработок: фронтенд отдаёт интерфейс **и** внутренне проксирует все вызовы API, поэтому клиентам не нужна дополнительная настройка.
 
 ```bash
 git clone https://github.com/reconurge/flowsint.git
 cd flowsint
 cp .env.example .env
-# Edit .env — see "Before exposing to a network" below
+# Отредактируйте .env — см. раздел «Перед открытием доступа из сети» ниже
 docker compose -f docker-compose.prod.yml up -d
 ```
 
-Anyone on the network can then access Flowsint at `http://<server-ip>:5173`.
+После этого любой пользователь сети сможет открыть Flowsint по адресу `http://<ip-сервера>:5173`.
 
-**Before exposing to a network, change the default secrets in `.env`:**
+**Перед открытием доступа из сети смените секреты по умолчанию в `.env`:**
 
-- `AUTH_SECRET` — signs authentication tokens. Generate one: `openssl rand -hex 32`
-- `MASTER_VAULT_KEY_V1` — encrypts stored API keys. Generate one: `python3 -c "import os, base64; print('base64:' + base64.b64encode(os.urandom(32)).decode())"`
-- `NEO4J_PASSWORD` — Neo4j database password.
+- `AUTH_SECRET` — подписывает токены аутентификации. Сгенерировать: `openssl rand -hex 32`
+- `MASTER_VAULT_KEY_V1` — шифрует сохранённые API-ключи. Сгенерировать: `python3 -c "import os, base64; print('base64:' + base64.b64encode(os.urandom(32)).decode())"`
+- `NEO4J_PASSWORD` — пароль базы данных Neo4j.
 
-**Also add your server hostname/IP to the Host-header allowlist** in `flowsint-app/nginx.conf` (look for `map $http_host $is_flowsint_host`). The default allowlist accepts only `localhost` / `127.0.0.1` / `[::1]`, which defends single-user installs against DNS rebinding; LAN and public deploys must opt-in their own hostname. Two commented-out template lines in the same map block show the format.
+**Также добавьте имя хоста или IP вашего сервера в список разрешённых Host-заголовков** в `flowsint-app/nginx.conf` (найдите `map $http_host $is_flowsint_host`). По умолчанию разрешены только `localhost` / `127.0.0.1` / `[::1]`: это защищает однопользовательские установки от DNS rebinding, поэтому для развёртываний в локальной сети и в интернете нужно явно добавить своё имя хоста. Две закомментированные строки-шаблона в том же блоке `map` показывают нужный формат.
 
-Only port `5173` is exposed to the network. PostgreSQL, Redis, Neo4j and the API are bound to `127.0.0.1` on the server and reachable only through the frontend proxy.
+В сеть открыт только порт `5173`. PostgreSQL, Redis, Neo4j и API привязаны на сервере к `127.0.0.1` и доступны только через прокси фронтенда.
 
-To pin a specific version instead of `latest`, set `FLOWSINT_VERSION` in `.env` (e.g. `FLOWSINT_VERSION=1.2.10`).
+Чтобы зафиксировать конкретную версию вместо `latest`, задайте `FLOWSINT_VERSION` в `.env` (например, `FLOWSINT_VERSION=1.2.10`).
 
-**HTTPS (recommended beyond a trusted LAN):** put any reverse proxy in front of port 5173. Example with [Caddy](https://caddyserver.com/):
+**HTTPS (рекомендуется за пределами доверенной локальной сети):** поставьте перед портом 5173 любой обратный прокси. Пример с [Caddy](https://caddyserver.com/):
 
 ```
 flowsint.example.com {
@@ -116,230 +126,230 @@ flowsint.example.com {
 }
 ```
 
-When fronting with a reverse proxy, also bind the app port to localhost in `docker-compose.prod.yml` (`"127.0.0.1:5173:8080"`) so clients can only go through HTTPS.
+Если перед приложением стоит обратный прокси, привяжите порт приложения к localhost в `docker-compose.prod.yml` (`"127.0.0.1:5173:8080"`), чтобы клиенты могли подключаться только через HTTPS.
 
 
-## What is it?
+## Что это такое?
 
-Flowsint is a graph-based investigation tool focused on reconnaissance and OSINT (Open Source Intelligence). It allows you to explore relationships between entities through a visual graph interface and automated enrichers.
+Flowsint — инструмент расследований на основе графов, ориентированный на разведку и OSINT (Open Source Intelligence, разведка по открытым источникам). Он позволяет исследовать связи между сущностями через визуальный интерфейс графа и автоматические обогатители (enrichers).
 
-### Available Enrichers
+### Доступные обогатители
 
-**Domain Enrichers**
-- Reverse DNS Resolution - Find domains pointing to an IP
-- DNS Resolution - Resolve domain to IP addresses
-- Subdomain Discovery - Enumerate subdomains
-- WHOIS Lookup - Get domain registration information
-- Domain to Website - Convert domain to website entity
-- Domain to Root Domain - Extract root domain
-- Domain to ASN - Find ASN associated with domain
-- Domain History - Retrieve historical domain data
+**Обогатители доменов**
+- Reverse DNS Resolution — найти домены, указывающие на IP
+- DNS Resolution — определить IP-адреса домена
+- Subdomain Discovery — перечислить поддомены
+- WHOIS Lookup — получить регистрационные данные домена
+- Domain to Website — преобразовать домен в сущность «сайт»
+- Domain to Root Domain — извлечь корневой домен
+- Domain to ASN — найти ASN, связанный с доменом
+- Domain History — получить исторические данные о домене
 
-**IP Enrichers**
-- IP Information - Get geolocation and network details
-- IP to ASN - Find ASN for IP address
+**Обогатители IP**
+- IP Information — получить геолокацию и сетевые сведения
+- IP to ASN — найти ASN для IP-адреса
 
-**ASN Enrichers**
-- ASN to CIDRs - Get IP ranges for an ASN
+**Обогатители ASN**
+- ASN to CIDRs — получить диапазоны IP для ASN
 
-**CIDR Enrichers**
-- CIDR to IPs - Enumerate IPs in a range
+**Обогатители CIDR**
+- CIDR to IPs — перечислить IP-адреса в диапазоне
 
-**Social Media Enrichers**
-- Maigret - Username search across social platforms
+**Обогатители социальных сетей**
+- Maigret — поиск имени пользователя на разных платформах
 
-**Organization Enrichers**
-- Organization to ASN - Find ASNs owned by organization
-- Organization Information - Get company details
-- Organization to Domains - Find domains owned by organization
+**Обогатители организаций**
+- Organization to ASN — найти ASN, принадлежащие организации
+- Organization Information — получить сведения о компании
+- Organization to Domains — найти домены, принадлежащие организации
 
-**Cryptocurrency Enrichers**
-- Wallet to Transactions - Get transaction history
-- Wallet to NFTs - Find NFTs owned by wallet
+**Обогатители криптовалют**
+- Wallet to Transactions — получить историю транзакций
+- Wallet to NFTs — найти NFT, принадлежащие кошельку
 
-**Website Enrichers**
-- Website Crawler - Crawl and map website structure
-- Website to Links - Extract all links
-- Website to Domain - Extract domain from URL
-- Website to Webtrackers - Identify tracking scripts
-- Website to Text - Extract text content
+**Обогатители сайтов**
+- Website Crawler — обойти сайт и построить карту его структуры
+- Website to Links — извлечь все ссылки
+- Website to Domain — извлечь домен из URL
+- Website to Webtrackers — выявить скрипты отслеживания
+- Website to Text — извлечь текстовое содержимое
 
-**Email Enrichers**
-- Email to Gravatar - Find Gravatar profile
-- Email to Breaches - Check data breach databases
-- Email to Domains - Find associated domains
+**Обогатители email**
+- Email to Gravatar — найти профиль Gravatar
+- Email to Breaches — проверить по базам утечек данных
+- Email to Domains — найти связанные домены
 
-**Phone Enrichers**
-- Phone to Breaches - Check phone number in breaches
+**Обогатители телефонов**
+- Phone to Breaches — проверить номер телефона по утечкам
 
-**Individual Enrichers**
-- Individual to Organization - Find organizational affiliations
-- Individual to Domains - Find domains associated with person
+**Обогатители физических лиц**
+- Individual to Organization — найти связи с организациями
+- Individual to Domains — найти домены, связанные с человеком
 
-**Integration Enrichers**
-- N8n Connector - Connect to N8n workflows
+**Интеграционные обогатители**
+- N8n Connector — подключение к рабочим процессам N8n
 
-## Project structure
+## Структура проекта
 
-The project is organized into autonomous modules:
+Проект разбит на автономные модули:
 
-### Core modules
+### Основные модули
 
-- **flowsint-core**: Core utilities, orchestrator, vault, celery tasks, and base classes
-- **flowsint-types**: Pydantic models and type definitions
-- **flowsint-enrichers**: Enricher modules, scanning logic, and tools
-- **flowsint-api**: FastAPI server, API routes, and schemas only
-- **flowsint-app**: Frontend application
+- **flowsint-core**: базовые утилиты, оркестратор, хранилище секретов (vault), задачи Celery и базовые классы
+- **flowsint-types**: модели Pydantic и определения типов
+- **flowsint-enrichers**: модули обогатителей, логика сканирования и инструменты
+- **flowsint-api**: сервер FastAPI, только маршруты API и схемы
+- **flowsint-app**: frontend-приложение
 
-### Module dependencies
+### Зависимости между модулями
 
 ```
 flowsint-app (frontend)
     ↓
-flowsint-api (API server)
+flowsint-api (API-сервер)
     ↓
-flowsint-core (orchestrator, tasks, vault)
+flowsint-core (оркестратор, задачи, vault)
     ↓
-flowsint-enrichers (enrichers & tools)
+flowsint-enrichers (обогатители и инструменты)
     ↓
-flowsint-types (types)
+flowsint-types (типы)
 ```
 
-## Development setup
+## Настройка среды разработки
 
-### Prerequisites
+### Требования
 
 - Docker
 
-### Run
+### Запуск
 
-**Linux / macOS** (requires **Make**):
+**Linux / macOS** (нужен **Make**):
 
 ```bash
 make dev
 ```
 
-**Windows** (cmd or PowerShell, no Make — create the `.env` files first, see [Get started](#windows)):
+**Windows** (cmd или PowerShell, без Make — сначала создайте файлы `.env`, см. [Быстрый старт](#windows)):
 
 ```bat
 docker compose -f docker-compose.dev.yml up -d --build
 docker compose -f docker-compose.dev.yml logs -f
 ```
 
-### Development
+### Разработка
 
-The app is accessible at [http://localhost:5173](http://localhost:5173).
+Приложение доступно по адресу [http://localhost:5173](http://localhost:5173).
 
-## Module details
+## Описание модулей
 
 ### flowsint-core
 
-Core utilities and base classes used by all other modules:
+Базовые утилиты и классы, используемые всеми остальными модулями:
 
-- Database connections (PostgreSQL, Neo4j)
-- Authentication and authorization
-- Logging and event handling
-- Configuration management
-- Base classes for enrichers and tools
-- Utility functions
+- Подключения к базам данных (PostgreSQL, Neo4j)
+- Аутентификация и авторизация
+- Логирование и обработка событий
+- Управление конфигурацией
+- Базовые классы для обогатителей и инструментов
+- Вспомогательные функции
 
 ### flowsint-types
 
-Pydantic models for all data types:
+Модели Pydantic для всех типов данных:
 
 - Domain, IP, ASN, CIDR
 - Individual, Organization, Email, Phone
-- Website, Social profiles, Credentials
-- Crypto wallets, Transactions, NFTs
-- And many more...
+- Website, профили в соцсетях, учётные данные
+- Криптокошельки, транзакции, NFT
+- И многое другое...
 
 ### flowsint-enrichers
 
-Enricher modules that process data:
+Модули обогатителей, обрабатывающие данные:
 
-- Domain enrichers (subdomains, WHOIS, resolution)
-- IP enrichers (geolocation, ASN lookup)
-- Social media enrichers (Maigret, Sherlock)
-- Email enrichers (breaches, Gravatar)
-- Crypto enrichers (transactions, NFTs)
-- And many more...
+- Обогатители доменов (поддомены, WHOIS, разрешение имён)
+- Обогатители IP (геолокация, поиск ASN)
+- Обогатители соцсетей (Maigret, Sherlock)
+- Обогатители email (утечки, Gravatar)
+- Крипто-обогатители (транзакции, NFT)
+- И многое другое...
 
 ### flowsint-api
 
-FastAPI server providing:
+Сервер FastAPI, который предоставляет:
 
-- REST API endpoints
-- Authentication and user management
-- Graph database integration
-- Real-time event streaming
+- REST API
+- Аутентификацию и управление пользователями
+- Интеграцию с графовой базой данных
+- Потоковую передачу событий в реальном времени
 
 ### flowsint-app
 
-Frontend application.
+Frontend-приложение.
 
-- Modern and UI friendly interface
-- Built for performance (no lag even on thousands of nodes)
+- Современный и удобный интерфейс
+- Рассчитано на производительность (без лагов даже на тысячах узлов)
 
-## Development workflow
+## Порядок разработки
 
-1. **Adding new types**: Add to `flowsint-types` module
-2. **Adding new enrichers**: Add to `flowsint-enrichers` module
-3. **Adding new API endpoints**: Add to `flowsint-api` module
-4. **Adding new utilities**: Add to `flowsint-core` module
+1. **Добавление новых типов**: добавляйте в модуль `flowsint-types`
+2. **Добавление новых обогатителей**: добавляйте в модуль `flowsint-enrichers`
+3. **Добавление новых эндпоинтов API**: добавляйте в модуль `flowsint-api`
+4. **Добавление новых утилит**: добавляйте в модуль `flowsint-core`
 
-## Testing
+## Тестирование
 
-Each module has its own (incomplete) test suite:
+У каждого модуля свой (неполный) набор тестов:
 
 ```bash
-# Test core module
+# Тесты модуля core
 cd flowsint-core
 uv run pytest
 
-# Test types module
+# Тесты модуля types
 cd ../flowsint-types
 uv run pytest
 
-# Test enrichers module
+# Тесты модуля enrichers
 cd ../flowsint-enrichers
 uv run pytest
 
-# Test API module
+# Тесты модуля API
 cd ../flowsint-api
 uv run pytest
 ```
 
-## Contributing
+## Участие в разработке
 
-1. Follow the modular structure
-2. Use [uv](https://docs.astral.sh/uv/) for dependency management
-3. Write tests for new functionality
-4. Update documentation as needed
-5. See [CONTRIBUTING.md](./CONTRIBUTING.md) for the checks to run before committing
+1. Соблюдайте модульную структуру
+2. Используйте [uv](https://docs.astral.sh/uv/) для управления зависимостями
+3. Пишите тесты для новой функциональности
+4. При необходимости обновляйте документацию
+5. Какие проверки запускать перед коммитом, см. в [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 
 ---
 
-## ⚖️ Legal & Ethical Use
+## ⚖️ Правовые и этические аспекты использования
 
-**Ethics:** Please read [ETHICS.md](./ETHICS.md) for responsible use guidelines.
+**Этика:** пожалуйста, прочитайте [ETHICS.md](./ETHICS.md) — там изложены правила ответственного использования.
 
-Flowsint is designed **strictly for lawful, ethical investigation and research purposes**.
+Flowsint создан **исключительно для законных и этичных расследований и исследований**.
 
-It was created to assist:
-- Cybersecurity researchers and analysts
-- Journalists and OSINT investigators
-- Law enforcement or fraud investigation teams
-- Organizations conducting internal threat intelligence or digital risk analysis
+Он создан, чтобы помогать:
+- Исследователям и аналитикам по кибербезопасности
+- Журналистам и OSINT-исследователям
+- Правоохранительным органам и командам по расследованию мошенничества
+- Организациям, которые проводят внутренний анализ киберугроз или цифровых рисков
 
-**Flowsint must not be used for:**
-- Unauthorized intrusion, surveillance, or data collection
-- Harassment, doxxing, or targeting of individuals
-- Political manipulation, misinformation, or violation of privacy laws
+**Flowsint нельзя использовать для:**
+- Несанкционированного проникновения, слежки или сбора данных
+- Преследования, раскрытия личных данных (доксинга) или травли людей
+- Политических манипуляций, дезинформации или нарушения законов о защите частной жизни
 
-Any misuse of this software is strictly prohibited and goes against the ethical principles defined in [ETHICS.md](./ETHICS.md).
+Любое злоупотребление этим программным обеспечением строго запрещено и противоречит этическим принципам, изложенным в [ETHICS.md](./ETHICS.md).
 
-## ❤️ Support
+## ❤️ Поддержка
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20a%20coffee-support-FFDD00?logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/dextmorgn)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-support-F16061?logo=ko-fi&logoColor=white)](https://ko-fi.com/P5P01W3GPJ)

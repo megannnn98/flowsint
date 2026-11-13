@@ -12,6 +12,7 @@ import { memo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import type { RuleFilter, Filters, RuleKey, RuleOperator } from '@/types/filter'
 
+import { t } from '@/i18n'
 type RuleFiltersProps = {
   filters: Filters
   setFilters: (filters: Filters) => void
@@ -53,7 +54,7 @@ function RuleFilters({ filters, setFilters }: RuleFiltersProps) {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <p className="opacity-90 text-sm">Filter by rule</p>
+        <p className="opacity-90 text-sm">{t('Filter by rule')}</p>
 
         <div className="flex gap-2">
           <Button
@@ -62,7 +63,7 @@ function RuleFilters({ filters, setFilters }: RuleFiltersProps) {
             size="sm"
             onClick={addRule}
           >
-            <Plus className="text-muted-foreground !h-3 !w-3" /> New rule
+            <Plus className="text-muted-foreground !h-3 !w-3" /> {t('New rule')}
           </Button>
 
           <Button
@@ -72,13 +73,13 @@ function RuleFilters({ filters, setFilters }: RuleFiltersProps) {
             size="sm"
             onClick={applyChanges}
           >
-            Apply
+            {t('Apply')}
           </Button>
         </div>
       </div>
 
       {rules.length === 0 ? (
-        <p className="text-xs text-muted-foreground">Start by adding a filter rule.</p>
+        <p className="text-xs text-muted-foreground">{t('Start by adding a filter rule.')}</p>
       ) : (
         <ul className="space-y-2">
           {rules.map((rule) => (

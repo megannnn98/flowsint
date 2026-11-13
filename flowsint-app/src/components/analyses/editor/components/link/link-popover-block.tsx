@@ -3,6 +3,7 @@ import { Separator } from '@/components/ui/separator'
 import { ToolbarButton } from '../toolbar-button'
 import { Copy, ExternalLink, Unlink } from 'lucide-react'
 
+import { t } from '@/i18n'
 interface LinkPopoverBlockProps {
   url: string
   onClear: () => void
@@ -33,15 +34,15 @@ export const LinkPopoverBlock: React.FC<LinkPopoverBlockProps> = ({ url, onClear
   return (
     <div className="flex h-10 overflow-hidden rounded-mdbg-background p-2 shadow-lg">
       <div className="inline-flex items-center gap-1">
-        <ToolbarButton tooltip="Edit link" onClick={onEdit} className="w-auto px-2">
-          Edit link
+        <ToolbarButton tooltip={t('Edit link')} onClick={onEdit} className="w-auto px-2">
+          {t('Edit link')}
         </ToolbarButton>
         <Separator orientation="vertical" />
-        <ToolbarButton tooltip="Open link in a new tab" onClick={handleOpenLink}>
+        <ToolbarButton tooltip={t('Open link in a new tab')} onClick={handleOpenLink}>
           <ExternalLink className="size-4" />
         </ToolbarButton>
         <Separator orientation="vertical" />
-        <ToolbarButton tooltip="Clear link" onClick={onClear}>
+        <ToolbarButton tooltip={t('Clear link')} onClick={onClear}>
           <Unlink className="size-4" />
         </ToolbarButton>
         <Separator orientation="vertical" />

@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createFileRoute } from '@tanstack/react-router'
 
+import { t } from '@/i18n'
 export const Route = createFileRoute('/login')({
   component: Login
 })
@@ -46,7 +47,9 @@ function Login() {
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold">Sign in to your account</h2>
+          <h2 className="mt-6 text-center text-3xl font-extrabold">
+            {t('Sign in to your account')}
+          </h2>
         </div>
 
         <FormProvider {...methods}>
@@ -54,7 +57,7 @@ function Login() {
             {/* Display login error */}
             {login.error && (
               <div className="p-3 mb-4 text-sm bg-red-500/10 border border-red-400 text-red-700 rounded">
-                {login.error instanceof Error ? login.error.message : 'Login error'}
+                {login.error instanceof Error ? login.error.message : t('Login error')}
               </div>
             )}
 
@@ -62,17 +65,17 @@ function Login() {
               {/* Username field */}
               <FormField
                 name="username"
-                label="Email"
-                placeholder="Your email"
+                label={t('Email')}
+                placeholder={t('Your email')}
                 disabled={login.isPending}
               />
 
               {/* Password field */}
               <FormField
                 name="password"
-                label="Password"
+                label={t('Password')}
                 type="password"
-                placeholder="Your password"
+                placeholder={t('Your password')}
                 disabled={login.isPending}
               />
             </div>
@@ -127,10 +130,10 @@ function Login() {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       ></path>
                     </svg>
-                    Signing in...
+                    {t('Signing in...')}
                   </span>
                 ) : (
-                  'Sign In'
+                  t('Sign In')
                 )}
               </button>
             </div>
@@ -140,9 +143,9 @@ function Login() {
         {/* Link to registration */}
         <div className="text-center mt-4">
           <p className="text-sm text-gray-600">
-            Don&apos;t have an account?{' '}
+            {t("Don't have an account?")}{' '}
             <Link to="/register" className="font-medium text-primary">
-              Create an account
+              {t('Create an account')}
             </Link>
           </p>
         </div>

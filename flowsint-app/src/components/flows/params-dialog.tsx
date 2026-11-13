@@ -14,6 +14,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs'
 import { MemoizedMarkdown } from '../chat/memoized-markdown'
 import { cn } from '@/lib/utils'
 
+import { t } from '@/i18n'
 const ParamsDialog = () => {
   const openParamsDialog = useFlowStore((s) => s.openParamsDialog)
   const setOpenParamsDialog = useFlowStore((s) => s.setOpenParamsDialog)
@@ -98,18 +99,20 @@ const ParamsDialog = () => {
       <DialogContent className="!w-[90vw] !max-w-[900px] h-[90vh] overflow-y-auto flex flex-col">
         <DialogHeader>
           <DialogTitle>
-            Configure <span className="text-primary">{selectedNode.data.class_name}</span>
+            {t('Configure')} <span className="text-primary">{selectedNode.data.class_name}</span>
           </DialogTitle>
           <div className={cn('justify-start', 'flex w-full')}>
             <div className={cn('w-full', 'p-3 rounded-xl max-w-full', 'flex flex-col gap-2')}>
-              <div className="max-w-none">{selectedNode?.data.description?.toString()}</div>
+              <div className="max-w-none">
+                {selectedNode?.data.description && t(selectedNode.data.description.toString())}
+              </div>
             </div>
           </div>
         </DialogHeader>
         <Tabs defaultValue="parameters" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="parameters">Parameters</TabsTrigger>
-            <TabsTrigger value="documentation">Documentation</TabsTrigger>
+            <TabsTrigger value="parameters">{t('Parameters')}</TabsTrigger>
+            <TabsTrigger value="documentation">{t('Documentation')}</TabsTrigger>
           </TabsList>
           <TabsContent value="parameters" className="space-y-4 mt-4">
             <div className="grid gap-4">
@@ -141,9 +144,9 @@ const ParamsDialog = () => {
 
         <DialogFooter className="mt-auto">
           <Button variant="outline" onClick={() => setOpenParamsDialog(false)}>
-            Cancel
+            {t('Cancel')}
           </Button>
-          <Button onClick={handleSave}>Save configuration</Button>
+          <Button onClick={handleSave}>{t('Save configuration')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

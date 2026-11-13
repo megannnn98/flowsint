@@ -1,7 +1,7 @@
 ---
-title: "Flows"
-description: "Quick start guide to using Flows for your OSINT investigations."
-category: "Getting started"
+title: "Потоки (Flows)"
+description: "Краткое руководство по использованию потоков (Flows) в OSINT-расследованиях."
+category: "Начало работы"
 order: 5
 author: "Flowsint Team"
 tags: ["tutorial", "getting-started", "flows"]
@@ -9,29 +9,29 @@ version: "1.2.8"
 last_updated_at: "2026-05-15"
 ---
 
-### What are Flows?
+### Что такое потоки?
 
-Flows are the chaining of multiple enrichers, where the output of one becomes the input of the next, allowing an investigation to be broadened or deepened.
+Потоки (Flows) — это цепочки из нескольких обогатителей, в которых результат одного становится входными данными следующего. Это позволяет расширять или углублять расследование.
 
-Some enrichers can be chained together, to that they can provide a reproductible and scalable research flow that can be re-applied to other entities of the same type.
+Некоторые обогатители можно объединять в цепочки, чтобы получить воспроизводимый и масштабируемый процесс исследования, который можно повторно применять к другим сущностям того же типа.
 
-### Getting started with Flows
+### Начало работы с потоками
 
-The best way to get started with flows is to go to [http://localhost:5173/dashboard/flows](http://localhost:5173/dashboard/flows) and create a new flow.
+Лучший способ начать — перейти на [http://localhost:5173/dashboard/flows](http://localhost:5173/dashboard/flows) и создать новый поток.
 
-From that, you can start building your first flow; a flow consists of **one** input type, and multiple chained enrichers.
+Оттуда можно приступить к созданию первого потока; поток состоит из **одного** входного типа и нескольких последовательно соединённых обогатителей.
 
-Start by drag & dropping your input type to the canva and start using the "**+**" button to add more enrichers to your flow.
+Начните с того, что перетащите входной тип на холст, а затем кнопкой «**+**» добавляйте в поток новые обогатители.
 
-Once you're satisfied with the flow, you can start viewing the execution order by pressing the "**compute**" button.
+Когда поток вас устроит, нажмите кнопку «**compute**» («Вычислить»), чтобы увидеть порядок выполнения.
 
-Make sure you give it a descriptive name and save ! (`crtl + s` or presse the save button).
+Обязательно дайте потоку понятное название и сохраните его! (`ctrl + s` или кнопка сохранения).
 
-Once it's done, go back to one of your sketches, right click on an item of the same type of the flow, and you should be able to launch it from the "flows" section.
+После этого вернитесь в один из ваших скетчей, щёлкните правой кнопкой мыши по элементу того же типа, что и у потока, и запустите поток из раздела «flows» («Потоки»).
 
-### Flow schema
+### Схема потока
 
-Every time a flow is launched, a log file is created at `flowsint_core/enricher_logs`.
+Каждый раз при запуске потока в `flowsint_core/enricher_logs` создаётся файл журнала.
 
 ```json
 {

@@ -15,6 +15,7 @@ import { queryKeys } from '@/api/query-keys'
 import ErrorState from '../shared/error-state'
 import { usePermissions } from '@/hooks/use-can'
 
+import { t } from '@/i18n'
 const AnalysisItem = ({ analysis, active }: { analysis: Analysis; active: boolean }) => {
   return (
     <Link
@@ -77,7 +78,7 @@ const AnalysisList = () => {
   const createMutation = useMutation({
     mutationFn: async () => {
       const newAnalysis: Partial<Analysis> = {
-        title: 'Untitled Analysis',
+        title: t('Untitled Analysis'),
         investigation_id: investigationId,
         content: {}
       }
@@ -85,13 +86,13 @@ const AnalysisList = () => {
     },
     onSuccess: async (data) => {
       if (!('id' in data)) {
-        toast.error(data.error || 'Failed to create analysis')
+        toast.error(data.error || t('Failed to create analysis'))
         return
       }
       queryClient.invalidateQueries({
         queryKey: queryKeys.analyses.byInvestigation(investigationId || '')
       })
-      toast.success('Analysis created successfully')
+      toast.success(t('Analysis created successfully'))
       if (investigationId) {
         navigate({
           to: '/dashboard/investigations/$investigationId/$type/$id',
@@ -109,8 +110,8 @@ const AnalysisList = () => {
   if (error)
     return (
       <ErrorState
-        title="Couldn't load analyses"
-        description="Something went wrong while fetching data. Please try again."
+        title={t("Couldn't load analyses")}
+        description={t('Something went wrong while fetching data. Please try again.')}
         error={error}
         onRetry={() => refetch()}
       />
@@ -125,7 +126,7 @@ const AnalysisList = () => {
             className="h-7 w-7"
             onClick={() => createMutation.mutate()}
             disabled={createMutation.isPending}
-            title="Create New analysis"
+            title={t('Create New analysis')}
           >
             <PlusIcon className="h-4 w-4" />
           </Button>
@@ -133,7 +134,7 @@ const AnalysisList = () => {
         <Input
           type="search"
           className="!border border-border h-7"
-          placeholder="Search analyses..."
+          placeholder={t('Search analyses...')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -159,12 +160,14 @@ const AnalysisList = () => {
             <FileText className="h-10 w-10 text-yellow-500" />
             <div className="space-y-1">
               <h3 className="text-sm font-semibold text-foreground">
-                {searchQuery ? 'No matching analyses' : 'No analyses yet'}
+                {searchQuery ? t('No matching analyses') : t('No analyses yet')}
               </h3>
               <p className="text-xs opacity-70 max-w-xs">
                 {searchQuery
-                  ? "Try adjusting your search query to find what you're looking for."
-                  : "This investigation doesn't contain any analysis. Analyses let you organize and document your findings."}
+                  ? t("Try adjusting your search query to find what you're looking for.")
+                  : t(
+                      "This investigation doesn't contain any analysis. Analyses let you organize and document your findings."
+                    )}
               </p>
             </div>
             <Button
@@ -174,7 +177,7 @@ const AnalysisList = () => {
               disabled={createMutation.isPending}
             >
               <PlusIcon className="w-4 h-4 mr-2" />
-              Create your first analysis
+              {t('Create your first analysis')}
             </Button>
           </div>
         )}

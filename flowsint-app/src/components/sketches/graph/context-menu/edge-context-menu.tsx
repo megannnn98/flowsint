@@ -12,6 +12,7 @@ import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { usePermissions } from '@/hooks/use-can'
 
+import { t } from '@/i18n'
 interface EdgeContextMenuProps {
   edge?: GraphEdge
   edges?: GraphEdge[]
@@ -92,11 +93,11 @@ export default function EdgeContextMenu({
             data: { label: newLabel }
           })
         )
-        toast.success('Relationship updated successfully.')
+        toast.success(t('Relationship updated successfully.'))
       } catch {
         // Rollback on error
         updateEdge(edge.id, { label: previousLabel })
-        toast.error('Failed to update relationship.')
+        toast.error(t('Failed to update relationship.'))
       }
     }
   }, [edge, updateEdge, sketchId, setMenu, onSubmitNew])
@@ -115,8 +116,8 @@ export default function EdgeContextMenu({
       const count = edgeIds.length
       if (
         !(await confirm({
-          title: `You are about to delete ${count} relationship${count > 1 ? 's' : ''}?`,
-          message: 'The action is irreversible.'
+          title: t('You are about to delete relationships: {{n}}?', { n: count }),
+          message: t('The action is irreversible.')
         }))
       ) {
         return
@@ -129,9 +130,9 @@ export default function EdgeContextMenu({
           return sketchService.deleteEdges(sketchId, JSON.stringify({ relationshipIds: edgeIds }))
         })(),
         {
-          loading: `Deleting ${count} relationship${count > 1 ? 's' : ''}...`,
-          success: `Relationship${count > 1 ? 's' : ''} deleted successfully.`,
-          error: 'Failed to delete relationship.'
+          loading: t('Deleting relationships: {{count}}...', { count }),
+          success: t('Relationships deleted: {{count}}.', { count }),
+          error: t('Failed to delete relationship.')
         }
       )
     },
@@ -163,7 +164,9 @@ export default function EdgeContextMenu({
       <div className="px-3 py-1 flex items-center justify-between shrink-0">
         <div className="flex text-xs items-center gap-1 truncate">
           {isMultiSelect ? (
-            <span className="block truncate">{edgeIds.length} relationships selected</span>
+            <span className="block truncate">
+              {edgeIds.length} {t('relationships selected')}
+            </span>
           ) : (
             <div className="p-1">
               <Input
