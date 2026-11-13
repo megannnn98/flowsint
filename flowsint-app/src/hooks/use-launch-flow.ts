@@ -32,14 +32,16 @@ export function useLaunchFlow(askUser: boolean = false) {
   const launchFlow = async (
     node_ids: string[],
     flow_id: string,
-    sketch_id: string | null | undefined
+    sketch_id: string | null | undefined,
+    flow_name?: string
   ) => {
     if (!sketch_id) return toast.error(t('Could not find the graph.'))
+    const name = flow_name || flow_id
     if (askUser) {
       const confirmed = await confirm({
-        title: `${flow_id} scan`,
+        title: t('{{name}} scan', { name }),
         message: t("You're about to launch {{name}} flow on {{n}} items.", {
-          name: flow_id,
+          name,
           n: node_ids.length
         })
       })
@@ -49,9 +51,9 @@ export function useLaunchFlow(askUser: boolean = false) {
     const count = node_ids.length
 
     toast.promise(launchFlowMutation.mutateAsync({ flowId: flow_id, body }), {
-      loading: 'Loading...',
-      success: () => `Flow ${flow_id} has been launched on ${count} node${count > 1 ? 's' : ''}.`,
-      error: () => `An error occurred launching flow.`
+      loading: t('Loading...'),
+      success: () => t('Flow {{name}} has been launched on {{n}} items.', { name, n: count }),
+      error: () => t('An error occurred launching flow.')
     })
     return
   }

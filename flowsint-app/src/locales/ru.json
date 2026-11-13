@@ -2588,5 +2588,11 @@
   "My Enricher": "Мой поток",
   "Select an investigation": "Выберите расследование",
   "e.g., OpenAI, GitHub, Shodan...": "например, OpenAI, GitHub, Shodan...",
-  "Enricher": "Обогатитель"
+  "Enricher": "Обогатитель",
+  "{{name}} scan": "Запуск: {{name}}",
+  "Flow {{name}} has been launched on {{n}} items.": "Поток {{name}} запущен для элементов: {{n}}.",
+  "An error occurred launching flow.": "Ошибка при запуске потока.",
+  "Enricher {{name}} has been launched on {{n}} items.": "Обогатитель {{name}} запущен для элементов: {{n}}.",
+  "An error occurred launching enricher.": "Ошибка при запуске обогатителя.",
+  "(Unnamed flow)": "(Поток без имени)"
 }
