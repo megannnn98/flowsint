@@ -142,3 +142,280 @@ Not reused, and why:
 New Flowsint types (no existing equivalent): `Identifier` (ИНН, СНИЛС, ОГРН,
 ИИН …), `Event` (dated facts and source claims), `SourceRecord` (one record of
 one dataset in one report).
+
+## 4. Setup
+
+### OpenRouter key
+
+The import uses the same key as the Flowsint chat:
+
+1. **Vault (preferred)** — in the UI open *Settings → Keys* and add a secret named
+   `OPENROUTER_API_KEY`. It is looked up for the user who uploaded the PDF.
+2. **Environment (fallback)** — `OPENROUTER_API_KEY` in `.env`; it is passed to the
+   `api` container by `docker-compose.{dev,prod}.yml`.
+
+### Settings (environment of the `api` container)
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `HIMERA_MODEL` | `google/gemini-2.5-flash` | OpenRouter model id |
+| `HIMERA_PDF_ENGINE` | `auto` | `auto` = `pdf-text` for PDFs with a text layer, `mistral-ocr` for scans; or force `pdf-text` / `mistral-ocr` / `native` |
+| `HIMERA_MAX_COST_USD` | `0.50` | hard cap for one document (all calls) |
+| `HIMERA_OCR_USD_PER_PAGE` | `0.002` | OCR price used in the pre-call estimate |
+| `HIMERA_PAGES_PER_CHUNK` | `6` | page range size for the records pass (`0` = whole PDF in one call) |
+| `HIMERA_CHUNK_OVERLAP_PAGES` | `1` | pages shared by neighbouring ranges |
+| `HIMERA_RECORDS_PER_BATCH` | `12` | records per call in the entities pass |
+| `HIMERA_MAX_OUTPUT_TOKENS` | `16000` | `max_tokens` of every call |
+| `HIMERA_TIMEOUT_S` | `180` | HTTP timeout per call |
+| `HIMERA_MAX_RETRIES` / `HIMERA_BACKOFF_BASE_S` | `3` / `2` | retries on 408/409/425/429/5xx/timeouts with exponential backoff (honours `Retry-After`) |
+| `HIMERA_MAX_REPAIR_ATTEMPTS` | `1` | text-only "fix the JSON" calls after an invalid answer |
+
+### Choosing a model
+
+Before the first call the service reads `GET /api/v1/models` and checks the model:
+
+* **Structured output** — `structured_outputs` in `supported_parameters` →
+  `response_format: {type: json_schema, strict: true}`. Otherwise `json_object`
+  (or plain prompt) with the schema embedded in the system prompt, and a warning
+  in the result. Prefer models with strict structured outputs.
+* **PDF input** — with `pdf-text` / `mistral-ocr` OpenRouter parses the PDF
+  itself, so any text model works. `native` requires `file` in
+  `architecture.input_modalities`, otherwise the import fails before sending.
+* **Context / output** — a 23-page report is ~35k prompt tokens; with the
+  default chunking each call stays well below 16k output tokens.
+
+Reasonable choices: `google/gemini-2.5-flash` (cheap, file input, structured
+outputs), `openai/gpt-4.1-mini`, `anthropic/claude-sonnet-4.5` (more careful
+with the subject/namesake distinction, more expensive).
+
+Data policy: the report contains personal data. Configure the OpenRouter
+account's data policy (no training / zero data retention providers) before use,
+and only upload reports you are allowed to process.
+
+## 5. Processing order
+
+1. **Prepare** (`himera/pdf.py`, pypdf): reject non-PDF/encrypted files, count
+   pages, measure the text layer (characters per page, not content), compute the
+   SHA-256, plan page ranges.
+2. **Records pass** (`extraction.py`): for every range, send the sub-PDF as a
+   `file` content part to `POST /api/v1/chat/completions` with the `file-parser`
+   plugin (`pdf.engine`) and the `himera_records` schema.
+3. **Merge records** (`records.py`): convert range-relative pages to report
+   pages and merge copies from overlapping ranges (see §6).
+4. **Entities pass**: send record JSON (no PDF) in batches with the subject
+   summary; schema `himera_entities`.
+5. **Validation** (`validation.py`, `normalizers.py`): see §8.
+6. **Store** the `HimeraExtractionResult` in `himera_imports.result` with model,
+   tokens and cost.
+7. **Preview / import** (`importer.py`): only what the user selected is written
+   to Neo4j.
+
+Failure handling:
+
+| Situation | Behaviour |
+|---|---|
+| `finish_reason = length` (truncated) | the page range / record batch is split in two and retried (up to 3 levels); a single page that still truncates marks the result `complete = false` |
+| invalid JSON / schema mismatch | one text-only repair call (no PDF re-send); if it still fails the range is skipped and the result is `complete = false` |
+| empty answer | warning; no records at all → `complete = false` |
+| 429 / 5xx / timeout | retry with backoff, then the import is `failed` with the error class |
+| 4xx (bad key, unsupported request) | no retry, import `failed` |
+| budget exceeded | the next call is not sent; the partial result is kept with `complete = false` |
+
+## 6. JSON Schemas
+
+Both schemas are strict (`additionalProperties: false`, all keys required,
+nullable via `["string", "null"]`); see `himera/schemas.py`.
+
+`himera_records`:
+
+```json
+{
+  "report_id": "string|null",
+  "truncation_notice": true,
+  "records": [{
+    "section": "summary|scoring|labels|income|addresses|dataset_record|service",
+    "source_name": "string|null", "source_heading": "string", "source_period": "string|null",
+    "page_start": 1, "page_end": 2, "ordinal_on_start_page": 1,
+    "starts_before_range": false, "continues_after_range": false,
+    "fields": [{"name": "Телефон", "value": "79990000000"}],
+    "raw_text": "string", "name_match_only": false
+  }]
+}
+```
+
+`himera_entities`:
+
+```json
+{
+  "entities": [{
+    "entity_id": "e1",
+    "type": "Individual|Phone|Email|Username|SocialAccount|Organization|Address|Document|Identifier|Event",
+    "raw_value": "string", "normalized_value": "string|null",
+    "record_id": "p02-01", "page": 2, "evidence": "string", "confidence": 0.9,
+    "subject_link": "subject|other_person|unknown|not_applicable",
+    "role": "string|null", "attributes": [{"name": "birth_date", "value": "3.4.1985"}]
+  }],
+  "relationships": [{
+    "type": "HAS_PHONE", "source_entity_id": "e1", "target_entity_id": "e2",
+    "record_id": "p02-01", "evidence": "string", "confidence": 0.9,
+    "status": "confirmed|candidate|source_claim"
+  }]
+}
+```
+
+## 7. Multi-page records and page ranges
+
+* Record id = `p<page_start>-<ordinal>`: the record's position among records
+  that **start** on that page. It is stable across ranges and different for two
+  identical records in a row, so real duplicates are kept.
+* Ranges overlap by `HIMERA_CHUNK_OVERLAP_PAGES`. A record seen in two ranges
+  has the same `(page_start, ordinal, heading)` key; the copy whose end was
+  seen (`continues_after_range = false`) or with more fields wins.
+* A record cut by the end of a range is `continues_after_range`; the next range
+  returns its tail as `starts_before_range` with heading `<continuation>`. The
+  tail's fields are appended to the open record (pairs already present are not
+  duplicated) and `page_end` is extended.
+* A record still open at the end gets a warning ("may continue beyond page N").
+* The footer's "report may be truncated" → `truncation_notice` + warning.
+
+## 8. Validation, identity and relationship rules
+
+Deterministic checks after the LLM (they classify, they never invent values):
+
+| Check | Result |
+|---|---|
+| placeholder / empty value (`-`, `нет`, `***`) | rejected |
+| `record_id` unknown | rejected |
+| raw value not present in the cited record text | **unverified** |
+| e-mail grammar; Cyrillic look-alike letters (`МАIL.RU`) | look-alikes are mapped to Latin in `normalized_value`, raw kept, entity **unverified** |
+| phone → E.164 (`phonenumbers`, RU default, `8…`/`7…`/10-digit forms) | invalid/only-possible → **unverified** |
+| ИНН (10/12), СНИЛС, ОГРН/ОГРНИП, ИИН (KZ), card (Luhn), account (20 digits) checksums | failed → **unverified** |
+| dates (`d.m.yyyy`, ISO, `yyyy`, `…Г`) → ISO | invalid → issue, raw kept |
+| page outside the record's pages | issue, page clamped |
+| LLM normalisation differs from the format check | issue, the check's value is used |
+
+Deduplication (`ExtractedEntity.mentions` keeps every record/page/evidence):
+
+* validated entities merge by `(type, normalized_value)`;
+* unverified entities never merge with anything;
+* Individuals: everything the model marked `subject` (and not in a name-only
+  record) becomes one subject node; others merge only on equal name **and**
+  birth date; without a birth date each record gives its own candidate.
+
+Relationships:
+
+* both ends must exist **and** be mentioned in the cited record, otherwise the
+  link is rejected ("not mentioned in the cited record") — co-occurrence in the
+  report is never enough;
+* links in a name-only record, to a person with unknown identity or to an
+  unverified entity are downgraded to `candidate`;
+* links to `Event` (labels, scores, registries, criminal/black-list entries)
+  are always `source_claim`: a statement of the source, not a fact;
+* `confirmed` → `relationships`; `candidate` / `source_claim` →
+  `ambiguous_relationships` (shown separately, not imported by default);
+* relationship type is sanitised to `[A-Z0-9_]`.
+
+## 9. Graph model
+
+| Himera type | Flowsint type | Node label |
+|---|---|---|
+| Individual | `Individual` | subject: `NAME (YYYY-MM-DD)`; others: `… [кандидат …]` |
+| Phone | `Phone` | E.164 |
+| Email | `Email` | address |
+| Username | `Username` | value |
+| SocialAccount | `SocialAccount` | `handle@platform` |
+| Organization | `Organization` (+ `inn`, `ogrn`) | name |
+| Address | `Location` | normalised address |
+| Document | `Document` | `doc_type number` |
+| Identifier | `Identifier` (new) | `SCHEME value` |
+| Event | `Event` (new) | title |
+| record | `SourceRecord` (new) | `heading (p. N) #record [report]` |
+
+Unverified values are labelled `raw (не подтверждено)` so they never MERGE with
+validated nodes.
+
+Provenance on every node: `source=himera`, `himera_report`, `himera_records`,
+`himera_pages`, `himera_raw_value`, `himera_verification`, `himera_confidence`,
+`himera_subject_link`. On every relationship: `himera_report`, `record_id`,
+`page_start`, `page_end`, `evidence`, `confidence`, `status`,
+`is_source_claim`. `SourceRecord -[:MENTIONS]-> entity` edges link each value to
+the record and page it was read from.
+
+Re-import: nodes MERGE on `(type, nodeLabel, sketch)` and edges on their full
+property set, and a second upload of the same PDF reuses the stored analysis
+(same SHA-256 in the same sketch), so nothing is duplicated and nothing is paid
+twice. Use `force=true` to re-analyse.
+
+## 10. Using the import in the UI
+
+1. Open a sketch → *Import* → **Himera Search PDF**.
+2. Choose the PDF. The analysis runs in the background (progress: spinner; it
+   can take a few minutes; the page polls every 3 s).
+3. Preview tabs: **Entities** (validated, selected by default), **Unverified**
+   (not selected), **Relationships** (confirmed, selected), **Ambiguous
+   relationships** (candidates and source claims, not selected), **Records**
+   (all records with pages). Header: records/entities count, model, engine,
+   tokens, cost, warnings; a red banner if the analysis is incomplete.
+4. Optionally untick *Add source record nodes*.
+5. **Import** — the graph refreshes without reloading the page.
+6. Select an imported Email or Username node → *Enrich* to run
+   `email_to_username`, `email_to_gravatar`, `email_to_domain`,
+   `username_to_socials_maigret`, `username_to_socials_sherlock`.
+
+API (authorised with the usual bearer token; upload/import need *update*
+rights on the investigation, the preview needs *read*):
+
+| Method | Path |
+|---|---|
+| `POST` | `/api/sketches/{sketch_id}/import/himera` (multipart `file`, optional `force`) |
+| `GET` | `/api/sketches/{sketch_id}/import/himera/{import_id}` |
+| `POST` | `/api/sketches/{sketch_id}/import/himera/{import_id}/execute` (`entity_ids`, `relationship_ids`, `include_source_records`) |
+
+## 11. Cost and limits
+
+* Cost per call comes from OpenRouter `usage.cost`; when absent it is computed
+  from the model's per-token price. The sum is stored per import and shown in
+  the preview.
+* Before each call the service estimates `prompt tokens × price + max_tokens ×
+  completion price (+ OCR pages)` and refuses the call if the document budget
+  would be exceeded.
+* PDF size limit 20 MB. Encrypted PDFs are rejected.
+* The LLM can miss or misread values; the deterministic checks catch format
+  errors and values that are not in the cited record, but not a wrong but
+  well-formed value copied from another line. Always review the preview.
+* The PDF can be shorter than Himera's TXT version.
+
+## 12. Tests and quality measurement
+
+* `flowsint-core/tests/himera/` — unit and pipeline tests with a scripted
+  OpenRouter (no network, no cost): client (retries, errors, budget), PDF
+  preparation, records pass (chunks, truncation, repair, empty), entities pass,
+  validation, importer (provenance, re-import), enricher compatibility, metrics.
+* `flowsint-api/tests/test_himera_import.py` — upload → preview → import
+  through the API (auth, viewer forbidden, cached re-upload, missing key).
+* Synthetic fixtures (fictional data) in `tests/himera/fixtures/`:
+  `synthetic_report.pdf` (4 pages: two records on one page, identical
+  duplicate records, a record spanning pages 2–3, a namesake section, an e-mail
+  with Cyrillic look-alikes, several phones and social profiles),
+  `scanned_report.pdf`, expected answers and the gold file
+  `expected_synthetic.json`. Regenerate with `make_fixtures.py`.
+* Metrics (`himera/metrics.py`): record precision/recall, entity
+  precision/recall (Event excluded), precision/recall of confirmed subject
+  relationships, wrong links of the subject to namesake values, unverified and
+  ambiguous shares, cost/tokens.
+* Live test (costs money, sends the fictional PDF):
+
+  ```bash
+  HIMERA_LIVE_TEST=1 OPENROUTER_API_KEY=... uv run python -m pytest \
+      flowsint-core/tests/himera/test_metrics_and_e2e.py -k live -s
+  ```
+
+* A real report (personal data!) only with explicit operator consent:
+
+  ```bash
+  HIMERA_ALLOW_SEND=1 OPENROUTER_API_KEY=... uv run python -m flowsint_core.himera \
+      report.pdf --out /safe/place/result.json
+  ```
+
+  Only counts and metrics are printed; the full result goes to `--out`, which
+  must stay out of the repository.
