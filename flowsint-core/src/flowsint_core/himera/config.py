@@ -23,10 +23,12 @@ class HimeraSettings:
     max_retries: int = 3
     backoff_base_s: float = 2.0
     # Page ranges for the records pass. 0 = whole document in one call.
-    pages_per_chunk: int = 6
+    pages_per_chunk: int = 4
     chunk_overlap_pages: int = 1
     # Records per call in the entities pass.
-    records_per_batch: int = 12
+    records_per_batch: int = 8
+    # Parallel OpenRouter calls (ranges and batches are independent).
+    concurrency: int = 8
     max_output_tokens: int = 16000
     # Bounded re-ask when the model returned broken / truncated JSON.
     max_repair_attempts: int = 1
@@ -62,6 +64,7 @@ class HimeraSettings:
             records_per_batch=num(
                 "HIMERA_RECORDS_PER_BATCH", defaults.records_per_batch, int
             ),
+            concurrency=num("HIMERA_CONCURRENCY", defaults.concurrency, int),
             max_output_tokens=num(
                 "HIMERA_MAX_OUTPUT_TOKENS", defaults.max_output_tokens, int
             ),

@@ -18,6 +18,7 @@ from .fakes import (
     MODEL,
     FakeOpenRouter,
     load_json,
+    perfect_entities_handler,
     perfect_records_handler,
     synthetic_pdf,
 )
@@ -63,7 +64,7 @@ async def test_whole_document_records():
     assert any("truncated" in w for w in result.warnings)
     assert [r.name_match_only for r in result.records].count(True) == 1
     assert fake.calls_for("himera_records")[0]["pdf_engine"] == "pdf-text"
-    assert result.usage.calls == 2 and result.usage.model == "test/model"
+    assert result.usage.calls == 3 and result.usage.model == "test/model"
 
 
 @pytest.mark.asyncio
@@ -258,7 +259,7 @@ async def test_real_client_over_mock_transport():
     result = await service.extract(synthetic_pdf())
     assert summary(result) == EXPECTED
     assert result.usage.cost_usd == pytest.approx(0.009)
-    assert result.usage.prompt_tokens == 5001
+    assert result.usage.prompt_tokens == 5002
     file_part = sent[0]["messages"][1]["content"][1]
     assert file_part["type"] == "file"
     assert sent[0]["response_format"]["json_schema"]["name"] == "himera_records"
@@ -328,3 +329,58 @@ def test_tail_on_overlap_page_joins_the_record_started_before_the_range():
     assert [f.name for f in by_heading["A"].fields] == ["x", "y", "w"]
     assert [f.name for f in by_heading["B"].fields] == ["z", "v"]
     assert (by_heading["B"].page_end, by_heading["B"].open_ended) == (3, False)
+
+
+@pytest.mark.asyncio
+async def test_ranges_and_batches_run_in_parallel_within_limit():
+    settings = replace(
+        WHOLE,
+        pages_per_chunk=1,
+        chunk_overlap_pages=0,
+        records_per_batch=2,
+        concurrency=3,
+    )
+    fake = FakeOpenRouter(
+        {
+            "himera_records": perfect_records_handler(),
+            "himera_entities": perfect_entities_handler(),
+        },
+        delay_s=0.02,
+    )
+    result = await HimeraExtractionService(fake, settings).extract(synthetic_pdf())
+    assert summary(result) == EXPECTED
+    assert fake.max_in_flight == 3
+
+
+@pytest.mark.asyncio
+async def test_parallel_calls_never_overshoot_the_budget():
+    settings = replace(
+        WHOLE,
+        pages_per_chunk=1,
+        chunk_overlap_pages=0,
+        concurrency=8,
+        max_cost_usd=0.02,
+    )
+    fake = FakeOpenRouter({"himera_records": perfect_records_handler()}, delay_s=0.02)
+    result = await HimeraExtractionService(fake, settings).extract(synthetic_pdf())
+    # each call reserves ~0.0068: only 2 fit at once in 0.02, others are refused
+    assert len(fake.calls) == 2
+    assert not result.complete
+    assert any("budget exceeded" in w for w in result.warnings)
+
+
+@pytest.mark.asyncio
+async def test_api_error_in_one_range_cancels_the_others():
+    from flowsint_core.himera.openrouter import OpenRouterHTTPError
+
+    perfect = perfect_records_handler()
+
+    def failing(schema_name, messages):
+        if "pages 1-1" in messages[1]["content"][0]["text"]:
+            return OpenRouterHTTPError(401, "bad key")
+        return perfect(schema_name, messages)
+
+    settings = replace(WHOLE, pages_per_chunk=1, chunk_overlap_pages=0, concurrency=8)
+    fake = FakeOpenRouter({"himera_records": failing}, delay_s=0.05)
+    with pytest.raises(OpenRouterHTTPError):
+        await HimeraExtractionService(fake, settings).extract(synthetic_pdf())

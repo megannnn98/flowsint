@@ -7,11 +7,12 @@ by the LLM; this module only orchestrates calls, parses/validates JSON and
 merges deterministic pieces.
 """
 
+import asyncio
 import json
 import logging
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar
+from typing import Any, Awaitable, Dict, List, Optional, Tuple, Type, TypeVar
 
 from pydantic import BaseModel, ValidationError
 
@@ -83,6 +84,19 @@ class _Run:
         self.warnings: List[str] = []
         self.complete = True
         self.stopped = False  # budget exhausted: no further calls
+        # Independent ranges/batches run in parallel, at most this many calls at once.
+        self.slots = asyncio.Semaphore(max(1, settings.concurrency))
+
+
+async def _gather(coros: List[Awaitable[Any]]) -> List[Any]:
+    """Run concurrently, keep order; on the first failure cancel the rest (no
+    orphan calls keep spending money) and re-raise that failure as is."""
+    try:
+        async with asyncio.TaskGroup() as group:
+            tasks = [group.create_task(c) for c in coros]  # type: ignore[arg-type]
+    except BaseExceptionGroup as eg:
+        raise eg.exceptions[0]
+    return [t.result() for t in tasks]
 
 
 def parse_json_output(content: str, output_model: Type[T]) -> T:
@@ -162,11 +176,10 @@ class HimeraExtractionService:
             self._settings.pages_per_chunk,
             self._settings.chunk_overlap_pages,
         )
-        chunks: List[ChunkRecords] = []
-        for rng in ranges:
-            chunks.extend(
-                await self._records_for_range(prepared, rng, run, filename, 0)
-            )
+        results = await _gather(
+            [self._records_for_range(prepared, rng, run, filename, 0) for rng in ranges]
+        )
+        chunks: List[ChunkRecords] = [c for part in results for c in part]
         return merge_chunk_records(chunks, prepared.page_count)
 
     async def _records_for_range(
@@ -222,11 +235,17 @@ class HimeraExtractionService:
                 run.warnings.append(
                     f"records {rng}: response hit the token limit, retrying as {left} and {right}"
                 )
-                return await self._records_for_range(
-                    prepared, left, run, filename, depth + 1
-                ) + await self._records_for_range(
-                    prepared, right, run, filename, depth + 1
+                halves = await _gather(
+                    [
+                        self._records_for_range(
+                            prepared, left, run, filename, depth + 1
+                        ),
+                        self._records_for_range(
+                            prepared, right, run, filename, depth + 1
+                        ),
+                    ]
                 )
+                return halves[0] + halves[1]
             run.complete = False
             run.warnings.append(
                 f"records {rng}: response truncated, records may be missing"
@@ -273,15 +292,16 @@ class HimeraExtractionService:
             if r.section != Section.SERVICE
         ]
         size = max(1, self._settings.records_per_batch)
-        entities: List[LlmEntity] = []
-        relationships: List[LlmRelationship] = []
-        counter = [0]
-        for start in range(0, len(payload), size):
-            batch_entities, batch_rels = await self._entities_for_batch(
-                subject, payload[start : start + size], run, counter
-            )
-            entities.extend(batch_entities)
-            relationships.extend(batch_rels)
+        results = await _gather(
+            [
+                self._entities_for_batch(
+                    subject, payload[start : start + size], run, f"b{n}"
+                )
+                for n, start in enumerate(range(0, len(payload), size), 1)
+            ]
+        )
+        entities: List[LlmEntity] = [e for part in results for e in part[0]]
+        relationships: List[LlmRelationship] = [r for part in results for r in part[1]]
         return entities, relationships
 
     async def _entities_for_batch(
@@ -289,7 +309,7 @@ class HimeraExtractionService:
         subject: Dict[str, Any],
         batch: List[Dict[str, Any]],
         run: _Run,
-        counter: List[int],
+        batch_key: str,
     ) -> Tuple[List[LlmEntity], List[LlmRelationship]]:
         if run.stopped or not batch:
             return [], []
@@ -316,11 +336,15 @@ class HimeraExtractionService:
                 run.warnings.append(
                     f"entities {ids}: response hit the token limit, retrying in two batches"
                 )
-                left = await self._entities_for_batch(
-                    subject, batch[:half], run, counter
-                )
-                right = await self._entities_for_batch(
-                    subject, batch[half:], run, counter
+                left, right = await _gather(
+                    [
+                        self._entities_for_batch(
+                            subject, batch[:half], run, batch_key + "a"
+                        ),
+                        self._entities_for_batch(
+                            subject, batch[half:], run, batch_key + "b"
+                        ),
+                    ]
                 )
                 return left[0] + right[0], left[1] + right[1]
             run.complete = False
@@ -335,8 +359,7 @@ class HimeraExtractionService:
         output = outcome.parsed
         assert isinstance(output, LlmEntitiesOutput)
         # Entity ids are only unique inside one answer: namespace them per batch.
-        counter[0] += 1
-        prefix = f"b{counter[0]}:"
+        prefix = f"{batch_key}:"
         allowed = {r["record_id"] for r in batch}
         entities = []
         for e in output.entities:
@@ -390,17 +413,18 @@ class HimeraExtractionService:
         extra_cost_estimate_usd: float = 0.0,
     ) -> CallOutcome:
         try:
-            result = await self._client.chat_json(
-                model=run.model,
-                messages=messages,
-                schema_name=schema_name,
-                schema=schema,
-                max_tokens=self._settings.max_output_tokens,
-                budget=run.budget,
-                estimated_prompt_tokens=estimated_prompt_tokens,
-                pdf_engine=pdf_engine,
-                extra_cost_estimate_usd=extra_cost_estimate_usd,
-            )
+            async with run.slots:
+                result = await self._client.chat_json(
+                    model=run.model,
+                    messages=messages,
+                    schema_name=schema_name,
+                    schema=schema,
+                    max_tokens=self._settings.max_output_tokens,
+                    budget=run.budget,
+                    estimated_prompt_tokens=estimated_prompt_tokens,
+                    pdf_engine=pdf_engine,
+                    extra_cost_estimate_usd=extra_cost_estimate_usd,
+                )
         except BudgetExceededError as e:
             self._stop(run, what, e)
             return CallOutcome(None)
@@ -418,21 +442,23 @@ class HimeraExtractionService:
             if run.stopped:
                 break
             try:
-                repaired = await self._client.chat_json(
-                    model=run.model,
-                    messages=[
-                        {"role": "system", "content": REPAIR_SYSTEM},
-                        {
-                            "role": "user",
-                            "content": repair_user_prompt(broken, error, schema),
-                        },
-                    ],
-                    schema_name=schema_name,
-                    schema=schema,
-                    max_tokens=self._settings.max_output_tokens,
-                    budget=run.budget,
-                    estimated_prompt_tokens=len(broken) // 2 + _SYSTEM_PROMPT_TOKENS,
-                )
+                async with run.slots:
+                    repaired = await self._client.chat_json(
+                        model=run.model,
+                        messages=[
+                            {"role": "system", "content": REPAIR_SYSTEM},
+                            {
+                                "role": "user",
+                                "content": repair_user_prompt(broken, error, schema),
+                            },
+                        ],
+                        schema_name=schema_name,
+                        schema=schema,
+                        max_tokens=self._settings.max_output_tokens,
+                        budget=run.budget,
+                        estimated_prompt_tokens=len(broken) // 2
+                        + _SYSTEM_PROMPT_TOKENS,
+                    )
             except BudgetExceededError as e:
                 self._stop(run, what, e)
                 break

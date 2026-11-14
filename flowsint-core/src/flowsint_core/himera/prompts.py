@@ -26,12 +26,11 @@ Rules:
 7. Copy field names and values EXACTLY as printed (keep case, odd characters, Cyrillic/Latin mix, spaces in
    numbers, broken quotes). Do not correct, translate, normalise or complete anything. Skip empty values.
    For tables (income) use field names like "Место работы", "Сумма", "Дата актуальности" per row.
-8. raw_text: the verbatim text of the record (may be shortened to the first ~600 characters).
-9. name_match_only = true when the record belongs to a section marked "совпадения по фио" (matched by full name
+8. name_match_only = true when the record belongs to a section marked "совпадения по фио" (matched by full name
    only) or otherwise states it is a name-only match.
-10. source_name: the dataset name from the heading without period/code; source_period: the year/period from the
+9. source_name: the dataset name from the heading without period/code; source_period: the year/period from the
    heading if printed, else null.
-11. report_id: the id after "Отчет №" if visible in this file, else null. truncation_notice = true if the footer says
+10. report_id: the id after "Отчет №" if visible in this file, else null. truncation_notice = true if the footer says
    the report may be truncated.
 Return JSON only."""
 

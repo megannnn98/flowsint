@@ -113,18 +113,37 @@ class ChatResult:
 
 @dataclass
 class CostBudget:
-    """Cumulative USD cap for one document; checked before every call."""
+    """Cumulative USD cap for one document.
+
+    Concurrent calls reserve their worst-case estimate before sending (``reserve``)
+    and settle it with the actual cost afterwards (``settle``), so parallel calls
+    cannot jointly overshoot the cap. reserve/settle contain no ``await``: they
+    are atomic on the event loop.
+    """
 
     max_usd: float
     spent_usd: float = 0.0
+    reserved_usd: float = 0.0
     calls: List[float] = field(default_factory=list)
 
     def check(self, estimate_usd: float) -> None:
-        if self.spent_usd + estimate_usd > self.max_usd:
+        if self.spent_usd + self.reserved_usd + estimate_usd > self.max_usd:
             raise BudgetExceededError(
                 f"Processing budget exceeded: spent ${self.spent_usd:.4f}, "
-                f"next call estimated ${estimate_usd:.4f}, limit ${self.max_usd:.4f}"
+                f"in flight ${self.reserved_usd:.4f}, next call estimated "
+                f"${estimate_usd:.4f}, limit ${self.max_usd:.4f}"
             )
+
+    def reserve(self, estimate_usd: float) -> None:
+        self.check(estimate_usd)
+        self.reserved_usd += estimate_usd
+
+    def release(self, estimate_usd: float) -> None:
+        self.reserved_usd = max(0.0, self.reserved_usd - estimate_usd)
+
+    def settle(self, estimate_usd: float, cost_usd: float) -> None:
+        self.release(estimate_usd)
+        self.charge(cost_usd)
 
     def charge(self, cost_usd: float) -> None:
         self.spent_usd += cost_usd
@@ -265,8 +284,35 @@ class OpenRouterClient:
             + max_tokens * model.completion_price
             + extra_cost_estimate_usd
         )
-        budget.check(estimate)
+        budget.reserve(estimate)
+        try:
+            return await self._chat_json(
+                model,
+                messages,
+                schema_name,
+                schema,
+                max_tokens,
+                pdf_engine,
+                budget,
+                estimate,
+            )
+        except BaseException:
+            # Failed before settle: free the reservation (the call is not charged
+            # locally; OpenRouter does not bill failed requests).
+            budget.release(estimate)
+            raise
 
+    async def _chat_json(
+        self,
+        model: ModelInfo,
+        messages: List[Dict[str, Any]],
+        schema_name: str,
+        schema: Dict[str, Any],
+        max_tokens: int,
+        pdf_engine: Optional[str],
+        budget: CostBudget,
+        estimate: float,
+    ) -> ChatResult:
         payload: Dict[str, Any] = {
             "model": model.id,
             "messages": messages,
@@ -301,7 +347,7 @@ class OpenRouterClient:
                 + completion_tokens * model.completion_price
             )
         usage = Usage(prompt_tokens, completion_tokens, float(cost), 1)
-        budget.charge(usage.cost_usd)
+        budget.settle(estimate, usage.cost_usd)
         logger.info(
             "openrouter call model=%s schema=%s finish=%s prompt_tokens=%s "
             "completion_tokens=%s cost=%.5f",

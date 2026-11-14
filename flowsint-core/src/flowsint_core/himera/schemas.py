@@ -260,7 +260,6 @@ RECORDS_SCHEMA: Dict[str, Any] = _obj(
                     "starts_before_range": {"type": "boolean"},
                     "continues_after_range": {"type": "boolean"},
                     "fields": _FIELDS,
-                    "raw_text": _s(),
                     "name_match_only": {"type": "boolean"},
                 }
             ),

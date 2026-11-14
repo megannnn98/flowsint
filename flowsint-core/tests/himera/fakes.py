@@ -1,5 +1,6 @@
 """Test doubles: a scripted OpenRouter client that never touches the network."""
 
+import asyncio
 import copy
 import json
 import re
@@ -90,7 +91,11 @@ class FakeOpenRouter:
         handlers: Dict[str, Handler],
         model: ModelInfo = MODEL,
         cost_per_call: float = 0.001,
+        delay_s: float = 0.0,
     ):
+        self.delay_s = delay_s
+        self.in_flight = 0
+        self.max_in_flight = 0
         self.handlers = {"himera_entities": empty_entities_handler, **handlers}
         self.model = model
         self.cost_per_call = cost_per_call
@@ -110,8 +115,15 @@ class FakeOpenRouter:
             + kw["max_tokens"] * model.completion_price
             + kw.get("extra_cost_estimate_usd", 0.0)
         )
-        budget.check(estimate)
+        budget.reserve(estimate)
         self.calls.append({"schema_name": schema_name, "messages": messages, **kw})
+        self.in_flight += 1
+        self.max_in_flight = max(self.max_in_flight, self.in_flight)
+        try:
+            if self.delay_s:
+                await asyncio.sleep(self.delay_s)
+        finally:
+            self.in_flight -= 1
         if schema_name in self.handlers and messages[0]["content"].startswith(
             "You fix JSON"
         ):
@@ -120,8 +132,9 @@ class FakeOpenRouter:
             handler = self.handlers[schema_name]
         reply = handler(schema_name, messages)
         if isinstance(reply, Exception):
+            budget.release(estimate)
             raise reply
-        budget.charge(self.cost_per_call)
+        budget.settle(estimate, self.cost_per_call)
         if isinstance(reply, ChatResult):
             return reply
         content = (

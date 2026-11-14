@@ -162,9 +162,10 @@ The import uses the same key as the Flowsint chat:
 | `HIMERA_PDF_ENGINE` | `auto` | `auto` = `pdf-text` for PDFs with a text layer, `mistral-ocr` for scans; or force `pdf-text` / `mistral-ocr` / `native` |
 | `HIMERA_MAX_COST_USD` | `0.50` | hard cap for one document (all calls) |
 | `HIMERA_OCR_USD_PER_PAGE` | `0.002` | OCR price used in the pre-call estimate |
-| `HIMERA_PAGES_PER_CHUNK` | `6` | page range size for the records pass (`0` = whole PDF in one call) |
+| `HIMERA_PAGES_PER_CHUNK` | `4` | page range size for the records pass (`0` = whole PDF in one call) |
 | `HIMERA_CHUNK_OVERLAP_PAGES` | `1` | pages shared by neighbouring ranges |
-| `HIMERA_RECORDS_PER_BATCH` | `12` | records per call in the entities pass |
+| `HIMERA_RECORDS_PER_BATCH` | `8` | records per call in the entities pass |
+| `HIMERA_CONCURRENCY` | `8` | parallel OpenRouter calls; ranges, and then record batches, are sent at once. Each call reserves its worst-case cost in the budget before sending, so parallel calls cannot overshoot `HIMERA_MAX_COST_USD`; the first API error cancels the remaining calls |
 | `HIMERA_MAX_OUTPUT_TOKENS` | `16000` | `max_tokens` of every call |
 | `HIMERA_TIMEOUT_S` | `180` | HTTP timeout per call |
 | `HIMERA_MAX_RETRIES` / `HIMERA_BACKOFF_BASE_S` | `3` / `2` | retries on 408/409/425/429/5xx/timeouts with exponential backoff (honours `Retry-After`) |
@@ -238,7 +239,7 @@ nullable via `["string", "null"]`); see `himera/schemas.py`.
     "page_start": 1, "page_end": 2, "ordinal_on_start_page": 1,
     "starts_before_range": false, "continues_after_range": false,
     "fields": [{"name": "Телефон", "value": "79990000000"}],
-    "raw_text": "string", "name_match_only": false
+    "name_match_only": false
   }]
 }
 ```
