@@ -1,0 +1,355 @@
+{
+ "report_id": "00000000-0000-4000-8000-000000000001",
+ "truncation_notice": true,
+ "records": [
+  {
+   "section": "summary",
+   "source_name": "УСТАНОВОЧНЫЕ ДАННЫЕ",
+   "source_heading": "УСТАНОВОЧНЫЕ ДАННЫЕ",
+   "source_period": null,
+   "page_start": 1,
+   "page_end": 1,
+   "ordinal_on_start_page": 1,
+   "fields": [
+    {
+     "name": "Лица",
+     "value": "ПЕТРОВ ПЁТР СЕРГЕЕВИЧ 3.4.1985,"
+    },
+    {
+     "name": "Паспорта",
+     "value": "0000123456"
+    },
+    {
+     "name": "Телефоны",
+     "value": "79990001122, 74950001122"
+    },
+    {
+     "name": "СНИЛС",
+     "value": "11223344595"
+    },
+    {
+     "name": "ИНН",
+     "value": "770123456703"
+    },
+    {
+     "name": "Возможные фамилии",
+     "value": "ПЕТРОВ, ПЕТРОВЪ"
+    }
+   ],
+   "raw_text": "УСТАНОВОЧНЫЕ ДАННЫЕ Лица ПЕТРОВ ПЁТР СЕРГЕЕВИЧ 3.4.1985, Паспорта 0000123456 Телефоны 79990001122, 74950001122 СНИЛС 11223344595 ИНН 770123456703 Возможные фамилии ПЕТРОВ, ПЕТРОВЪ",
+   "name_match_only": false,
+   "starts_before_range": false,
+   "continues_after_range": false
+  },
+  {
+   "section": "scoring",
+   "source_name": "Результаты скоринга",
+   "source_heading": "Результаты скоринга",
+   "source_period": null,
+   "page_start": 1,
+   "page_end": 1,
+   "ordinal_on_start_page": 2,
+   "fields": [
+    {
+     "name": "Общий показатель",
+     "value": "0,8 - есть негатив"
+    },
+    {
+     "name": "Прочее",
+     "value": "0,8"
+    }
+   ],
+   "raw_text": "Результаты скоринга Общий показатель 0,8 - есть негатив Прочее 0,8",
+   "name_match_only": false,
+   "starts_before_range": false,
+   "continues_after_range": false
+  },
+  {
+   "section": "labels",
+   "source_name": "Метки",
+   "source_heading": "Метки",
+   "source_period": null,
+   "page_start": 1,
+   "page_end": 1,
+   "ordinal_on_start_page": 3,
+   "fields": [
+    {
+     "name": "Имя",
+     "value": "ПЕТРОВ ПЁТР СЕРГЕЕВИЧ"
+    },
+    {
+     "name": "Дата рождения",
+     "value": "3.4.1985"
+    },
+    {
+     "name": "Регион",
+     "value": "ТВЕРСКАЯ ОБЛАСТЬ"
+    },
+    {
+     "name": "Метки",
+     "value": "ДОЛЖНИК"
+    }
+   ],
+   "raw_text": "Метки Имя ПЕТРОВ ПЁТР СЕРГЕЕВИЧ Дата рождения 3.4.1985 Регион ТВЕРСКАЯ ОБЛАСТЬ Метки ДОЛЖНИК",
+   "name_match_only": false,
+   "starts_before_range": false,
+   "continues_after_range": false
+  },
+  {
+   "section": "income",
+   "source_name": "Доходы",
+   "source_heading": "Доходы",
+   "source_period": null,
+   "page_start": 1,
+   "page_end": 1,
+   "ordinal_on_start_page": 4,
+   "fields": [
+    {
+     "name": "Место работы",
+     "value": "ООО ВЕКТОР"
+    },
+    {
+     "name": "Сумма",
+     "value": "120000 ₽"
+    },
+    {
+     "name": "Дата актуальности",
+     "value": "2021"
+    }
+   ],
+   "raw_text": "Доходы Место работы Сумма Дата актуальности ООО ВЕКТОР 120000 ₽ 2021",
+   "name_match_only": false,
+   "starts_before_range": false,
+   "continues_after_range": false
+  },
+  {
+   "section": "addresses",
+   "source_name": "Адреса",
+   "source_heading": "Адреса",
+   "source_period": null,
+   "page_start": 1,
+   "page_end": 1,
+   "ordinal_on_start_page": 5,
+   "fields": [
+    {
+     "name": "Адрес",
+     "value": "Г ТВЕРЬ, УЛ ЛЕСНАЯ, Д 5, КВ 12"
+    },
+    {
+     "name": "Адрес",
+     "value": "ТВЕРЬ, ЛЕСНАЯ УЛ., Д.5, КВ.12"
+    }
+   ],
+   "raw_text": "Адреса Г ТВЕРЬ, УЛ ЛЕСНАЯ, Д 5, КВ 12 ТВЕРЬ, ЛЕСНАЯ УЛ., Д.5, КВ.12",
+   "name_match_only": false,
+   "starts_before_range": false,
+   "continues_after_range": false
+  },
+  {
+   "section": "dataset_record",
+   "source_name": "КЛИЕНТЫ БАНКА",
+   "source_heading": "КЛИЕНТЫ БАНКА 2023 QV",
+   "source_period": "2023",
+   "page_start": 2,
+   "page_end": 2,
+   "fields": [
+    {
+     "name": "Имя",
+     "value": "ПЕТРОВ ПЁТР СЕРГЕЕВИЧ"
+    },
+    {
+     "name": "Дата рождения",
+     "value": "3.4.1985"
+    },
+    {
+     "name": "Телефон",
+     "value": "79990001122"
+    },
+    {
+     "name": "Емаil",
+     "value": "PETROV85@МАIL.RU"
+    }
+   ],
+   "raw_text": "КЛИЕНТЫ БАНКА 2023 QV Имя ПЕТРОВ ПЁТР СЕРГЕЕВИЧ Дата рождения 3.4.1985 Телефон 79990001122 Емаil PETROV85@МАIL.RU",
+   "ordinal_on_start_page": 1,
+   "name_match_only": false,
+   "starts_before_range": false,
+   "continues_after_range": false
+  },
+  {
+   "section": "dataset_record",
+   "source_name": "КЛИЕНТЫ БАНКА",
+   "source_heading": "КЛИЕНТЫ БАНКА 2023 QV",
+   "source_period": "2023",
+   "page_start": 2,
+   "page_end": 2,
+   "fields": [
+    {
+     "name": "Имя",
+     "value": "ПЕТРОВ ПЁТР СЕРГЕЕВИЧ"
+    },
+    {
+     "name": "Дата рождения",
+     "value": "3.4.1985"
+    },
+    {
+     "name": "Телефон",
+     "value": "79990001122"
+    },
+    {
+     "name": "Емаil",
+     "value": "PETROV85@МАIL.RU"
+    }
+   ],
+   "raw_text": "КЛИЕНТЫ БАНКА 2023 QV Имя ПЕТРОВ ПЁТР СЕРГЕЕВИЧ Дата рождения 3.4.1985 Телефон 79990001122 Емаil PETROV85@МАIL.RU",
+   "ordinal_on_start_page": 2,
+   "name_match_only": false,
+   "starts_before_range": false,
+   "continues_after_range": false
+  },
+  {
+   "section": "dataset_record",
+   "source_name": "КАДРЫ ФЛ",
+   "source_heading": "КАДРЫ ФЛ 2021 10 LU",
+   "source_period": "2021 10",
+   "page_start": 2,
+   "page_end": 3,
+   "ordinal_on_start_page": 3,
+   "fields": [
+    {
+     "name": "Имя",
+     "value": "ПЕТРОВ ПЁТР СЕРГЕЕВИЧ"
+    },
+    {
+     "name": "Дата рождения",
+     "value": "3.4.1985"
+    },
+    {
+     "name": "ИНН",
+     "value": "770123456703"
+    },
+    {
+     "name": "СНИЛС",
+     "value": "11223344595"
+    },
+    {
+     "name": "Организация",
+     "value": "ООО ВЕКТОР"
+    },
+    {
+     "name": "ИНН организации",
+     "value": "7709876545"
+    },
+    {
+     "name": "ОГРН",
+     "value": "1027700123450"
+    },
+    {
+     "name": "Должность",
+     "value": "ИНЖЕНЕР"
+    }
+   ],
+   "raw_text": "КАДРЫ ФЛ 2021 10 LU Имя ПЕТРОВ ПЁТР СЕРГЕЕВИЧ Дата рождения 3.4.1985 ИНН 770123456703 СНИЛС 11223344595 Организация ООО ВЕКТОР ИНН организации 7709876545 ОГРН 1027700123450 Должность ИНЖЕНЕР",
+   "name_match_only": false,
+   "starts_before_range": false,
+   "continues_after_range": false
+  },
+  {
+   "section": "dataset_record",
+   "source_name": "ПОЛЬЗОВАТЕЛИ СОЦСЕТИ",
+   "source_heading": "ПОЛЬЗОВАТЕЛИ СОЦСЕТИ 2020 VK",
+   "source_period": "2020",
+   "page_start": 3,
+   "page_end": 3,
+   "ordinal_on_start_page": 1,
+   "fields": [
+    {
+     "name": "Имя",
+     "value": "Петров Пётр"
+    },
+    {
+     "name": "Дата рождения",
+     "value": "03.04.1985"
+    },
+    {
+     "name": "Профиль",
+     "value": "https://vk.com/id123456789"
+    },
+    {
+     "name": "Телеграм",
+     "value": "@petrov_ps"
+    },
+    {
+     "name": "E-mail",
+     "value": "petrov.ps@example.com"
+    },
+    {
+     "name": "Телефон",
+     "value": "+7 (916) 555-12-34"
+    },
+    {
+     "name": "Логин",
+     "value": "petrov_ps"
+    }
+   ],
+   "raw_text": "ПОЛЬЗОВАТЕЛИ СОЦСЕТИ 2020 VK Имя Петров Пётр Дата рождения 03.04.1985 Профиль https://vk.com/id123456789 Телеграм @petrov_ps E-mail petrov.ps@example.com Телефон +7 (916) 555-12-34 Логин petrov_ps",
+   "name_match_only": false,
+   "starts_before_range": false,
+   "continues_after_range": false
+  },
+  {
+   "section": "dataset_record",
+   "source_name": "Жители Москвы",
+   "source_heading": "Жители Москвы 2021 (совпадения по фио)",
+   "source_period": "2021",
+   "page_start": 4,
+   "page_end": 4,
+   "ordinal_on_start_page": 1,
+   "fields": [
+    {
+     "name": "Имя",
+     "value": "Петров Пётр Сергеевич"
+    },
+    {
+     "name": "Номер документа",
+     "value": "4500999888"
+    },
+    {
+     "name": "Телефон",
+     "value": "79160000000"
+    },
+    {
+     "name": "Email",
+     "value": "p.petrov@example.org"
+    },
+    {
+     "name": "Адрес",
+     "value": "Москва, ул. Садовая, д.1, кв.2"
+    }
+   ],
+   "raw_text": "Жители Москвы 2021 (совпадения по фио) Имя Петров Пётр Сергеевич Номер документа 4500999888 Телефон 79160000000 Email p.petrov@example.org Адрес Москва, ул. Садовая, д.1, кв.2",
+   "name_match_only": true,
+   "starts_before_range": false,
+   "continues_after_range": false
+  },
+  {
+   "section": "service",
+   "source_name": null,
+   "source_heading": "Служебная информация",
+   "source_period": null,
+   "page_start": 4,
+   "page_end": 4,
+   "ordinal_on_start_page": 2,
+   "fields": [
+    {
+     "name": "Примечание",
+     "value": "Отчёт может быть урезан из за его размера, для полноты отчёта скачайте txt."
+    }
+   ],
+   "raw_text": "Отчёт может быть урезан из за его размера, для полноты отчёта скачайте txt. Отчёт был сформирован в сервисе Himera Search (synthetic fixture).",
+   "name_match_only": false,
+   "starts_before_range": false,
+   "continues_after_range": false
+  }
+ ]
+}

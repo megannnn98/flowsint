@@ -120,9 +120,9 @@ export default function BackgroundContextMenu({
       return matchesName || matchesDescription
     }) || []
 
-  const handleFlowClick = (e: React.MouseEvent, flowId: string) => {
+  const handleFlowClick = (e: React.MouseEvent, flowId: string, flowName?: string) => {
     e.stopPropagation()
-    launchFlow(selectedNodeIds, flowId, sketchId)
+    launchFlow(selectedNodeIds, flowId, sketchId, flowName)
     setMenu(null)
   }
 
@@ -360,7 +360,7 @@ export default function BackgroundContextMenu({
                       <button
                         key={flow.id}
                         className="w-full flex items-center gap-2 p-2 rounded-md hover:bg-muted text-left transition-colors"
-                        onClick={(e) => handleFlowClick(e, flow.id)}
+                        onClick={(e) => handleFlowClick(e, flow.id, flow.name)}
                       >
                         <FileCode2 className="h-4 w-4 text-muted-foreground shrink-0" />
                         <div className="flex-1 min-w-0">
@@ -372,7 +372,7 @@ export default function BackgroundContextMenu({
                                 <BadgeCheck className="h-3 w-3 text-green-400" />
                               )}{' '}
                             </span>{' '}
-                            {flow.name || '(Unnamed flow)'}
+                            {flow.name || t('(Unnamed flow)')}
                           </p>
                           {flow.description && (
                             <p className="text-xs text-muted-foreground truncate">

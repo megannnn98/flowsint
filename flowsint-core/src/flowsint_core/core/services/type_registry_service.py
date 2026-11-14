@@ -270,6 +270,7 @@ class TypeRegistryService(BaseService):
                     ("Individual", "full_name", None),
                     ("Username", "value", "username"),
                     ("Organization", "name", None),
+                    ("Identifier", "value", "identifier"),
                 ],
             },
             {
@@ -342,6 +343,8 @@ class TypeRegistryService(BaseService):
                 "children": [
                     ("Document", "title", "document"),
                     ("File", "filename", "file"),
+                    ("SourceRecord", "record_key", "sourcerecord"),
+                    ("Event", "title", "event"),
                 ],
             },
             {

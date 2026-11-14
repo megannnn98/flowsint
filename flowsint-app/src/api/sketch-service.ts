@@ -11,6 +11,7 @@ import type {
   RelationshipType
 } from '@/types'
 import type { GraphNode } from '@/types/graph'
+import type { HimeraExecuteResult, HimeraImport, OpenRouterBalance } from '@/types/himera'
 import type { ActionItem } from '@/lib/action-items'
 
 // `inline=true` asks the backend for the relationships-already-joined
@@ -139,6 +140,40 @@ export const sketchService = {
     return fetchWithAuth(`/api/sketches/${sketchId}/import/execute`, {
       method: 'POST',
       body: formData
+    })
+  },
+  startHimeraImport: async (sketchId: string, file: File, force = false): Promise<HimeraImport> => {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('force', String(force))
+    return fetchWithAuth(`/api/sketches/${sketchId}/import/himera`, {
+      method: 'POST',
+      body: formData
+    })
+  },
+  getActiveHimeraImport: async (sketchId: string): Promise<HimeraImport | null> => {
+    return fetchWithAuth(`/api/sketches/${sketchId}/import/himera/active`, { method: 'GET' })
+  },
+  getOpenRouterBalance: async (sketchId: string): Promise<OpenRouterBalance> => {
+    return fetchWithAuth(`/api/sketches/${sketchId}/import/himera/balance`, { method: 'GET' })
+  },
+  getHimeraImport: async (sketchId: string, importId: string): Promise<HimeraImport> => {
+    return fetchWithAuth(`/api/sketches/${sketchId}/import/himera/${importId}`, {
+      method: 'GET'
+    })
+  },
+  executeHimeraImport: async (
+    sketchId: string,
+    importId: string,
+    selection: {
+      entity_ids: string[]
+      relationship_ids: string[]
+      include_source_records: boolean
+    }
+  ): Promise<HimeraExecuteResult> => {
+    return fetchWithAuth(`/api/sketches/${sketchId}/import/himera/${importId}/execute`, {
+      method: 'POST',
+      body: JSON.stringify(selection)
     })
   },
   updateNodePositions: async (
