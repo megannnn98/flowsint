@@ -476,6 +476,7 @@ class HimeraExtractionService:
                     schema=schema,
                     max_tokens=self._settings.max_output_tokens,
                     budget=run.budget,
+                    provider_sort=self._settings.provider_sort or None,
                     estimated_prompt_tokens=estimated_prompt_tokens,
                     pdf_engine=pdf_engine,
                     extra_cost_estimate_usd=extra_cost_estimate_usd,
@@ -511,6 +512,7 @@ class HimeraExtractionService:
                         schema=schema,
                         max_tokens=self._settings.max_output_tokens,
                         budget=run.budget,
+                        provider_sort=self._settings.provider_sort or None,
                         estimated_prompt_tokens=len(broken) // 2
                         + _SYSTEM_PROMPT_TOKENS,
                     )

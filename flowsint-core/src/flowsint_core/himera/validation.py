@@ -142,7 +142,16 @@ def normalize_entity(
                 issues.extend(d.issues)
 
     text = _record_text(record)
-    if not N.text_contains(text, raw):
+    field_values = [f.value for f in record.fields]
+    digit_types = (EntityType.PHONE, EntityType.IDENTIFIER, EntityType.DOCUMENT)
+    grounded = N.text_contains(text, raw) or (
+        t in digit_types
+        and (
+            N.digits_present(field_values, raw)
+            or N.digits_present(field_values, checked.value)
+        )
+    )
+    if not grounded:
         valid = False
         issues.append("value not found in the cited source record")
     elif entity.evidence and not N.words_present(text, entity.evidence):

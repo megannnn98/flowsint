@@ -270,3 +270,12 @@ def words_present(haystack: str, needle: str) -> bool:
     words = re.findall(r"\w+", needle.casefold())
     hay = set(re.findall(r"\w+", haystack.casefold()))
     return bool(words) and all(w in hay for w in words)
+
+
+def digits_present(fields_text: List[str], value: str, min_digits: int = 5) -> bool:
+    """The digits of ``value`` occur in the digits of one of the record's fields
+    (formatting such as '+7 (908) …' vs '7908…' does not matter)."""
+    d = digits(value)
+    if len(d) < min_digits:
+        return False
+    return any(d in digits(f) for f in fields_text)

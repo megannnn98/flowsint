@@ -14,7 +14,7 @@ Two families:
 from enum import Enum
 from typing import Any, Dict, List, Literal, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class Section(str, Enum):
@@ -62,6 +62,16 @@ class FieldValue(BaseModel):
     model_config = ConfigDict(extra="ignore")
     name: str
     value: str
+
+    @field_validator("name", "value", mode="before")
+    @classmethod
+    def _scalar_to_str(cls, v: Any) -> Any:
+        # Models without strict structured output send numbers/null here.
+        if v is None:
+            return ""
+        if isinstance(v, (int, float, bool)):
+            return str(v)
+        return v
 
 
 # ---------------------------------------------------------------- LLM pass 1

@@ -304,3 +304,43 @@ def test_subject_link_only_on_individuals_kept():
         [],
     )
     assert out.entities[0].subject_link == SubjectLink.UNKNOWN
+
+
+def test_numbers_and_null_in_attributes_are_accepted():
+    from flowsint_core.himera.schemas import LlmEntitiesOutput
+
+    out = LlmEntitiesOutput.model_validate(
+        {
+            "entities": [
+                {
+                    "entity_id": "e1",
+                    "type": "Organization",
+                    "raw_value": "ООО Х",
+                    "record_id": "r1",
+                    "page": 1,
+                    "evidence": "ООО Х",
+                    "confidence": 0.9,
+                    "attributes": [
+                        {"name": "inn", "value": 7709876545},
+                        {"name": "x", "value": None},
+                    ],
+                }
+            ],
+            "relationships": [],
+        }
+    )
+    assert [a.value for a in out.entities[0].attributes] == ["7709876545", ""]
+
+
+def test_reformatted_phone_is_grounded_but_invented_one_is_not():
+    records = [record("r1", [("Телефоны", "79161112233, 78123456789")])]
+    out = assemble(
+        records,
+        [
+            entity("a", EntityType.PHONE, "+7 (916) 111-22-33", "r1"),
+            entity("b", EntityType.PHONE, "+7 (999) 000-00-00", "r1"),
+        ],
+        [],
+    )
+    assert [e.normalized_value for e in out.entities] == ["+79161112233"]
+    assert out.unverified_entities[0].normalized_value == "+79990000000"

@@ -35,6 +35,9 @@ class HimeraSettings:
     records_per_batch: int = 8
     # Parallel OpenRouter calls (ranges and batches are independent).
     concurrency: int = 8
+    # OpenRouter provider routing: "throughput" picks the fastest provider of the
+    # model, "price" the cheapest, "latency" the quickest to first token, "" = default.
+    provider_sort: str = "throughput"
     max_output_tokens: int = 16000
     # Bounded re-ask when the model returned broken / truncated JSON.
     max_repair_attempts: int = 1
@@ -77,6 +80,7 @@ class HimeraSettings:
                 "HIMERA_RECORDS_PER_BATCH", defaults.records_per_batch, int
             ),
             concurrency=num("HIMERA_CONCURRENCY", defaults.concurrency, int),
+            provider_sort=env.get("HIMERA_PROVIDER_SORT", defaults.provider_sort),
             max_output_tokens=num(
                 "HIMERA_MAX_OUTPUT_TOKENS", defaults.max_output_tokens, int
             ),
