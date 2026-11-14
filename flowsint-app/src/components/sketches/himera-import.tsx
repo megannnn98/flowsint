@@ -113,7 +113,8 @@ function AnalysisProgress({
         </span>
       </div>
       <p className="text-xs text-muted-foreground">
-        {t('The PDF is being analysed by the language model. This can take a few minutes.')}
+        {t('The PDF is being analysed by the language model. This can take a few minutes.')}{' '}
+        {t('You can close this window: the analysis continues on the server.')}
       </p>
     </div>
   )
@@ -310,6 +311,7 @@ function Preview({
       }
       refetchGraph()
       void queryClient.invalidateQueries({ queryKey: ['openrouter-balance', sketchId] })
+      queryClient.removeQueries({ queryKey: ['himera-import-active', sketchId] })
       onSuccess()
     } catch (error) {
       toast.error((error as Error)?.message)
@@ -495,11 +497,26 @@ export function HimeraImportPanel({
   const [importId, setImportId] = useState<string | null>(null)
   const [startedAt, setStartedAt] = useState(() => Date.now())
   const [uploading, setUploading] = useState(false)
+  const [dismissed, setDismissed] = useState<string | null>(null)
+
+  // Reopening the panel resumes an analysis that is still running (or done but
+  // not imported) — closing the window never stops the server-side analysis.
+  const { data: active } = useQuery({
+    queryKey: ['himera-import-active', sketchId],
+    queryFn: () => sketchService.getActiveHimeraImport(sketchId),
+    enabled: !importId
+  })
+  // Derived, not stored: the resumed analysis is the active one unless the user
+  // dismissed it or started another.
+  const resumed = !importId && active && active.id !== dismissed ? active : null
+  const currentId = importId ?? resumed?.id ?? null
+  const shownStartedAt =
+    resumed?.created_at && !importId ? Date.parse(resumed.created_at) : startedAt
 
   const { data } = useQuery({
-    queryKey: ['himera-import', sketchId, importId],
-    queryFn: () => sketchService.getHimeraImport(sketchId, importId as string),
-    enabled: Boolean(importId),
+    queryKey: ['himera-import', sketchId, currentId],
+    queryFn: () => sketchService.getHimeraImport(sketchId, currentId as string),
+    enabled: Boolean(currentId),
     refetchInterval: (query) =>
       query.state.data?.status === 'processing' || !query.state.data ? POLL_MS : false
   })
@@ -519,6 +536,9 @@ export function HimeraImportPanel({
       try {
         setStartedAt(Date.now())
         const started = await sketchService.startHimeraImport(sketchId, file, force)
+        if (started.created_at) {
+          setStartedAt(Date.parse(started.created_at))
+        }
         setImportId(started.id)
       } catch (error) {
         toast.error((error as Error)?.message)
@@ -530,9 +550,10 @@ export function HimeraImportPanel({
   )
 
   const reset = useCallback(() => {
+    setDismissed(currentId)
     setImportId(null)
     onCancel()
-  }, [onCancel])
+  }, [onCancel, currentId])
 
   if (data?.status === 'completed' && data.result) {
     return (
@@ -558,7 +579,7 @@ export function HimeraImportPanel({
     )
   }
 
-  if (importId || uploading) {
+  if (currentId || uploading) {
     if (uploading || !data) {
       return (
         <div className="flex flex-col items-center justify-center gap-4 py-12">
@@ -567,7 +588,7 @@ export function HimeraImportPanel({
         </div>
       )
     }
-    return <AnalysisProgress progress={data.progress} startedAt={startedAt} />
+    return <AnalysisProgress progress={data.progress} startedAt={shownStartedAt} />
   }
 
   return (

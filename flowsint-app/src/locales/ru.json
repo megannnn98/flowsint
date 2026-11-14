@@ -2645,5 +2645,6 @@
   "Checking and saving": "Проверка и сохранение",
   "{{done}} of {{total}} parts done": "готово частей: {{done}} из {{total}}",
   "Spent": "Потрачено",
-  "Uploading...": "Загрузка..."
+  "Uploading...": "Загрузка...",
+  "You can close this window: the analysis continues on the server.": "Окно можно закрыть — анализ продолжится на сервере."
 }

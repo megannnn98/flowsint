@@ -233,3 +233,14 @@ def test_balance_endpoint(client, setup, monkeypatch):
         headers=setup["headers"](),
     )
     assert res.status_code == 400 and "OPENROUTER_API_KEY" in res.json()["detail"]
+
+
+def test_active_import_is_resumable_until_imported(client, setup):
+    base = f"/api/sketches/{setup['sketch'].id}/import/himera"
+    h = setup["headers"]()
+    assert client.get(f"{base}/active", headers=h).json() is None
+    import_id = upload(client, setup).json()["id"]
+    active = client.get(f"{base}/active", headers=h).json()
+    assert active["id"] == import_id and active["created_at"]
+    client.post(f"{base}/{import_id}/execute", json={}, headers=h)
+    assert client.get(f"{base}/active", headers=h).json() is None

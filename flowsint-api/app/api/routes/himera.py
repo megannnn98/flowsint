@@ -1,6 +1,7 @@
 """Himera Search PDF import (LLM extraction via OpenRouter) into a sketch."""
 
 import logging
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
@@ -61,6 +62,7 @@ class HimeraImportRead(BaseModel):
     result: Optional[Dict[str, Any]] = None
     import_summary: Optional[Dict[str, Any]] = None
     progress: Optional[Dict[str, Any]] = None
+    created_at: Optional[datetime] = None
     reused: bool = False
 
 
@@ -87,6 +89,7 @@ def _read(
         result=row.result if with_result else None,
         import_summary=row.import_summary,
         progress=row.progress,
+        created_at=row.created_at,
         reused=reused,
     )
 
@@ -134,6 +137,25 @@ async def start_himera_import(
     if needs_processing:
         background_tasks.add_task(_process_in_background, row.id, content)
     return _read(row, reused=not needs_processing, with_result=False)
+
+
+@router.get(
+    "/{sketch_id}/import/himera/active", response_model=Optional[HimeraImportRead]
+)
+def get_active_himera_import(
+    sketch_id: str,
+    db: Session = Depends(get_db),
+    current_user: Profile = Depends(get_current_user),
+):
+    """Analysis to resume when the import panel is reopened (or null)."""
+    service = create_himera_import_service(db)
+    try:
+        row = service.active(_parse_uuid(sketch_id, "Sketch"), current_user.id)
+    except NotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except PermissionDeniedError:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    return _read(row, with_result=False) if row else None
 
 
 @router.get("/{sketch_id}/import/himera/balance")

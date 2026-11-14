@@ -68,6 +68,23 @@ class HimeraImportService(BaseService):
             raise NotFoundError("Import not found")
         return row
 
+    def active(self, sketch_id: UUID, user_id: UUID) -> Optional[HimeraImport]:
+        """The analysis the import panel should resume: still running, or
+        finished but not imported yet (newest first)."""
+        self._sketch(sketch_id, user_id, "read")
+        rows = (
+            self._db.query(HimeraImport)
+            .filter(
+                HimeraImport.sketch_id == sketch_id,
+                HimeraImport.status.in_(["processing", "completed"]),
+                HimeraImport.imported_at.is_(None),
+            )
+            .order_by(HimeraImport.created_at.desc())
+            .limit(5)
+            .all()
+        )
+        return next((r for r in rows if not _is_stale(r)), None)
+
     # ----------------------------------------------------------- start
 
     def start(

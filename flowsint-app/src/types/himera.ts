@@ -93,6 +93,7 @@ export interface HimeraImport {
     calls: number
     cost_usd: number
   } | null
+  created_at: string | null
   reused: boolean
 }
 

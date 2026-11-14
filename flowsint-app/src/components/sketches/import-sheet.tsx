@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import {
   Sheet,
   SheetContent,
@@ -30,8 +31,16 @@ export function ImportSheet({ sketchId }: ImportSheetProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisResult, setAnalysisResult] = useState<any>(null)
-  const [mode, setMode] = useState<'file' | 'himera'>('file')
+  // null = not chosen by the user: open the Himera tab when an analysis is active.
+  const [pickedMode, setMode] = useState<'file' | 'himera' | null>(null)
   const [himeraHasResult, setHimeraHasResult] = useState(false)
+  // A Himera analysis still running/not imported: open its tab directly.
+  const { data: activeHimera } = useQuery({
+    queryKey: ['himera-import-active', sketchId],
+    queryFn: () => sketchService.getActiveHimeraImport(sketchId),
+    enabled: open
+  })
+  const mode = pickedMode ?? (activeHimera ? 'himera' : 'file')
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -105,7 +114,7 @@ export function ImportSheet({ sketchId }: ImportSheetProps) {
 
   const handleClose = useCallback(() => {
     handleReset()
-    setMode('file')
+    setMode(null)
     onOpenChange(false)
   }, [handleReset, onOpenChange])
 

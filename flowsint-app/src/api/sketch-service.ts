@@ -142,11 +142,7 @@ export const sketchService = {
       body: formData
     })
   },
-  startHimeraImport: async (
-    sketchId: string,
-    file: File,
-    force = false
-  ): Promise<HimeraImport> => {
+  startHimeraImport: async (sketchId: string, file: File, force = false): Promise<HimeraImport> => {
     const formData = new FormData()
     formData.append('file', file)
     formData.append('force', String(force))
@@ -154,6 +150,9 @@ export const sketchService = {
       method: 'POST',
       body: formData
     })
+  },
+  getActiveHimeraImport: async (sketchId: string): Promise<HimeraImport | null> => {
+    return fetchWithAuth(`/api/sketches/${sketchId}/import/himera/active`, { method: 'GET' })
   },
   getOpenRouterBalance: async (sketchId: string): Promise<OpenRouterBalance> => {
     return fetchWithAuth(`/api/sketches/${sketchId}/import/himera/balance`, { method: 'GET' })
