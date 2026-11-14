@@ -21,7 +21,7 @@ from .base import BaseService
 from .exceptions import NotFoundError, ValidationError
 from .vault_service import VaultService
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("flowsint_core.himera.service")
 
 OPENROUTER_KEY_NAME = "OPENROUTER_API_KEY"
 MAX_PDF_BYTES = 20 * 1024 * 1024

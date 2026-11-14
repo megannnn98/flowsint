@@ -263,3 +263,10 @@ def text_contains(haystack: str, needle: str) -> bool:
         return collapse(s).casefold()
 
     return bool(needle.strip()) and norm(needle) in norm(haystack)
+
+
+def words_present(haystack: str, needle: str) -> bool:
+    """Every word of ``needle`` occurs in ``haystack`` (order and separators free)."""
+    words = re.findall(r"\w+", needle.casefold())
+    hay = set(re.findall(r"\w+", haystack.casefold()))
+    return bool(words) and all(w in hay for w in words)

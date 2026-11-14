@@ -145,8 +145,8 @@ def normalize_entity(
     if not N.text_contains(text, raw):
         valid = False
         issues.append("value not found in the cited source record")
-    elif entity.evidence and not N.text_contains(text, entity.evidence):
-        issues.append("evidence is not a verbatim fragment of the record")
+    elif entity.evidence and not N.words_present(text, entity.evidence):
+        issues.append("evidence words are not all in the record")
 
     verification = Verification.VALIDATED if valid else Verification.UNVERIFIED
     return checked.value, verification, issues, attributes

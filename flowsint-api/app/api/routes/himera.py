@@ -1,5 +1,6 @@
 """Himera Search PDF import (LLM extraction via OpenRouter) into a sketch."""
 
+import logging
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
@@ -33,6 +34,17 @@ from flowsint_core.core.services.type_registry_service import (
 )
 
 router = APIRouter()
+
+# Progress of the background analysis (ranges, tokens, cost, retries) is logged at
+# INFO by flowsint_core.himera; uvicorn only wires its own loggers, so attach a
+# handler here. Messages carry no PDF content (see openrouter.py).
+_himera_logger = logging.getLogger("flowsint_core.himera")
+if not _himera_logger.handlers:
+    _handler = logging.StreamHandler()
+    _handler.setFormatter(logging.Formatter("%(levelname)s:%(name)s:%(message)s"))
+    _himera_logger.addHandler(_handler)
+    _himera_logger.setLevel(logging.INFO)
+    _himera_logger.propagate = False
 
 
 class HimeraImportRead(BaseModel):

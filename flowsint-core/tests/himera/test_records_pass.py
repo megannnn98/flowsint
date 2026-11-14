@@ -262,3 +262,69 @@ async def test_real_client_over_mock_transport():
     file_part = sent[0]["messages"][1]["content"][1]
     assert file_part["type"] == "file"
     assert sent[0]["response_format"]["json_schema"]["name"] == "himera_records"
+
+
+@pytest.mark.asyncio
+async def test_overlap_page_with_miscounted_ordinals_gives_no_duplicates():
+    """Seen on the real report: on an overlap page that starts with the tail of a
+    previous record, the model counted that tail as record #1, shifting the
+    ordinals of the records that really start there."""
+    perfect = perfect_records_handler()
+
+    def miscounting(schema_name, messages):
+        out = perfect(schema_name, messages)
+        if any(r["starts_before_range"] for r in out["records"]):
+            for r in out["records"]:
+                if r["page_start"] == 1 and not r["starts_before_range"]:
+                    r["ordinal_on_start_page"] += 1
+        return out
+
+    settings = replace(WHOLE, pages_per_chunk=2, chunk_overlap_pages=1)
+    result, _ = await run({"himera_records": miscounting}, settings)
+    assert summary(result) == EXPECTED
+    assert not any("already holds" in w for w in result.warnings)
+
+
+def test_tail_on_overlap_page_joins_the_record_started_before_the_range():
+    from flowsint_core.himera.pdf import PageRange
+    from flowsint_core.himera.records import ChunkRecords, merge_chunk_records
+    from flowsint_core.himera.schemas import LlmRecordsOutput
+
+    def rec(heading, start, end, ordinal, fields, **kw):
+        return {
+            "section": "dataset_record",
+            "source_heading": heading,
+            "page_start": start,
+            "page_end": end,
+            "ordinal_on_start_page": ordinal,
+            "fields": [{"name": n, "value": v} for n, v in fields],
+            **kw,
+        }
+
+    a = LlmRecordsOutput(
+        records=[
+            rec("A", 1, 2, 1, [("x", "1"), ("y", "2")]),
+            rec("B", 2, 2, 1, [("z", "3")], continues_after_range=True),
+        ]
+    )
+    b = LlmRecordsOutput(
+        records=[
+            rec(
+                "<continuation>",
+                1,
+                1,
+                1,
+                [("y", "2"), ("w", "4")],
+                starts_before_range=True,
+            ),
+            rec("B", 1, 2, 2, [("z", "3"), ("v", "5")]),
+        ]
+    )
+    merged = merge_chunk_records(
+        [ChunkRecords(PageRange(1, 2), a), ChunkRecords(PageRange(2, 3), b)], 3
+    )
+    by_heading = {r.source_heading: r for r in merged.records}
+    assert [r.record_id for r in merged.records] == ["p01-01", "p02-01"]
+    assert [f.name for f in by_heading["A"].fields] == ["x", "y", "w"]
+    assert [f.name for f in by_heading["B"].fields] == ["z", "v"]
+    assert (by_heading["B"].page_end, by_heading["B"].open_ended) == (3, False)

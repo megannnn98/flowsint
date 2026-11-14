@@ -57,17 +57,21 @@ def _add_fields(target: SourceRecord, extra: List[FieldValue]) -> None:
 
 
 def merge_chunk_records(chunks: List[ChunkRecords], page_count: int) -> MergeResult:
-    merged: Dict[str, SourceRecord] = {}
-    keys: Dict[Tuple[int, int, str], str] = {}
+    merged: Dict[Tuple[int, str, int], SourceRecord] = {}
+    # Reading order of the first sighting, by object id of the kept copy.
+    order: Dict[int, Tuple[int, int]] = {}
     warnings: List[str] = []
     report_id: Optional[str] = None
     truncation = False
 
-    for chunk in chunks:
+    for chunk_no, chunk in enumerate(chunks):
         rng = chunk.page_range
         label = str(rng)
         report_id = report_id or chunk.output.report_id
         truncation = truncation or chunk.output.truncation_notice
+        # Occurrence of a heading among records starting on a page, counted by
+        # us from the answer order: models miscount ordinals on overlap pages.
+        occurrences: Dict[Tuple[int, str], int] = {}
         for idx, rec in enumerate(chunk.output.records):
             what = f"range {label} record {idx + 1}"
             start = _abs_page(rec.page_start, rng, warnings, what)
@@ -75,38 +79,39 @@ def merge_chunk_records(chunks: List[ChunkRecords], page_count: int) -> MergeRes
             open_ended = rec.continues_after_range and end < page_count
 
             if rec.starts_before_range or rec.source_heading == CONTINUATION_HEADING:
+                # The tail belongs to a record that started before this range
+                # (records starting on the first page are seen whole here).
                 target = next(
                     (
                         r
-                        for r in reversed(list(merged.values()))
-                        if r.open_ended and r.page_end >= rng.first - 1
+                        for r in sorted(
+                            merged.values(),
+                            key=lambda r: (r.page_start, order[id(r)]),
+                            reverse=True,
+                        )
+                        if r.page_start < rng.first
+                        and (r.open_ended or r.page_end >= rng.first)
                     ),
                     None,
                 )
-                if target is None:
-                    # Already seen whole in the previous (overlapping) range.
-                    target = next(
-                        (
-                            r
-                            for r in reversed(list(merged.values()))
-                            if r.page_start < rng.first <= r.page_end
-                        ),
-                        None,
-                    )
                 if target is not None:
                     _add_fields(target, rec.fields)
                     target.page_end = max(target.page_end, end)
                     target.open_ended = open_ended
                     if rec.raw_text and rec.raw_text not in target.raw_text:
                         target.raw_text = f"{target.raw_text}\n{rec.raw_text}".strip()
-                    target.chunks.append(label)
+                    if label not in target.chunks:
+                        target.chunks.append(label)
                     continue
                 if rng.first > 1:
                     warnings.append(
                         f"{what}: continuation without a known start on page {start}"
                     )
 
-            key = (start, rec.ordinal_on_start_page, _norm_heading(rec.source_heading))
+            heading = _norm_heading(rec.source_heading)
+            occurrence = occurrences.get((start, heading), 0) + 1
+            occurrences[(start, heading)] = occurrence
+            key = (start, heading, occurrence)
             candidate = SourceRecord(
                 record_id="",
                 section=rec.section,
@@ -122,43 +127,30 @@ def merge_chunk_records(chunks: List[ChunkRecords], page_count: int) -> MergeRes
                 open_ended=open_ended,
                 chunks=[label],
             )
-
-            existing_id = keys.get(key)
-            if existing_id is not None:
-                existing = merged[existing_id]
-                better = (existing.open_ended and not candidate.open_ended) or (
-                    existing.open_ended == candidate.open_ended
-                    and len(candidate.fields) > len(existing.fields)
-                )
-                chunks_seen = existing.chunks + [label]
-                if better:
-                    candidate.record_id = existing_id
-                    candidate.chunks = chunks_seen
-                    merged[existing_id] = candidate
-                else:
-                    existing.chunks = chunks_seen
+            existing = merged.get(key)
+            if existing is None:
+                merged[key] = candidate
+                order[id(candidate)] = (chunk_no, idx)
                 continue
+            better = (existing.open_ended and not candidate.open_ended) or (
+                existing.open_ended == candidate.open_ended
+                and len(candidate.fields) > len(existing.fields)
+            )
+            if better:
+                candidate.chunks = existing.chunks + [label]
+                order[id(candidate)] = order[id(existing)]
+                merged[key] = candidate
+            else:
+                existing.chunks.append(label)
 
-            record_id = _record_id(start, rec.ordinal_on_start_page)
-            if record_id in merged:
-                warnings.append(
-                    f"{what}: position {record_id} already holds a record with another "
-                    "heading; kept both"
-                )
-                suffix = 2
-                while (
-                    _record_id(start, rec.ordinal_on_start_page, f"-{suffix}") in merged
-                ):
-                    suffix += 1
-                record_id = _record_id(start, rec.ordinal_on_start_page, f"-{suffix}")
-            candidate.record_id = record_id
-            merged[record_id] = candidate
-            keys[key] = record_id
-
-    records = sorted(
-        merged.values(),
-        key=lambda r: (r.page_start, r.ordinal_on_start_page, r.record_id),
-    )
+    # Stable ids: position among records starting on the page, in reading order
+    # (first sighting).
+    records = sorted(merged.values(), key=lambda r: (r.page_start, order[id(r)]))
+    per_page: Dict[int, int] = {}
+    for r in records:
+        per_page[r.page_start] = per_page.get(r.page_start, 0) + 1
+        r.ordinal_on_start_page = per_page[r.page_start]
+        r.record_id = _record_id(r.page_start, r.ordinal_on_start_page)
     for r in records:
         if r.open_ended:
             warnings.append(
