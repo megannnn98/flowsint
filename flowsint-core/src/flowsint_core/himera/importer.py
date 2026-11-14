@@ -200,6 +200,9 @@ def record_to_type(
         name_match_only=record.name_match_only,
     )
     setattr(node, "source", SOURCE)
+    # Identical headings on one page are distinct records: keep them apart in the
+    # graph (nodes MERGE on nodeLabel), and apart from other reports.
+    node.nodeLabel = f"{node.nodeLabel} #{record.record_id} [{key[:13]}]"
     return node
 
 
