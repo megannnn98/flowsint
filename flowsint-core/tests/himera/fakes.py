@@ -80,6 +80,10 @@ def perfect_records_handler(whole: Optional[Dict[str, Any]] = None) -> Handler:
     return handler
 
 
+def empty_entities_handler(schema_name, messages):
+    return {"entities": [], "relationships": []}
+
+
 class FakeOpenRouter:
     def __init__(
         self,
@@ -87,10 +91,13 @@ class FakeOpenRouter:
         model: ModelInfo = MODEL,
         cost_per_call: float = 0.001,
     ):
-        self.handlers = handlers
+        self.handlers = {"himera_entities": empty_entities_handler, **handlers}
         self.model = model
         self.cost_per_call = cost_per_call
         self.calls: List[Dict[str, Any]] = []
+
+    def calls_for(self, schema_name: str) -> List[Dict[str, Any]]:
+        return [c for c in self.calls if c["schema_name"] == schema_name]
 
     async def get_model(self, model_id: str) -> ModelInfo:
         return self.model
@@ -123,3 +130,37 @@ class FakeOpenRouter:
         return ChatResult(
             content, "stop", Usage(1000, 200, self.cost_per_call, 1), model.id
         )
+
+
+def batch_records_of(messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    text = messages[1]["content"]
+    return json.loads(text.split("\n\nRecords:\n", 1)[1])
+
+
+def perfect_entities_handler(by_record: Optional[Dict[str, Any]] = None) -> Handler:
+    """Answer of a perfect model for whatever records are in the batch."""
+    by_record = by_record or load_json("llm_entities_by_record.json")
+
+    def handler(schema_name, messages):
+        entities, relationships = [], []
+        for rec in batch_records_of(messages):
+            gold = by_record.get(rec["record_id"])
+            if not gold:
+                continue
+            rid = rec["record_id"]
+            for e in gold["entities"]:
+                entities.append(
+                    {**e, "entity_id": f"{rid}.{e['entity_id']}", "record_id": rid}
+                )
+            for r in gold["relationships"]:
+                relationships.append(
+                    {
+                        **r,
+                        "source_entity_id": f"{rid}.{r['source_entity_id']}",
+                        "target_entity_id": f"{rid}.{r['target_entity_id']}",
+                        "record_id": rid,
+                    }
+                )
+        return {"entities": entities, "relationships": relationships}
+
+    return handler

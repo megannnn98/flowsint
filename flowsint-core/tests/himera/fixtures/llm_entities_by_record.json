@@ -1,0 +1,788 @@
+{
+ "p01-01": {
+  "entities": [
+   {
+    "entity_id": "i",
+    "type": "Individual",
+    "raw_value": "ПЕТРОВ ПЁТР СЕРГЕЕВИЧ",
+    "normalized_value": "ПЕТРОВ ПЁТР СЕРГЕЕВИЧ",
+    "page": 1,
+    "evidence": "Лица ПЕТРОВ ПЁТР СЕРГЕЕВИЧ 3.4.1985,",
+    "confidence": 0.95,
+    "subject_link": "subject",
+    "role": null,
+    "attributes": [
+     {
+      "name": "birth_date",
+      "value": "3.4.1985"
+     },
+     {
+      "name": "alt_surnames",
+      "value": "ПЕТРОВ, ПЕТРОВЪ"
+     }
+    ]
+   },
+   {
+    "entity_id": "d",
+    "type": "Document",
+    "raw_value": "0000123456",
+    "normalized_value": "0000123456",
+    "page": 1,
+    "evidence": "Паспорта 0000123456",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": [
+     {
+      "name": "doc_type",
+      "value": "passport"
+     }
+    ]
+   },
+   {
+    "entity_id": "p1",
+    "type": "Phone",
+    "raw_value": "79990001122",
+    "normalized_value": "+79990001122",
+    "page": 1,
+    "evidence": "Телефоны 79990001122, 74950001122",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": "personal",
+    "attributes": []
+   },
+   {
+    "entity_id": "p2",
+    "type": "Phone",
+    "raw_value": "74950001122",
+    "normalized_value": "+74950001122",
+    "page": 1,
+    "evidence": "Телефоны 79990001122, 74950001122",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": "unknown",
+    "attributes": []
+   },
+   {
+    "entity_id": "s",
+    "type": "Identifier",
+    "raw_value": "11223344595",
+    "normalized_value": "11223344595",
+    "page": 1,
+    "evidence": "СНИЛС 11223344595",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": [
+     {
+      "name": "scheme",
+      "value": "snils"
+     }
+    ]
+   },
+   {
+    "entity_id": "n",
+    "type": "Identifier",
+    "raw_value": "770123456703",
+    "normalized_value": "770123456703",
+    "page": 1,
+    "evidence": "ИНН 770123456703",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": [
+     {
+      "name": "scheme",
+      "value": "inn"
+     }
+    ]
+   }
+  ],
+  "relationships": [
+   {
+    "type": "HAS_DOCUMENT",
+    "source_entity_id": "i",
+    "target_entity_id": "d",
+    "evidence": "Паспорта 0000123456",
+    "confidence": 0.9,
+    "status": "confirmed"
+   },
+   {
+    "type": "HAS_PHONE",
+    "source_entity_id": "i",
+    "target_entity_id": "p1",
+    "evidence": "Телефоны 79990001122",
+    "confidence": 0.9,
+    "status": "confirmed"
+   },
+   {
+    "type": "HAS_PHONE",
+    "source_entity_id": "i",
+    "target_entity_id": "p2",
+    "evidence": "Телефоны 74950001122",
+    "confidence": 0.9,
+    "status": "confirmed"
+   },
+   {
+    "type": "HAS_IDENTIFIER",
+    "source_entity_id": "i",
+    "target_entity_id": "s",
+    "evidence": "СНИЛС 11223344595",
+    "confidence": 0.9,
+    "status": "confirmed"
+   },
+   {
+    "type": "HAS_IDENTIFIER",
+    "source_entity_id": "i",
+    "target_entity_id": "n",
+    "evidence": "ИНН 770123456703",
+    "confidence": 0.9,
+    "status": "confirmed"
+   }
+  ]
+ },
+ "p01-02": {
+  "entities": [
+   {
+    "entity_id": "sc",
+    "type": "Event",
+    "raw_value": "0,8 - есть негатив",
+    "normalized_value": "Общий показатель скоринга 0,8",
+    "page": 1,
+    "evidence": "Общий показатель 0,8 - есть негатив",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": [
+     {
+      "name": "claim",
+      "value": "score"
+     }
+    ]
+   }
+  ],
+  "relationships": []
+ },
+ "p01-03": {
+  "entities": [
+   {
+    "entity_id": "i",
+    "type": "Individual",
+    "raw_value": "ПЕТРОВ ПЁТР СЕРГЕЕВИЧ",
+    "normalized_value": "ПЕТРОВ ПЁТР СЕРГЕЕВИЧ",
+    "page": 1,
+    "evidence": "Имя ПЕТРОВ ПЁТР СЕРГЕЕВИЧ",
+    "confidence": 0.95,
+    "subject_link": "subject",
+    "role": null,
+    "attributes": [
+     {
+      "name": "birth_date",
+      "value": "3.4.1985"
+     }
+    ]
+   },
+   {
+    "entity_id": "l",
+    "type": "Event",
+    "raw_value": "ДОЛЖНИК",
+    "normalized_value": "МЕТКА: ДОЛЖНИК",
+    "page": 1,
+    "evidence": "Метки ДОЛЖНИК",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": [
+     {
+      "name": "claim",
+      "value": "label"
+     },
+     {
+      "name": "region",
+      "value": "ТВЕРСКАЯ ОБЛАСТЬ"
+     }
+    ]
+   }
+  ],
+  "relationships": [
+   {
+    "type": "SUBJECT_OF_CLAIM",
+    "source_entity_id": "i",
+    "target_entity_id": "l",
+    "evidence": "Метки ДОЛЖНИК",
+    "confidence": 0.9,
+    "status": "source_claim"
+   }
+  ]
+ },
+ "p01-04": {
+  "entities": [
+   {
+    "entity_id": "o",
+    "type": "Organization",
+    "raw_value": "ООО ВЕКТОР",
+    "normalized_value": "ООО ВЕКТОР",
+    "page": 1,
+    "evidence": "ООО ВЕКТОР 120000 ₽ 2021",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": []
+   }
+  ],
+  "relationships": []
+ },
+ "p01-05": {
+  "entities": [
+   {
+    "entity_id": "a1",
+    "type": "Address",
+    "raw_value": "Г ТВЕРЬ, УЛ ЛЕСНАЯ, Д 5, КВ 12",
+    "normalized_value": "Г ТВЕРЬ, УЛ ЛЕСНАЯ, Д 5, КВ 12",
+    "page": 1,
+    "evidence": "Г ТВЕРЬ, УЛ ЛЕСНАЯ, Д 5, КВ 12",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": []
+   },
+   {
+    "entity_id": "a2",
+    "type": "Address",
+    "raw_value": "ТВЕРЬ, ЛЕСНАЯ УЛ., Д.5, КВ.12",
+    "normalized_value": "Г ТВЕРЬ, УЛ ЛЕСНАЯ, Д 5, КВ 12",
+    "page": 1,
+    "evidence": "ТВЕРЬ, ЛЕСНАЯ УЛ., Д.5, КВ.12",
+    "confidence": 0.8,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": []
+   }
+  ],
+  "relationships": []
+ },
+ "p02-01": {
+  "entities": [
+   {
+    "entity_id": "i",
+    "type": "Individual",
+    "raw_value": "ПЕТРОВ ПЁТР СЕРГЕЕВИЧ",
+    "normalized_value": "ПЕТРОВ ПЁТР СЕРГЕЕВИЧ",
+    "page": 2,
+    "evidence": "Имя ПЕТРОВ ПЁТР СЕРГЕЕВИЧ",
+    "confidence": 0.95,
+    "subject_link": "subject",
+    "role": null,
+    "attributes": [
+     {
+      "name": "birth_date",
+      "value": "3.4.1985"
+     }
+    ]
+   },
+   {
+    "entity_id": "p",
+    "type": "Phone",
+    "raw_value": "79990001122",
+    "normalized_value": "+79990001122",
+    "page": 2,
+    "evidence": "Телефон 79990001122",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": "personal",
+    "attributes": []
+   },
+   {
+    "entity_id": "m",
+    "type": "Email",
+    "raw_value": "PETROV85@МАIL.RU",
+    "normalized_value": "petrov85@mail.ru",
+    "page": 2,
+    "evidence": "Емаil PETROV85@МАIL.RU",
+    "confidence": 0.8,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": []
+   },
+   {
+    "entity_id": "u",
+    "type": "Username",
+    "raw_value": "petrov85",
+    "normalized_value": "petrov85",
+    "page": 2,
+    "evidence": "Емаil PETROV85@МАIL.RU",
+    "confidence": 0.5,
+    "subject_link": "not_applicable",
+    "role": "derived_from_email",
+    "attributes": []
+   }
+  ],
+  "relationships": [
+   {
+    "type": "HAS_PHONE",
+    "source_entity_id": "i",
+    "target_entity_id": "p",
+    "evidence": "Телефон 79990001122",
+    "confidence": 0.9,
+    "status": "confirmed"
+   },
+   {
+    "type": "HAS_EMAIL",
+    "source_entity_id": "i",
+    "target_entity_id": "m",
+    "evidence": "Емаil PETROV85@МАIL.RU",
+    "confidence": 0.9,
+    "status": "confirmed"
+   },
+   {
+    "type": "EMAIL_DERIVED_USERNAME",
+    "source_entity_id": "m",
+    "target_entity_id": "u",
+    "evidence": "Емаil PETROV85@МАIL.RU",
+    "confidence": 0.5,
+    "status": "confirmed"
+   }
+  ]
+ },
+ "p02-02": {
+  "entities": [
+   {
+    "entity_id": "i",
+    "type": "Individual",
+    "raw_value": "ПЕТРОВ ПЁТР СЕРГЕЕВИЧ",
+    "normalized_value": "ПЕТРОВ ПЁТР СЕРГЕЕВИЧ",
+    "page": 2,
+    "evidence": "Имя ПЕТРОВ ПЁТР СЕРГЕЕВИЧ",
+    "confidence": 0.95,
+    "subject_link": "subject",
+    "role": null,
+    "attributes": [
+     {
+      "name": "birth_date",
+      "value": "3.4.1985"
+     }
+    ]
+   },
+   {
+    "entity_id": "p",
+    "type": "Phone",
+    "raw_value": "79990001122",
+    "normalized_value": "+79990001122",
+    "page": 2,
+    "evidence": "Телефон 79990001122",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": "personal",
+    "attributes": []
+   },
+   {
+    "entity_id": "m",
+    "type": "Email",
+    "raw_value": "PETROV85@МАIL.RU",
+    "normalized_value": "petrov85@mail.ru",
+    "page": 2,
+    "evidence": "Емаil PETROV85@МАIL.RU",
+    "confidence": 0.8,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": []
+   },
+   {
+    "entity_id": "u",
+    "type": "Username",
+    "raw_value": "petrov85",
+    "normalized_value": "petrov85",
+    "page": 2,
+    "evidence": "Емаil PETROV85@МАIL.RU",
+    "confidence": 0.5,
+    "subject_link": "not_applicable",
+    "role": "derived_from_email",
+    "attributes": []
+   }
+  ],
+  "relationships": [
+   {
+    "type": "HAS_PHONE",
+    "source_entity_id": "i",
+    "target_entity_id": "p",
+    "evidence": "Телефон 79990001122",
+    "confidence": 0.9,
+    "status": "confirmed"
+   },
+   {
+    "type": "HAS_EMAIL",
+    "source_entity_id": "i",
+    "target_entity_id": "m",
+    "evidence": "Емаil PETROV85@МАIL.RU",
+    "confidence": 0.9,
+    "status": "confirmed"
+   },
+   {
+    "type": "EMAIL_DERIVED_USERNAME",
+    "source_entity_id": "m",
+    "target_entity_id": "u",
+    "evidence": "Емаil PETROV85@МАIL.RU",
+    "confidence": 0.5,
+    "status": "confirmed"
+   }
+  ]
+ },
+ "p02-03": {
+  "entities": [
+   {
+    "entity_id": "i",
+    "type": "Individual",
+    "raw_value": "ПЕТРОВ ПЁТР СЕРГЕЕВИЧ",
+    "normalized_value": "ПЕТРОВ ПЁТР СЕРГЕЕВИЧ",
+    "page": 2,
+    "evidence": "Имя ПЕТРОВ ПЁТР СЕРГЕЕВИЧ",
+    "confidence": 0.95,
+    "subject_link": "subject",
+    "role": null,
+    "attributes": [
+     {
+      "name": "birth_date",
+      "value": "3.4.1985"
+     }
+    ]
+   },
+   {
+    "entity_id": "n",
+    "type": "Identifier",
+    "raw_value": "770123456703",
+    "normalized_value": "770123456703",
+    "page": 2,
+    "evidence": "ИНН 770123456703",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": [
+     {
+      "name": "scheme",
+      "value": "inn"
+     }
+    ]
+   },
+   {
+    "entity_id": "s",
+    "type": "Identifier",
+    "raw_value": "11223344595",
+    "normalized_value": "11223344595",
+    "page": 2,
+    "evidence": "СНИЛС 11223344595",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": [
+     {
+      "name": "scheme",
+      "value": "snils"
+     }
+    ]
+   },
+   {
+    "entity_id": "o",
+    "type": "Organization",
+    "raw_value": "ООО ВЕКТОР",
+    "normalized_value": "ООО ВЕКТОР",
+    "page": 3,
+    "evidence": "Организация ООО ВЕКТОР",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": [
+     {
+      "name": "inn",
+      "value": "7709876545"
+     },
+     {
+      "name": "ogrn",
+      "value": "1027700123450"
+     }
+    ]
+   }
+  ],
+  "relationships": [
+   {
+    "type": "HAS_IDENTIFIER",
+    "source_entity_id": "i",
+    "target_entity_id": "n",
+    "evidence": "ИНН 770123456703",
+    "confidence": 0.9,
+    "status": "confirmed"
+   },
+   {
+    "type": "HAS_IDENTIFIER",
+    "source_entity_id": "i",
+    "target_entity_id": "s",
+    "evidence": "СНИЛС 11223344595",
+    "confidence": 0.9,
+    "status": "confirmed"
+   },
+   {
+    "type": "WORKED_AT",
+    "source_entity_id": "i",
+    "target_entity_id": "o",
+    "evidence": "Организация ООО ВЕКТОР Должность ИНЖЕНЕР",
+    "confidence": 0.9,
+    "status": "confirmed"
+   }
+  ]
+ },
+ "p03-01": {
+  "entities": [
+   {
+    "entity_id": "i",
+    "type": "Individual",
+    "raw_value": "Петров Пётр",
+    "normalized_value": "ПЕТРОВ ПЁТР",
+    "page": 3,
+    "evidence": "Имя Петров Пётр",
+    "confidence": 0.8,
+    "subject_link": "subject",
+    "role": null,
+    "attributes": [
+     {
+      "name": "birth_date",
+      "value": "03.04.1985"
+     }
+    ]
+   },
+   {
+    "entity_id": "vk",
+    "type": "SocialAccount",
+    "raw_value": "https://vk.com/id123456789",
+    "normalized_value": "https://vk.com/id123456789",
+    "page": 3,
+    "evidence": "Профиль https://vk.com/id123456789",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": [
+     {
+      "name": "platform",
+      "value": "vk"
+     },
+     {
+      "name": "user_id",
+      "value": "123456789"
+     },
+     {
+      "name": "profile_url",
+      "value": "https://vk.com/id123456789"
+     }
+    ]
+   },
+   {
+    "entity_id": "tg",
+    "type": "SocialAccount",
+    "raw_value": "@petrov_ps",
+    "normalized_value": "petrov_ps",
+    "page": 3,
+    "evidence": "Телеграм @petrov_ps",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": [
+     {
+      "name": "platform",
+      "value": "telegram"
+     },
+     {
+      "name": "profile_url",
+      "value": "https://t.me/petrov_ps"
+     }
+    ]
+   },
+   {
+    "entity_id": "m",
+    "type": "Email",
+    "raw_value": "petrov.ps@example.com",
+    "normalized_value": "petrov.ps@example.com",
+    "page": 3,
+    "evidence": "E-mail petrov.ps@example.com",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": []
+   },
+   {
+    "entity_id": "p",
+    "type": "Phone",
+    "raw_value": "+7 (916) 555-12-34",
+    "normalized_value": "+79165551234",
+    "page": 3,
+    "evidence": "Телефон +7 (916) 555-12-34",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": "personal",
+    "attributes": []
+   },
+   {
+    "entity_id": "u",
+    "type": "Username",
+    "raw_value": "petrov_ps",
+    "normalized_value": "petrov_ps",
+    "page": 3,
+    "evidence": "Логин petrov_ps",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": []
+   }
+  ],
+  "relationships": [
+   {
+    "type": "HAS_SOCIAL_ACCOUNT",
+    "source_entity_id": "i",
+    "target_entity_id": "vk",
+    "evidence": "Профиль https://vk.com/id123456789",
+    "confidence": 0.9,
+    "status": "confirmed"
+   },
+   {
+    "type": "HAS_SOCIAL_ACCOUNT",
+    "source_entity_id": "i",
+    "target_entity_id": "tg",
+    "evidence": "Телеграм @petrov_ps",
+    "confidence": 0.9,
+    "status": "confirmed"
+   },
+   {
+    "type": "HAS_EMAIL",
+    "source_entity_id": "i",
+    "target_entity_id": "m",
+    "evidence": "E-mail petrov.ps@example.com",
+    "confidence": 0.9,
+    "status": "confirmed"
+   },
+   {
+    "type": "HAS_PHONE",
+    "source_entity_id": "i",
+    "target_entity_id": "p",
+    "evidence": "Телефон +7 (916) 555-12-34",
+    "confidence": 0.9,
+    "status": "confirmed"
+   },
+   {
+    "type": "HAS_USERNAME",
+    "source_entity_id": "i",
+    "target_entity_id": "u",
+    "evidence": "Логин petrov_ps",
+    "confidence": 0.9,
+    "status": "confirmed"
+   },
+   {
+    "type": "SOCIAL_ACCOUNT_USES_USERNAME",
+    "source_entity_id": "tg",
+    "target_entity_id": "u",
+    "evidence": "Телеграм @petrov_ps Логин petrov_ps",
+    "confidence": 0.7,
+    "status": "confirmed"
+   }
+  ]
+ },
+ "p04-01": {
+  "entities": [
+   {
+    "entity_id": "i",
+    "type": "Individual",
+    "raw_value": "Петров Пётр Сергеевич",
+    "normalized_value": "ПЕТРОВ ПЁТР СЕРГЕЕВИЧ",
+    "page": 4,
+    "evidence": "Имя Петров Пётр Сергеевич",
+    "confidence": 0.9,
+    "subject_link": "other_person",
+    "role": null,
+    "attributes": []
+   },
+   {
+    "entity_id": "d",
+    "type": "Document",
+    "raw_value": "4500999888",
+    "normalized_value": "4500999888",
+    "page": 4,
+    "evidence": "Номер документа 4500999888",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": [
+     {
+      "name": "doc_type",
+      "value": "passport"
+     }
+    ]
+   },
+   {
+    "entity_id": "p",
+    "type": "Phone",
+    "raw_value": "79160000000",
+    "normalized_value": "+79160000000",
+    "page": 4,
+    "evidence": "Телефон 79160000000",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": []
+   },
+   {
+    "entity_id": "m",
+    "type": "Email",
+    "raw_value": "p.petrov@example.org",
+    "normalized_value": "p.petrov@example.org",
+    "page": 4,
+    "evidence": "Email p.petrov@example.org",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": []
+   },
+   {
+    "entity_id": "a",
+    "type": "Address",
+    "raw_value": "Москва, ул. Садовая, д.1, кв.2",
+    "normalized_value": "Г МОСКВА, УЛ САДОВАЯ, Д 1, КВ 2",
+    "page": 4,
+    "evidence": "Адрес Москва, ул. Садовая, д.1, кв.2",
+    "confidence": 0.95,
+    "subject_link": "not_applicable",
+    "role": null,
+    "attributes": []
+   }
+  ],
+  "relationships": [
+   {
+    "type": "HAS_DOCUMENT",
+    "source_entity_id": "i",
+    "target_entity_id": "d",
+    "evidence": "Номер документа 4500999888",
+    "confidence": 0.9,
+    "status": "candidate"
+   },
+   {
+    "type": "HAS_PHONE",
+    "source_entity_id": "i",
+    "target_entity_id": "p",
+    "evidence": "Телефон 79160000000",
+    "confidence": 0.9,
+    "status": "candidate"
+   },
+   {
+    "type": "HAS_EMAIL",
+    "source_entity_id": "i",
+    "target_entity_id": "m",
+    "evidence": "Email p.petrov@example.org",
+    "confidence": 0.9,
+    "status": "candidate"
+   },
+   {
+    "type": "ASSOCIATED_WITH_ADDRESS",
+    "source_entity_id": "i",
+    "target_entity_id": "a",
+    "evidence": "Адрес Москва, ул. Садовая, д.1, кв.2",
+    "confidence": 0.9,
+    "status": "candidate"
+   }
+  ]
+ }
+}

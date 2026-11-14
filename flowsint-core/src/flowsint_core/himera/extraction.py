@@ -11,7 +11,7 @@ import json
 import logging
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Type, TypeVar
+from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar
 
 from pydantic import BaseModel, ValidationError
 
@@ -35,18 +35,27 @@ from .pdf import (
     split_range,
 )
 from .prompts import (
+    ENTITIES_SYSTEM,
     RECORDS_SYSTEM,
     REPAIR_SYSTEM,
+    entities_user_prompt,
     records_user_prompt,
     repair_user_prompt,
 )
 from .records import ChunkRecords, MergeResult, merge_chunk_records
 from .schemas import (
+    ENTITIES_SCHEMA,
     RECORDS_SCHEMA,
     HimeraExtractionResult,
+    LlmEntitiesOutput,
+    LlmEntity,
     LlmRecordsOutput,
+    LlmRelationship,
+    Section,
+    SourceRecord,
     UsageSummary,
 )
+from .validation import assemble
 
 logger = logging.getLogger(__name__)
 
@@ -119,12 +128,20 @@ class HimeraExtractionService:
             run.complete = False
             run.warnings.append("no records extracted")
 
+        entities, relationships = await self.extract_entities(merged.records, run)
+        assembled = assemble(merged.records, entities, relationships)
+
         result = HimeraExtractionResult(
             report_id=merged.report_id,
             pdf_sha256=prepared.sha256,
             page_count=prepared.page_count,
             records=merged.records,
-            warnings=run.warnings + merged.warnings,
+            entities=assembled.entities,
+            unverified_entities=assembled.unverified_entities,
+            relationships=assembled.relationships,
+            ambiguous_relationships=assembled.ambiguous_relationships,
+            rejected=assembled.rejected,
+            warnings=run.warnings + merged.warnings + assembled.warnings,
             truncation_notice=merged.truncation_notice,
             complete=run.complete,
             usage=self._usage_summary(run),
@@ -224,6 +241,120 @@ class HimeraExtractionService:
         if not output.records:
             run.warnings.append(f"records {rng}: model returned no records")
         return [ChunkRecords(rng, output)]
+
+    # ------------------------------------------------------------- pass 2
+
+    async def extract_entities(
+        self, records: List[SourceRecord], run: _Run
+    ) -> Tuple[List[LlmEntity], List[LlmRelationship]]:
+        subject = next(
+            (
+                {
+                    "source_heading": r.source_heading,
+                    "fields": [f.model_dump() for f in r.fields],
+                }
+                for r in records
+                if r.section == Section.SUMMARY
+            ),
+            {},
+        )
+        payload = [
+            {
+                "record_id": r.record_id,
+                "section": r.section.value,
+                "source_heading": r.source_heading,
+                "source_period": r.source_period,
+                "page_start": r.page_start,
+                "page_end": r.page_end,
+                "name_match_only": r.name_match_only,
+                "fields": [f.model_dump() for f in r.fields],
+            }
+            for r in records
+            if r.section != Section.SERVICE
+        ]
+        size = max(1, self._settings.records_per_batch)
+        entities: List[LlmEntity] = []
+        relationships: List[LlmRelationship] = []
+        counter = [0]
+        for start in range(0, len(payload), size):
+            batch_entities, batch_rels = await self._entities_for_batch(
+                subject, payload[start : start + size], run, counter
+            )
+            entities.extend(batch_entities)
+            relationships.extend(batch_rels)
+        return entities, relationships
+
+    async def _entities_for_batch(
+        self,
+        subject: Dict[str, Any],
+        batch: List[Dict[str, Any]],
+        run: _Run,
+        counter: List[int],
+    ) -> Tuple[List[LlmEntity], List[LlmRelationship]]:
+        if run.stopped or not batch:
+            return [], []
+        ids = f"{batch[0]['record_id']}..{batch[-1]['record_id']}"
+        user = entities_user_prompt(subject, batch)
+        outcome = await self._structured_call(
+            run,
+            [
+                {
+                    "role": "system",
+                    "content": self._system(ENTITIES_SYSTEM, ENTITIES_SCHEMA, run),
+                },
+                {"role": "user", "content": user},
+            ],
+            "himera_entities",
+            ENTITIES_SCHEMA,
+            LlmEntitiesOutput,
+            estimated_prompt_tokens=len(user) // 2 + _SYSTEM_PROMPT_TOKENS,
+            what=f"entities {ids}",
+        )
+        if outcome.truncated:
+            if len(batch) > 1:
+                half = len(batch) // 2
+                run.warnings.append(
+                    f"entities {ids}: response hit the token limit, retrying in two batches"
+                )
+                left = await self._entities_for_batch(
+                    subject, batch[:half], run, counter
+                )
+                right = await self._entities_for_batch(
+                    subject, batch[half:], run, counter
+                )
+                return left[0] + right[0], left[1] + right[1]
+            run.complete = False
+            run.warnings.append(
+                f"entities {ids}: response truncated, entities may be missing"
+            )
+        if outcome.parsed is None:
+            if outcome.error:
+                run.complete = False
+                run.warnings.append(f"entities {ids}: {outcome.error}")
+            return [], []
+        output = outcome.parsed
+        assert isinstance(output, LlmEntitiesOutput)
+        # Entity ids are only unique inside one answer: namespace them per batch.
+        counter[0] += 1
+        prefix = f"b{counter[0]}:"
+        allowed = {r["record_id"] for r in batch}
+        entities = []
+        for e in output.entities:
+            e = e.model_copy(update={"entity_id": prefix + e.entity_id})
+            if e.record_id not in allowed:
+                # Points to a record outside this batch: keep it so validation rejects it.
+                e = e.model_copy(update={"record_id": f"{e.record_id}?outside-batch"})
+            entities.append(e)
+        rels = [
+            r.model_copy(
+                update={
+                    "source_entity_id": prefix + r.source_entity_id,
+                    "target_entity_id": prefix + r.target_entity_id,
+                }
+            )
+            for r in output.relationships
+        ]
+        return entities, rels
 
     # ------------------------------------------------------------ helpers
 

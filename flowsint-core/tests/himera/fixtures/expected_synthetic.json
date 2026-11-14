@@ -1,0 +1,189 @@
+{
+ "records": [
+  [
+   "УСТАНОВОЧНЫЕ ДАННЫЕ",
+   1,
+   1
+  ],
+  [
+   "Результаты скоринга",
+   1,
+   1
+  ],
+  [
+   "Метки",
+   1,
+   1
+  ],
+  [
+   "Доходы",
+   1,
+   1
+  ],
+  [
+   "Адреса",
+   1,
+   1
+  ],
+  [
+   "КЛИЕНТЫ БАНКА 2023 QV",
+   2,
+   2
+  ],
+  [
+   "КЛИЕНТЫ БАНКА 2023 QV",
+   2,
+   2
+  ],
+  [
+   "КАДРЫ ФЛ 2021 10 LU",
+   2,
+   3
+  ],
+  [
+   "ПОЛЬЗОВАТЕЛИ СОЦСЕТИ 2020 VK",
+   3,
+   3
+  ],
+  [
+   "Жители Москвы 2021 (совпадения по фио)",
+   4,
+   4
+  ]
+ ],
+ "entities": [
+  [
+   "Individual",
+   "ПЕТРОВ ПЁТР СЕРГЕЕВИЧ"
+  ],
+  [
+   "Document",
+   "0000123456"
+  ],
+  [
+   "Phone",
+   "+79990001122"
+  ],
+  [
+   "Phone",
+   "+74950001122"
+  ],
+  [
+   "Identifier",
+   "11223344595"
+  ],
+  [
+   "Identifier",
+   "770123456703"
+  ],
+  [
+   "Organization",
+   "ООО ВЕКТОР"
+  ],
+  [
+   "Address",
+   "Г ТВЕРЬ, УЛ ЛЕСНАЯ, Д 5, КВ 12"
+  ],
+  [
+   "Email",
+   "petrov85@mail.ru"
+  ],
+  [
+   "Username",
+   "petrov85"
+  ],
+  [
+   "SocialAccount",
+   "https://vk.com/id123456789"
+  ],
+  [
+   "SocialAccount",
+   "petrov_ps"
+  ],
+  [
+   "Email",
+   "petrov.ps@example.com"
+  ],
+  [
+   "Phone",
+   "+79165551234"
+  ],
+  [
+   "Username",
+   "petrov_ps"
+  ],
+  [
+   "Document",
+   "4500999888"
+  ],
+  [
+   "Phone",
+   "+79160000000"
+  ],
+  [
+   "Email",
+   "p.petrov@example.org"
+  ],
+  [
+   "Address",
+   "Г МОСКВА, УЛ САДОВАЯ, Д 1, КВ 2"
+  ]
+ ],
+ "subject": "ПЕТРОВ ПЁТР СЕРГЕЕВИЧ",
+ "relationships_confirmed": [
+  [
+   "HAS_DOCUMENT",
+   "0000123456"
+  ],
+  [
+   "HAS_PHONE",
+   "+79990001122"
+  ],
+  [
+   "HAS_PHONE",
+   "+74950001122"
+  ],
+  [
+   "HAS_IDENTIFIER",
+   "11223344595"
+  ],
+  [
+   "HAS_IDENTIFIER",
+   "770123456703"
+  ],
+  [
+   "WORKED_AT",
+   "ООО ВЕКТОР"
+  ],
+  [
+   "HAS_SOCIAL_ACCOUNT",
+   "https://vk.com/id123456789"
+  ],
+  [
+   "HAS_SOCIAL_ACCOUNT",
+   "petrov_ps"
+  ],
+  [
+   "HAS_EMAIL",
+   "petrov.ps@example.com"
+  ],
+  [
+   "HAS_PHONE",
+   "+79165551234"
+  ],
+  [
+   "HAS_USERNAME",
+   "petrov_ps"
+  ]
+ ],
+ "name_match_candidates": [
+  "4500999888",
+  "+79160000000",
+  "p.petrov@example.org"
+ ],
+ "must_not_link_subject_to": [
+  "4500999888",
+  "+79160000000",
+  "p.petrov@example.org"
+ ]
+}

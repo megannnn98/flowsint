@@ -62,8 +62,8 @@ async def test_whole_document_records():
     assert result.truncation_notice
     assert any("truncated" in w for w in result.warnings)
     assert [r.name_match_only for r in result.records].count(True) == 1
-    assert fake.calls[0]["pdf_engine"] == "pdf-text"
-    assert result.usage.calls == 1 and result.usage.model == "test/model"
+    assert fake.calls_for("himera_records")[0]["pdf_engine"] == "pdf-text"
+    assert result.usage.calls == 2 and result.usage.model == "test/model"
 
 
 @pytest.mark.asyncio
@@ -79,7 +79,7 @@ async def test_duplicate_records_of_one_source_are_kept_separate():
 async def test_chunked_ranges_merge_to_same_records(size, overlap):
     settings = replace(WHOLE, pages_per_chunk=size, chunk_overlap_pages=overlap)
     result, fake = await run({"himera_records": perfect_records_handler()}, settings)
-    assert len(fake.calls) > 1
+    assert len(fake.calls_for("himera_records")) > 1
     assert summary(result) == EXPECTED
     multi = next(r for r in result.records if r.record_id == "p02-03")
     names = [f.name for f in multi.fields]
@@ -100,7 +100,7 @@ async def test_truncated_response_splits_range_and_recovers():
 
     result, fake = await run({"himera_records": handler})
     assert summary(result) == EXPECTED
-    assert len(fake.calls) == 3
+    assert len(fake.calls_for("himera_records")) == 3
     assert any("token limit" in w for w in result.warnings)
     assert result.complete
 
@@ -128,8 +128,10 @@ async def test_broken_json_is_repaired_once():
     result, fake = await run({"himera_records": broken, "repair": repair})
     assert len(result.records) == 11
     assert any("repaired" in w for w in result.warnings)
-    assert len(fake.calls) == 2
-    assert fake.calls[1].get("pdf_engine") is None  # repair is text-only
+    assert len(fake.calls_for("himera_records")) == 2
+    assert (
+        fake.calls_for("himera_records")[1].get("pdf_engine") is None
+    )  # repair is text-only
 
 
 @pytest.mark.asyncio
@@ -143,7 +145,7 @@ async def test_unrepairable_json_reports_without_personal_data():
     joined = " ".join(result.warnings)
     assert "invalid JSON after repair" in joined
     assert "ПЕТРОВ" not in joined
-    assert len(fake.calls) == 2
+    assert len(fake.calls_for("himera_records")) == 2
 
 
 @pytest.mark.asyncio
@@ -168,7 +170,7 @@ async def test_budget_stops_further_calls():
     )
     result, fake = await run({"himera_records": perfect_records_handler()}, settings)
     # each call costs 0.001 + estimate ~0.0068 → only the first fits
-    assert len(fake.calls) == 1
+    assert len(fake.calls_for("himera_records")) == 1
     assert not result.complete
     assert any("budget exceeded" in w for w in result.warnings)
 
@@ -186,8 +188,8 @@ async def test_scanned_pdf_uses_ocr_engine():
         },
         pdf=pdf,
     )
-    assert fake.calls[0]["pdf_engine"] == "mistral-ocr"
-    assert fake.calls[0]["extra_cost_estimate_usd"] > 0
+    assert fake.calls_for("himera_records")[0]["pdf_engine"] == "mistral-ocr"
+    assert fake.calls_for("himera_records")[0]["extra_cost_estimate_usd"] > 0
 
 
 @pytest.mark.asyncio
@@ -217,7 +219,22 @@ async def test_real_client_over_mock_transport():
     def handler(request: httpx.Request):
         if request.url.path.endswith("/models"):
             return httpx.Response(200, json=models)
-        sent.append(json.loads(request.content))
+        body = json.loads(request.content)
+        if body["response_format"]["json_schema"]["name"] == "himera_entities":
+            content = {"entities": [], "relationships": []}
+            return httpx.Response(
+                200,
+                json={
+                    "choices": [
+                        {
+                            "message": {"content": json.dumps(content)},
+                            "finish_reason": "stop",
+                        }
+                    ],
+                    "usage": {"prompt_tokens": 1, "completion_tokens": 1, "cost": 0.0},
+                },
+            )
+        sent.append(body)
         return httpx.Response(
             200,
             json={
@@ -241,7 +258,7 @@ async def test_real_client_over_mock_transport():
     result = await service.extract(synthetic_pdf())
     assert summary(result) == EXPECTED
     assert result.usage.cost_usd == pytest.approx(0.009)
-    assert result.usage.prompt_tokens == 5000
+    assert result.usage.prompt_tokens == 5001
     file_part = sent[0]["messages"][1]["content"][1]
     assert file_part["type"] == "file"
     assert sent[0]["response_format"]["json_schema"]["name"] == "himera_records"
