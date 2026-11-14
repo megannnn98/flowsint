@@ -134,6 +134,28 @@ async def start_himera_import(
     return _read(row, reused=not needs_processing, with_result=False)
 
 
+@router.get("/{sketch_id}/import/himera/balance")
+async def get_openrouter_balance(
+    sketch_id: str,
+    db: Session = Depends(get_db),
+    current_user: Profile = Depends(get_current_user),
+):
+    """OpenRouter credits left for the key used by this user's Himera imports."""
+    from flowsint_core.himera.openrouter import OpenRouterError
+
+    service = create_himera_import_service(db)
+    try:
+        return await service.balance(_parse_uuid(sketch_id, "Sketch"), current_user.id)
+    except NotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except PermissionDeniedError:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    except ValidationError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except OpenRouterError as e:
+        raise HTTPException(status_code=502, detail=f"OpenRouter: {str(e)[:200]}")
+
+
 @router.get("/{sketch_id}/import/himera/{import_id}", response_model=HimeraImportRead)
 def get_himera_import(
     sketch_id: str,

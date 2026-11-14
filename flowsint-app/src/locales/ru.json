@@ -2633,5 +2633,10 @@
   "name match only": "совпадение только по ФИО",
   "Add source record nodes (provenance)": "Добавить узлы записей источника (происхождение)",
   "Import {{count}} entities": "Импортировать сущностей: {{count}}",
-  "Imported: {{nodes}} nodes, {{edges}} relationships": "Импортировано: узлов {{nodes}}, связей {{edges}}"
+  "Imported: {{nodes}} nodes, {{edges}} relationships": "Импортировано: узлов {{nodes}}, связей {{edges}}",
+  "OpenRouter balance": "Баланс OpenRouter",
+  "unavailable": "недоступен",
+  "no limit": "без лимита",
+  "Remaining limit of this API key": "Остаток лимита этого API-ключа",
+  "Account credits minus usage": "Кредиты аккаунта минус расход"
 }

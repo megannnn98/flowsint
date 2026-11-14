@@ -110,6 +110,31 @@ class HimeraImportService(BaseService):
         self._refresh(row)
         return row, True
 
+    async def balance(
+        self,
+        sketch_id: UUID,
+        user_id: UUID,
+        client_factory: Optional[Callable[[str], object]] = None,
+    ) -> dict:
+        """OpenRouter credits left for the key this user's imports would use."""
+        from flowsint_core.himera.openrouter import OpenRouterClient
+
+        self._sketch(sketch_id, user_id, "read")
+        key = self.resolve_api_key(user_id)
+        client = (
+            client_factory(key)
+            if client_factory
+            else OpenRouterClient(key, timeout_s=15, max_retries=1)
+        )
+        b = await client.get_balance()  # type: ignore[attr-defined]
+        return {
+            "remaining_usd": b.remaining_usd,
+            "total_usage_usd": b.total_usage,
+            "total_credits_usd": b.total_credits,
+            "key_limit_usd": b.key_limit,
+            "source": b.source,
+        }
+
     # --------------------------------------------------------- process
 
     def resolve_api_key(self, owner_id: UUID) -> str:

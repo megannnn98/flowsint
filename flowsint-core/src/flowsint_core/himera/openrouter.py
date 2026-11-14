@@ -103,6 +103,15 @@ class Usage:
         self.calls += other.calls
 
 
+@dataclass(frozen=True)
+class Balance:
+    remaining_usd: Optional[float]  # None = unlimited key without account access
+    total_usage: float = 0.0
+    total_credits: Optional[float] = None
+    key_limit: Optional[float] = None
+    source: str = "credits"  # "credits" (account) or "key" (this key's limit)
+
+
 @dataclass
 class ChatResult:
     content: str
@@ -253,6 +262,28 @@ class OpenRouterClient:
             f"{type(last_error).__name__}: {str(last_error)[:_ERROR_TEXT_LIMIT]}"
         )
 
+    async def get_balance(self) -> "Balance":
+        """Account credits left (GET /credits); falls back to the key's own
+        remaining limit (GET /key) when the key may not read account credits."""
+        try:
+            data = (await self._request("GET", "/credits")).get("data") or {}
+            total = float(data.get("total_credits") or 0)
+            used = float(data.get("total_usage") or 0)
+            return Balance(
+                remaining_usd=total - used, total_credits=total, total_usage=used
+            )
+        except OpenRouterHTTPError as e:
+            if e.status not in (401, 403, 404):
+                raise
+        data = (await self._request("GET", "/key")).get("data") or {}
+        remaining = data.get("limit_remaining")
+        return Balance(
+            remaining_usd=float(remaining) if remaining is not None else None,
+            total_usage=float(data.get("usage") or 0),
+            key_limit=float(data["limit"]) if data.get("limit") is not None else None,
+            source="key",
+        )
+
     async def get_model(self, model_id: str) -> ModelInfo:
         if self._models_cache is None:
             body = await self._request("GET", "/models")
@@ -278,6 +309,7 @@ class OpenRouterClient:
         estimated_prompt_tokens: int,
         pdf_engine: Optional[str] = None,
         extra_cost_estimate_usd: float = 0.0,
+        provider_sort: Optional[str] = None,
     ) -> ChatResult:
         estimate = (
             estimated_prompt_tokens * model.prompt_price
@@ -295,6 +327,7 @@ class OpenRouterClient:
                 pdf_engine,
                 budget,
                 estimate,
+                provider_sort,
             )
         except BaseException:
             # Failed before settle: free the reservation (the call is not charged
@@ -312,6 +345,7 @@ class OpenRouterClient:
         pdf_engine: Optional[str],
         budget: CostBudget,
         estimate: float,
+        provider_sort: Optional[str] = None,
     ) -> ChatResult:
         payload: Dict[str, Any] = {
             "model": model.id,
@@ -328,6 +362,8 @@ class OpenRouterClient:
             }
         elif mode == "json_object":
             payload["response_format"] = {"type": "json_object"}
+        if provider_sort:
+            payload["provider"] = {"sort": provider_sort}
         if pdf_engine:
             payload["plugins"] = [{"id": "file-parser", "pdf": {"engine": pdf_engine}}]
 

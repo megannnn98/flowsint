@@ -11,7 +11,7 @@ import type {
   RelationshipType
 } from '@/types'
 import type { GraphNode } from '@/types/graph'
-import type { HimeraExecuteResult, HimeraImport } from '@/types/himera'
+import type { HimeraExecuteResult, HimeraImport, OpenRouterBalance } from '@/types/himera'
 import type { ActionItem } from '@/lib/action-items'
 
 // `inline=true` asks the backend for the relationships-already-joined
@@ -154,6 +154,9 @@ export const sketchService = {
       method: 'POST',
       body: formData
     })
+  },
+  getOpenRouterBalance: async (sketchId: string): Promise<OpenRouterBalance> => {
+    return fetchWithAuth(`/api/sketches/${sketchId}/import/himera/balance`, { method: 'GET' })
   },
   getHimeraImport: async (sketchId: string, importId: string): Promise<HimeraImport> => {
     return fetchWithAuth(`/api/sketches/${sketchId}/import/himera/${importId}`, {

@@ -96,3 +96,11 @@ export interface HimeraExecuteResult {
   skipped_relationships: number
   errors: string[]
 }
+
+export interface OpenRouterBalance {
+  remaining_usd: number | null
+  total_usage_usd: number
+  total_credits_usd: number | null
+  key_limit_usd: number | null
+  source: 'credits' | 'key'
+}

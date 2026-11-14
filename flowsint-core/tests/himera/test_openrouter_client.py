@@ -191,3 +191,46 @@ def test_pdf_file_part_is_data_url():
 def test_missing_key_rejected():
     with pytest.raises(ValueError):
         OpenRouterClient("")
+
+
+@pytest.mark.asyncio
+async def test_balance_from_account_credits():
+    rec = Recorder(
+        [
+            httpx.Response(
+                200, json={"data": {"total_credits": 10.0, "total_usage": 2.5}}
+            )
+        ]
+    )
+    balance = await make_client(rec).get_balance()
+    assert balance.remaining_usd == pytest.approx(7.5)
+    assert balance.source == "credits"
+    assert rec.requests[0].url.path.endswith("/credits")
+
+
+@pytest.mark.asyncio
+async def test_balance_falls_back_to_key_limit():
+    rec = Recorder(
+        [
+            httpx.Response(
+                403, json={"error": {"message": "provisioning key required"}}
+            ),
+            httpx.Response(
+                200, json={"data": {"usage": 1.2, "limit": 5.0, "limit_remaining": 3.8}}
+            ),
+        ]
+    )
+    balance = await make_client(rec).get_balance()
+    assert (balance.remaining_usd, balance.key_limit, balance.source) == (
+        3.8,
+        5.0,
+        "key",
+    )
+    assert rec.requests[1].url.path.endswith("/key")
+
+
+@pytest.mark.asyncio
+async def test_provider_sort_is_sent():
+    rec = Recorder([httpx.Response(200, json=ok_completion())])
+    await call(make_client(rec), provider_sort="throughput")
+    assert json.loads(rec.requests[0].content)["provider"] == {"sort": "throughput"}

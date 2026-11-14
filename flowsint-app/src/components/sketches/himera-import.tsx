@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { FileText, Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -34,6 +34,44 @@ interface HimeraImportPanelProps {
 }
 
 const POLL_MS = 3000
+
+function BalanceLine({ sketchId }: { sketchId: string }) {
+  const { data, error, isLoading } = useQuery({
+    queryKey: ['openrouter-balance', sketchId],
+    queryFn: () => sketchService.getOpenRouterBalance(sketchId),
+    staleTime: 30_000,
+    retry: false
+  })
+  if (isLoading) {
+    return <span className="text-xs text-muted-foreground">{t('OpenRouter balance')}: …</span>
+  }
+  if (error || !data) {
+    return (
+      <span className="text-xs text-amber-600">
+        {t('OpenRouter balance')}: {(error as Error)?.message ?? t('unavailable')}
+      </span>
+    )
+  }
+  const value =
+    data.remaining_usd === null ? t('no limit') : `$${data.remaining_usd.toFixed(2)}`
+  return (
+    <span
+      className={cn(
+        'text-xs',
+        data.remaining_usd !== null && data.remaining_usd < 1
+          ? 'text-red-600 font-semibold'
+          : 'text-muted-foreground'
+      )}
+      title={
+        data.source === 'key'
+          ? t('Remaining limit of this API key')
+          : t('Account credits minus usage')
+      }
+    >
+      {t('OpenRouter balance')}: {value}
+    </span>
+  )
+}
 
 function pagesOf(entity: HimeraEntity): string {
   return [...new Set(entity.mentions.map((m) => m.page))].sort((a, b) => a - b).join(', ')
@@ -188,6 +226,7 @@ function Preview({
   onCancel: () => void
 }) {
   const refetchGraph = useGraphControls((s) => s.refetchGraph)
+  const queryClient = useQueryClient()
   const [entities, setEntities] = useState(
     () => new Set(result.entities.map((e) => e.entity_id))
   )
@@ -226,13 +265,14 @@ function Preview({
         })
       }
       refetchGraph()
+      void queryClient.invalidateQueries({ queryKey: ['openrouter-balance', sketchId] })
       onSuccess()
     } catch (error) {
       toast.error((error as Error)?.message)
     } finally {
       setImporting(false)
     }
-  }, [sketchId, data.id, entities, relationships, includeRecords, refetchGraph, onSuccess])
+  }, [sketchId, data.id, entities, relationships, includeRecords, refetchGraph, onSuccess, queryClient])
 
   const u = result.usage
   return (
@@ -257,6 +297,7 @@ function Preview({
           {t('Cost')}: ${u.cost_usd.toFixed(4)}
         </span>
         {data.reused && <Badge variant="secondary">{t('cached analysis')}</Badge>}
+        <BalanceLine sketchId={sketchId} />
       </div>
       {(!result.complete || result.warnings.length > 0) && (
         <div
@@ -483,6 +524,7 @@ export function HimeraImportPanel({
           <FileText className="h-12 w-12" />
         </div>
         <p className="text-lg font-medium">{t('Himera Search PDF report')}</p>
+        <BalanceLine sketchId={sketchId} />
         <p className="text-sm text-muted-foreground max-w-md">
           {t(
             'The report is sent to OpenRouter for analysis. It contains personal data: make sure this is allowed for your investigation and provider settings.'

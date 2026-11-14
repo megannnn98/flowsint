@@ -209,3 +209,25 @@ def test_stale_processing_row_is_not_reused(client, setup, db_session):
     db_session.commit()
     second = upload(client, setup).json()
     assert second["id"] != first["id"] and second["reused"] is False
+
+
+def test_balance_endpoint(client, setup, monkeypatch):
+    from flowsint_core.core.services import himera_import_service as svc
+    from flowsint_core.himera.openrouter import Balance, OpenRouterClient
+
+    async def fake_balance(self):
+        return Balance(remaining_usd=4.25, total_usage=5.75, total_credits=10.0)
+
+    monkeypatch.setattr(OpenRouterClient, "get_balance", fake_balance)
+    res = client.get(
+        f"/api/sketches/{setup['sketch'].id}/import/himera/balance",
+        headers=setup["headers"](),
+    )
+    assert res.status_code == 200, res.text
+    assert res.json()["remaining_usd"] == 4.25
+    monkeypatch.delenv("OPENROUTER_API_KEY")
+    res = client.get(
+        f"/api/sketches/{setup['sketch'].id}/import/himera/balance",
+        headers=setup["headers"](),
+    )
+    assert res.status_code == 400 and "OPENROUTER_API_KEY" in res.json()["detail"]
