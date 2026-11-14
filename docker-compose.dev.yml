@@ -86,6 +86,9 @@ services:
       - LLM_PROVIDER=${LLM_PROVIDER:-mistral}
       - LLM_MODEL=${LLM_MODEL:-}
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - HIMERA_MODEL=${HIMERA_MODEL:-}
+      - HIMERA_PDF_ENGINE=${HIMERA_PDF_ENGINE:-auto}
+      - HIMERA_MAX_COST_USD=${HIMERA_MAX_COST_USD:-}
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       postgres:
