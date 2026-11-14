@@ -197,3 +197,15 @@ def test_missing_key_marks_failed(client, setup, monkeypatch, db_session):
         headers=setup["headers"](),
     ).json()
     assert body["status"] == "failed" and "OPENROUTER_API_KEY" in body["error"]
+
+
+def test_stale_processing_row_is_not_reused(client, setup, db_session):
+    from datetime import datetime, timedelta, timezone
+
+    first = upload(client, setup).json()
+    row = db_session.get(HimeraImport, __import__("uuid").UUID(first["id"]))
+    row.status = "processing"
+    row.created_at = datetime.now(timezone.utc) - timedelta(hours=2)
+    db_session.commit()
+    second = upload(client, setup).json()
+    assert second["id"] != first["id"] and second["reused"] is False

@@ -50,7 +50,7 @@ Input: the subject summary and a list of records (record_id, section, heading, p
 
 Entity types: Individual (full name; attributes birth_date, alt_surnames), Phone, Email, Username,
 SocialAccount (VK/Telegram/other profiles; attributes platform, profile_url, user_id), Organization
-(attributes inn, ogrn), Address, Document (passport, driver licence, vehicle plate ...; attributes doc_type,
+(attributes inn, ogrn), Address (attributes city, zip, country only if printed), Document (passport, driver licence, vehicle plate ...; attributes doc_type,
 issued_by, issue_date), Identifier (ИНН, СНИЛС, ОГРН, ИИН, bank card, bank account; attribute scheme =
 inn|snils|ogrn|iin|bank_card|bank_account|other), Event (dated fact or source claim: label, score, departure,
 registration, criminal record entry ...; attributes date, claim).

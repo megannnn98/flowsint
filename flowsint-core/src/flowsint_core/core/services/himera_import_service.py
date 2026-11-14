@@ -9,7 +9,7 @@ Flow: ``start`` (store a row, reuse a finished analysis of the same PDF) →
 import hashlib
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Callable, Optional
 from uuid import UUID
 
@@ -25,6 +25,17 @@ logger = logging.getLogger(__name__)
 
 OPENROUTER_KEY_NAME = "OPENROUTER_API_KEY"
 MAX_PDF_BYTES = 20 * 1024 * 1024
+# A "processing" row older than this lost its background task (e.g. API restart).
+STALE_PROCESSING = timedelta(minutes=30)
+
+
+def _is_stale(row: HimeraImport) -> bool:
+    if row.status != "processing" or row.created_at is None:
+        return False
+    created = row.created_at
+    if created.tzinfo is None:  # SQLite returns naive UTC timestamps
+        created = created.replace(tzinfo=timezone.utc)
+    return datetime.now(timezone.utc) - created > STALE_PROCESSING
 
 
 class HimeraImportService(BaseService):
@@ -85,7 +96,7 @@ class HimeraImportService(BaseService):
                 .order_by(HimeraImport.created_at.desc())
                 .first()
             )
-            if existing is not None:
+            if existing is not None and not _is_stale(existing):
                 return existing, False
         row = HimeraImport(
             sketch_id=sketch_id,

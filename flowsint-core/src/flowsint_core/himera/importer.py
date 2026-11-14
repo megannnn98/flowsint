@@ -73,13 +73,21 @@ def _split_list(value: Optional[str]) -> Optional[List[str]]:
     return items or None
 
 
-def _build(cls, label: str, **data) -> FlowsintType:
+MISSING = "не указано"
+
+
+def _build(cls, label: str, **data) -> Optional[FlowsintType]:
+    """Validated instance, or None when the value does not fit the strict type.
+
+    Never use ``model_construct`` here: the graph is read back through the
+    type's validators (GraphSerializer.neo4j_dict_to_graph_node), and one
+    invalid node would break loading of the whole sketch.
+    """
     data = {k: v for k, v in data.items() if v not in (None, "", [])}
     try:
         obj = cls(**data)
     except (ValidationError, ValueError):
-        # Value kept as stated (e.g. an unverified phone the user chose to import).
-        obj = cls.model_construct(**data)
+        return None
     obj.nodeLabel = label
     return obj
 
@@ -133,8 +141,16 @@ def entity_to_type(entity: ExtractedEntity, key: str) -> FlowsintType:
             Organization, label, name=value, inn=a.get("inn"), ogrn=a.get("ogrn")
         )
     elif t == EntityType.ADDRESS:
-        obj = Location.model_construct(address=value, city="", country="", zip="")
-        obj.nodeLabel = label
+        # Location requires city/country/zip: use the parts the model gave,
+        # an explicit "не указано" otherwise (never a guessed value).
+        obj = _build(
+            Location,
+            label,
+            address=value,
+            city=a.get("city") or MISSING,
+            country=a.get("country") or MISSING,
+            zip=a.get("zip") or MISSING,
+        )
     elif t == EntityType.DOCUMENT:
         doc_type = a.get("doc_type")
         title = f"{doc_type} {value}" if doc_type else value
@@ -164,6 +180,12 @@ def entity_to_type(entity: ExtractedEntity, key: str) -> FlowsintType:
             assertion="source_claim" if a.get("claim") else "fact",
             source=SOURCE,
         )
+
+    if obj is None:
+        # e.g. an unverified phone/e-mail the user chose to import: keep the value
+        # as stated in a type without format rules, so it cannot reach enrichers.
+        obj = Identifier(value=entity.raw_value, scheme=t.value.lower())
+        obj.nodeLabel = label if unverified else f"{entity.raw_value} (не подтверждено)"
 
     provenance = {
         "source": SOURCE,

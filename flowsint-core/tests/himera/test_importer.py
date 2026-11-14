@@ -148,3 +148,40 @@ def test_nodes_are_enricher_compatible(result):
     username = entity_to_type(by_type[EntityType.USERNAME], "r")
     assert email.__class__.__name__ == "Email" and "@" in email.email
     assert username.__class__.__name__ == "Username" and username.value
+
+
+def test_every_imported_node_reads_back_from_the_graph(result):
+    """get_sketch_graph re-validates every node: one bad node breaks the sketch."""
+    from flowsint_core.core.graph import GraphSerializer
+    from flowsint_core.himera.schemas import Mention, Verification
+
+    bad_phone = result.entities[0].model_copy(
+        update={
+            "entity_id": "ent-badphone",
+            "type": EntityType.PHONE,
+            "raw_value": "12",
+            "normalized_value": "12",
+            "verification": Verification.UNVERIFIED,
+            "mentions": [
+                Mention(
+                    record_id="p02-01",
+                    page=2,
+                    raw_value="12",
+                    evidence="12",
+                    confidence=0.3,
+                )
+            ],
+        }
+    )
+    result.unverified_entities.append(bad_phone)
+    graph = MergingGraph()
+    everything = ImportSelection(
+        entity_ids={e.entity_id for e in result.entities + result.unverified_entities}
+    )
+    HimeraGraphImporter(graph).import_result(result, everything)
+    for props in graph.nodes.values():
+        node = GraphSerializer.neo4j_dict_to_graph_node({"id": "1", "data": props})
+        assert node.nodeLabel
+    address = next(p for (t, _), p in graph.nodes.items() if t == "location")
+    assert address["nodeProperties.city"] == "не указано"
+    assert ("identifier", "12 (не подтверждено)") in graph.nodes
