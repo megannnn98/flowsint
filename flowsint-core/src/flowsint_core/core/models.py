@@ -453,6 +453,8 @@ class HimeraImport(Base):
     cost_usd = mapped_column(Float, nullable=True)
     result = mapped_column(JSON, nullable=True)
     import_summary = mapped_column(JSON, nullable=True)
+    # Live progress of the analysis: {"stage", "done", "total", "calls", "cost_usd"}.
+    progress = mapped_column(JSON, nullable=True)
     imported_at = mapped_column(DateTime(timezone=True), nullable=True)
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at = mapped_column(

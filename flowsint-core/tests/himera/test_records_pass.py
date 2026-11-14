@@ -474,3 +474,56 @@ def test_only_first_record_of_a_range_can_be_a_tail():
     assert sorted(by) == ["A", "B", "C"]
     assert [f.name for f in by["A"].fields] == ["x", "y"]
     assert by["B"].page_start == 3 and by["C"].page_start == 3
+
+
+@pytest.mark.asyncio
+async def test_progress_is_reported_per_range_and_batch():
+    events = []
+    settings = replace(
+        WHOLE, pages_per_chunk=1, chunk_overlap_pages=0, records_per_batch=4
+    )
+    fake = FakeOpenRouter(
+        {
+            "himera_records": perfect_records_handler(),
+            "himera_entities": perfect_entities_handler(),
+        }
+    )
+    await HimeraExtractionService(fake, settings, on_progress=events.append).extract(
+        synthetic_pdf()
+    )
+    records = [e for e in events if e["stage"] == "records"]
+    entities = [e for e in events if e["stage"] == "entities"]
+    assert records[0] == {**records[0], "done": 0, "total": 4}
+    assert records[-1]["done"] == records[-1]["total"] == 4
+    assert entities[-1]["done"] == entities[-1]["total"] == 3  # 10 records / 4
+    assert events[-1]["stage"] == "validating"
+    assert events[-1]["cost_usd"] > 0 and events[-1]["calls"] == 7
+
+
+@pytest.mark.asyncio
+async def test_progress_total_grows_when_a_range_is_split():
+    events = []
+    perfect = perfect_records_handler()
+
+    def handler(schema_name, messages):
+        if "pages 1-4" in messages[1]["content"][0]["text"]:
+            return ChatResult('{"records": [', "length", Usage(1, 1, 0.0, 1), "m")
+        return perfect(schema_name, messages)
+
+    await HimeraExtractionService(
+        FakeOpenRouter({"himera_records": handler}), WHOLE, on_progress=events.append
+    ).extract(synthetic_pdf())
+    records = [e for e in events if e["stage"] == "records"]
+    assert records[-1]["done"] == records[-1]["total"] == 2
+
+
+@pytest.mark.asyncio
+async def test_broken_progress_callback_does_not_break_extraction():
+    def boom(_):
+        raise RuntimeError("db down")
+
+    fake = FakeOpenRouter({"himera_records": perfect_records_handler()})
+    result = await HimeraExtractionService(fake, WHOLE, on_progress=boom).extract(
+        synthetic_pdf()
+    )
+    assert len(result.records) == 11

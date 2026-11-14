@@ -60,6 +60,7 @@ class HimeraImportRead(BaseModel):
     cost_usd: Optional[float] = None
     result: Optional[Dict[str, Any]] = None
     import_summary: Optional[Dict[str, Any]] = None
+    progress: Optional[Dict[str, Any]] = None
     reused: bool = False
 
 
@@ -85,6 +86,7 @@ def _read(
         cost_usd=row.cost_usd,
         result=row.result if with_result else None,
         import_summary=row.import_summary,
+        progress=row.progress,
         reused=reused,
     )
 

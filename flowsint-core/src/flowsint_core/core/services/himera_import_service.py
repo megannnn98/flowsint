@@ -173,7 +173,11 @@ class HimeraImportService(BaseService):
                     backoff_base_s=settings.backoff_base_s,
                 )
             )
-            result = await HimeraExtractionService(client, settings).extract(  # type: ignore[arg-type]
+            result = await HimeraExtractionService(
+                client,  # type: ignore[arg-type]
+                settings,
+                on_progress=lambda p: self._save_progress(row, p),
+            ).extract(  # type: ignore[arg-type]
                 pdf_bytes, filename="report.pdf"
             )
         except Exception as e:  # noqa: BLE001 - stored for the user, never re-raised
@@ -202,6 +206,11 @@ class HimeraImportService(BaseService):
             result.usage.cost_usd,
         )
         return row
+
+    def _save_progress(self, row: HimeraImport, progress: dict) -> None:
+        # Small JSON update per finished call (~20 per report) for the UI bar.
+        row.progress = dict(progress)
+        self._commit()
 
     # --------------------------------------------------------- execute
 

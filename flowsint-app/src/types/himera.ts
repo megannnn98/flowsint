@@ -86,6 +86,13 @@ export interface HimeraImport {
   cost_usd: number | null
   result: HimeraResult | null
   import_summary: Record<string, unknown> | null
+  progress: {
+    stage: 'preparing' | 'records' | 'entities' | 'validating'
+    done: number
+    total: number
+    calls: number
+    cost_usd: number
+  } | null
   reused: boolean
 }
 

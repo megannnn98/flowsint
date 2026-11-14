@@ -12,7 +12,7 @@ import json
 import logging
 import re
 from dataclasses import dataclass
-from typing import Any, Awaitable, Dict, List, Optional, Tuple, Type, TypeVar
+from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, Type, TypeVar
 
 from pydantic import BaseModel, ValidationError
 
@@ -90,6 +90,7 @@ class _Run:
         # Independent ranges/batches run in parallel, at most this many calls at once.
         self.slots = asyncio.Semaphore(max(1, settings.concurrency))
         self.page_texts: List[str] = []  # text mode only
+        self.progress: Dict[str, Any] = {"stage": "preparing", "done": 0, "total": 0}
 
 
 TEXT_ENGINE = "text"
@@ -137,12 +138,50 @@ def parse_json_output(content: str, output_model: Type[T]) -> T:
     return output_model.model_validate(json.loads(text))
 
 
+ProgressCallback = Callable[[Dict[str, Any]], None]
+
+
 class HimeraExtractionService:
     def __init__(
-        self, client: OpenRouterClient, settings: Optional[HimeraSettings] = None
+        self,
+        client: OpenRouterClient,
+        settings: Optional[HimeraSettings] = None,
+        on_progress: Optional[ProgressCallback] = None,
     ):
         self._client = client
         self._settings = settings or HimeraSettings.from_env()
+        # Called with {"stage", "done", "total", "calls", "cost_usd"} after every
+        # finished range/batch. Must be cheap; errors in it are logged and ignored.
+        self._on_progress = on_progress
+
+    # ----------------------------------------------------------- progress
+
+    def _stage(self, run: "_Run", stage: str, total: int) -> None:
+        run.progress = {"stage": stage, "done": 0, "total": total}
+        self._report(run)
+
+    def _grow(self, run: "_Run") -> None:
+        # One unit was split in two (truncated answer).
+        run.progress["total"] = run.progress.get("total", 0) + 1
+        self._report(run)
+
+    def _tick(self, run: "_Run") -> None:
+        run.progress["done"] = run.progress.get("done", 0) + 1
+        self._report(run)
+
+    def _report(self, run: "_Run") -> None:
+        if self._on_progress is None:
+            return
+        try:
+            self._on_progress(
+                {
+                    **run.progress,
+                    "calls": run.usage.calls,
+                    "cost_usd": round(run.usage.cost_usd, 4),
+                }
+            )
+        except Exception as e:  # noqa: BLE001 - progress must never break extraction
+            logger.warning("himera progress callback failed: %s", type(e).__name__)
 
     # ------------------------------------------------------------- public
 
@@ -179,6 +218,7 @@ class HimeraExtractionService:
             run.warnings.append("no records extracted")
 
         entities, relationships = await self.extract_entities(merged.records, run)
+        self._stage(run, "validating", 1)
         assembled = assemble(merged.records, entities, relationships)
 
         result = HimeraExtractionResult(
@@ -212,6 +252,7 @@ class HimeraExtractionService:
             self._settings.pages_per_chunk,
             self._settings.chunk_overlap_pages,
         )
+        self._stage(run, "records", len(ranges))
         results = await _gather(
             [self._records_for_range(prepared, rng, run, filename, 0) for rng in ranges]
         )
@@ -280,8 +321,13 @@ class HimeraExtractionService:
             extra_cost_estimate_usd=extra_cost,
             what=f"records {rng}",
         )
+        will_split = outcome.truncated and rng.pages > 1 and depth < _MAX_SPLIT_DEPTH
+        if will_split:
+            self._grow(run)
+        else:
+            self._tick(run)
         if outcome.truncated:
-            if rng.pages > 1 and depth < _MAX_SPLIT_DEPTH:
+            if will_split:
                 left, right = split_range(rng)
                 run.warnings.append(
                     f"records {rng}: response hit the token limit, retrying as {left} and {right}"
@@ -345,6 +391,7 @@ class HimeraExtractionService:
             if r.section != Section.SERVICE
         ]
         size = max(1, self._settings.records_per_batch)
+        self._stage(run, "entities", (len(payload) + size - 1) // size)
         results = await _gather(
             [
                 self._entities_for_batch(
@@ -383,8 +430,13 @@ class HimeraExtractionService:
             estimated_prompt_tokens=len(user) // 2 + _SYSTEM_PROMPT_TOKENS,
             what=f"entities {ids}",
         )
+        will_split = outcome.truncated and len(batch) > 1
+        if will_split:
+            self._grow(run)
+        else:
+            self._tick(run)
         if outcome.truncated:
-            if len(batch) > 1:
+            if will_split:
                 half = len(batch) // 2
                 run.warnings.append(
                     f"entities {ids}: response hit the token limit, retrying in two batches"

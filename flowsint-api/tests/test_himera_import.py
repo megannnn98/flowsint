@@ -146,6 +146,8 @@ def test_full_flow_upload_preview_import(client, setup):
     body = res.json()
     assert body["status"] == "completed", body
     assert body["cost_usd"] > 0 and body["model"] == "test/model"
+    progress = body["progress"]
+    assert progress["stage"] == "validating" and progress["calls"] >= 2
     result = body["result"]
     assert len(result["records"]) == 11
     assert result["ambiguous_relationships"] and result["unverified_entities"]

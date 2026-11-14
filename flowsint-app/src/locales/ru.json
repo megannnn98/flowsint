@@ -2638,5 +2638,12 @@
   "unavailable": "недоступен",
   "no limit": "без лимита",
   "Remaining limit of this API key": "Остаток лимита этого API-ключа",
-  "Account credits minus usage": "Кредиты аккаунта минус расход"
+  "Account credits minus usage": "Кредиты аккаунта минус расход",
+  "Preparing the PDF": "Подготовка PDF",
+  "Step 1 of 2: reading records": "Шаг 1 из 2: разбор записей",
+  "Step 2 of 2: extracting entities and links": "Шаг 2 из 2: извлечение сущностей и связей",
+  "Checking and saving": "Проверка и сохранение",
+  "{{done}} of {{total}} parts done": "готово частей: {{done}} из {{total}}",
+  "Spent": "Потрачено",
+  "Uploading...": "Загрузка..."
 }

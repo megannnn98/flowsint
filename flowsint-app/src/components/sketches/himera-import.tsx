@@ -5,6 +5,7 @@ import { FileText, Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Table,
@@ -18,12 +19,7 @@ import { sketchService } from '@/api/sketch-service'
 import { useGraphControls } from '@/stores/graph-controls-store'
 import { cn } from '@/lib/utils'
 import Loader from '../loader'
-import type {
-  HimeraEntity,
-  HimeraImport,
-  HimeraRelationship,
-  HimeraResult
-} from '@/types/himera'
+import type { HimeraEntity, HimeraImport, HimeraRelationship, HimeraResult } from '@/types/himera'
 import { t } from '@/i18n'
 
 interface HimeraImportPanelProps {
@@ -33,7 +29,7 @@ interface HimeraImportPanelProps {
   onResultChange?: (hasResult: boolean) => void
 }
 
-const POLL_MS = 3000
+const POLL_MS = 2000
 
 function BalanceLine({ sketchId }: { sketchId: string }) {
   const { data, error, isLoading } = useQuery({
@@ -52,8 +48,7 @@ function BalanceLine({ sketchId }: { sketchId: string }) {
       </span>
     )
   }
-  const value =
-    data.remaining_usd === null ? t('no limit') : `$${data.remaining_usd.toFixed(2)}`
+  const value = data.remaining_usd === null ? t('no limit') : `$${data.remaining_usd.toFixed(2)}`
   return (
     <span
       className={cn(
@@ -70,6 +65,57 @@ function BalanceLine({ sketchId }: { sketchId: string }) {
     >
       {t('OpenRouter balance')}: {value}
     </span>
+  )
+}
+
+// Share of the bar per stage: records pass, entities pass, validation.
+const STAGES: Record<string, { label: string; from: number; to: number }> = {
+  preparing: { label: 'Preparing the PDF', from: 0, to: 2 },
+  records: { label: 'Step 1 of 2: reading records', from: 2, to: 50 },
+  entities: { label: 'Step 2 of 2: extracting entities and links', from: 50, to: 95 },
+  validating: { label: 'Checking and saving', from: 95, to: 100 }
+}
+
+function AnalysisProgress({
+  progress,
+  startedAt
+}: {
+  progress: HimeraImport['progress']
+  startedAt: number
+}) {
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(timer)
+  }, [])
+  const stage = STAGES[progress?.stage ?? 'preparing'] ?? STAGES.preparing
+  const done = progress?.done ?? 0
+  const total = progress?.total ?? 0
+  const share = total > 0 ? Math.min(done / total, 1) : 0
+  const percent = Math.round(stage.from + (stage.to - stage.from) * share)
+  const seconds = Math.max(0, Math.round((now - startedAt) / 1000))
+  const elapsed = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
+  return (
+    <div className="flex flex-col gap-3 py-12 px-4 w-full max-w-xl mx-auto">
+      <div className="flex justify-between text-sm">
+        <span className="font-medium">{t(stage.label)}</span>
+        <span className="text-muted-foreground">{percent}%</span>
+      </div>
+      <Progress value={percent} />
+      <div className="flex justify-between text-xs text-muted-foreground">
+        <span>
+          {total > 0 && progress?.stage !== 'validating'
+            ? t('{{done}} of {{total}} parts done', { done, total })
+            : ' '}
+        </span>
+        <span>
+          {t('Spent')}: ${(progress?.cost_usd ?? 0).toFixed(3)} · {elapsed}
+        </span>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        {t('The PDF is being analysed by the language model. This can take a few minutes.')}
+      </p>
+    </div>
   )
 }
 
@@ -227,9 +273,7 @@ function Preview({
 }) {
   const refetchGraph = useGraphControls((s) => s.refetchGraph)
   const queryClient = useQueryClient()
-  const [entities, setEntities] = useState(
-    () => new Set(result.entities.map((e) => e.entity_id))
-  )
+  const [entities, setEntities] = useState(() => new Set(result.entities.map((e) => e.entity_id)))
   const [relationships, setRelationships] = useState(
     () => new Set(result.relationships.map((r) => r.rel_id))
   )
@@ -272,7 +316,16 @@ function Preview({
     } finally {
       setImporting(false)
     }
-  }, [sketchId, data.id, entities, relationships, includeRecords, refetchGraph, onSuccess, queryClient])
+  }, [
+    sketchId,
+    data.id,
+    entities,
+    relationships,
+    includeRecords,
+    refetchGraph,
+    onSuccess,
+    queryClient
+  ])
 
   const u = result.usage
   return (
@@ -398,9 +451,7 @@ function Preview({
                       )}
                     </TableCell>
                     <TableCell className="text-xs">
-                      {r.page_start === r.page_end
-                        ? r.page_start
-                        : `${r.page_start}-${r.page_end}`}
+                      {r.page_start === r.page_end ? r.page_start : `${r.page_start}-${r.page_end}`}
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
                       {r.fields.map((f) => `${f.name}: ${f.value}`).join('; ')}
@@ -442,6 +493,7 @@ export function HimeraImportPanel({
   onResultChange
 }: HimeraImportPanelProps) {
   const [importId, setImportId] = useState<string | null>(null)
+  const [startedAt, setStartedAt] = useState(() => Date.now())
   const [uploading, setUploading] = useState(false)
 
   const { data } = useQuery({
@@ -465,6 +517,7 @@ export function HimeraImportPanel({
       }
       setUploading(true)
       try {
+        setStartedAt(Date.now())
         const started = await sketchService.startHimeraImport(sketchId, file, force)
         setImportId(started.id)
       } catch (error) {
@@ -506,14 +559,15 @@ export function HimeraImportPanel({
   }
 
   if (importId || uploading) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-4 py-12">
-        <Loader />
-        <p className="text-sm text-muted-foreground">
-          {t('The PDF is being analysed by the language model. This can take a few minutes.')}
-        </p>
-      </div>
-    )
+    if (uploading || !data) {
+      return (
+        <div className="flex flex-col items-center justify-center gap-4 py-12">
+          <Loader />
+          <p className="text-sm text-muted-foreground">{t('Uploading...')}</p>
+        </div>
+      )
+    }
+    return <AnalysisProgress progress={data.progress} startedAt={startedAt} />
   }
 
   return (
