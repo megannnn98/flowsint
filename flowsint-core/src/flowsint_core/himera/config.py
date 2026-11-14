@@ -5,15 +5,21 @@ from dataclasses import dataclass
 from typing import Literal, Mapping, Optional
 
 PdfEngine = Literal["auto", "pdf-text", "mistral-ocr", "native"]
+InputMode = Literal["auto", "text", "pdf"]
 
-DEFAULT_MODEL = "google/gemini-2.5-flash"
+DEFAULT_MODEL = "deepseek/deepseek-v3.2"
 _PDF_ENGINES = ("auto", "pdf-text", "mistral-ocr", "native")
+_INPUT_MODES = ("auto", "text", "pdf")
 
 
 @dataclass(frozen=True)
 class HimeraSettings:
     model: str = DEFAULT_MODEL
-    # "auto": pdf-text when the PDF has a text layer, mistral-ocr otherwise.
+    # "text": send the locally extracted text with page markers (any text model,
+    # e.g. DeepSeek); "pdf": send the PDF file to OpenRouter's parser/OCR;
+    # "auto": text when the PDF has a text layer, pdf (OCR) otherwise.
+    input_mode: InputMode = "auto"
+    # PDF mode only. "auto": pdf-text with a text layer, mistral-ocr otherwise.
     pdf_engine: PdfEngine = "auto"
     # Hard cap for one document (all LLM calls together), in USD.
     max_cost_usd: float = 0.50
@@ -41,6 +47,11 @@ class HimeraSettings:
             raise ValueError(
                 f"HIMERA_PDF_ENGINE must be one of {', '.join(_PDF_ENGINES)}, got '{engine}'"
             )
+        mode = env.get("HIMERA_INPUT") or "auto"
+        if mode not in _INPUT_MODES:
+            raise ValueError(
+                f"HIMERA_INPUT must be one of {', '.join(_INPUT_MODES)}, got '{mode}'"
+            )
         defaults = cls()
 
         def num(name: str, default: float, cast=float):
@@ -49,6 +60,7 @@ class HimeraSettings:
 
         return cls(
             model=env.get("HIMERA_MODEL") or DEFAULT_MODEL,
+            input_mode=mode,  # type: ignore[arg-type]
             pdf_engine=engine,  # type: ignore[arg-type]
             max_cost_usd=num("HIMERA_MAX_COST_USD", defaults.max_cost_usd),
             ocr_usd_per_page=num("HIMERA_OCR_USD_PER_PAGE", defaults.ocr_usd_per_page),

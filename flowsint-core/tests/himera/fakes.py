@@ -64,8 +64,13 @@ Reply = Union[str, Dict[str, Any], ChatResult, Exception]
 Handler = Callable[[str, List[Dict[str, Any]]], Reply]
 
 
+def is_text_mode(messages: List[Dict[str, Any]]) -> bool:
+    return isinstance(messages[1]["content"], str)
+
+
 def page_range_of(messages: List[Dict[str, Any]]):
-    text = messages[1]["content"][0]["text"]
+    content = messages[1]["content"]
+    text = content if isinstance(content, str) else content[0]["text"]
     m = re.search(r"pages (\d+)-(\d+) of a (\d+)-page", text)
     assert m, text
     return tuple(int(x) for x in m.groups())
@@ -76,7 +81,12 @@ def perfect_records_handler(whole: Optional[Dict[str, Any]] = None) -> Handler:
 
     def handler(schema_name, messages):
         first, last, total = page_range_of(messages)
-        return simulate_records_chunk(whole, first, last, total)
+        out = simulate_records_chunk(whole, first, last, total)
+        if is_text_mode(messages):  # text mode answers with report pages
+            for r in out["records"]:
+                r["page_start"] += first - 1
+                r["page_end"] += first - 1
+        return out
 
     return handler
 

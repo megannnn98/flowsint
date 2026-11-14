@@ -31,15 +31,18 @@ from .pdf import (
     PageRange,
     PreparedPdf,
     extract_pages,
+    page_texts,
     plan_page_ranges,
     prepare_pdf,
     split_range,
+    text_with_markers,
 )
 from .prompts import (
     ENTITIES_SYSTEM,
     RECORDS_SYSTEM,
     REPAIR_SYSTEM,
     entities_user_prompt,
+    records_text_prompt,
     records_user_prompt,
     repair_user_prompt,
 )
@@ -86,6 +89,33 @@ class _Run:
         self.stopped = False  # budget exhausted: no further calls
         # Independent ranges/batches run in parallel, at most this many calls at once.
         self.slots = asyncio.Semaphore(max(1, settings.concurrency))
+        self.page_texts: List[str] = []  # text mode only
+
+
+TEXT_ENGINE = "text"
+
+
+def _to_relative_pages(output: LlmRecordsOutput, rng: PageRange) -> LlmRecordsOutput:
+    """Text mode answers with report pages (from the markers); the merge works
+    with pages relative to the range. Out-of-range pages are left for the merge
+    to clamp and report."""
+
+    def rel(page: int) -> int:
+        return page - rng.first + 1 if rng.first <= page <= rng.last else page
+
+    return output.model_copy(
+        update={
+            "records": [
+                r.model_copy(
+                    update={
+                        "page_start": rel(r.page_start),
+                        "page_end": rel(r.page_end),
+                    }
+                )
+                for r in output.records
+            ]
+        }
+    )
 
 
 async def _gather(coros: List[Awaitable[Any]]) -> List[Any]:
@@ -123,6 +153,12 @@ class HimeraExtractionService:
         model = await self._client.get_model(self._settings.model)
         engine = self._resolve_engine(prepared, model)
         run = _Run(model, engine, self._settings)
+        if engine == TEXT_ENGINE:
+            run.page_texts = page_texts(prepared.data)
+        elif self._settings.input_mode == "text":
+            run.warnings.append(
+                "PDF has no text layer: sent as a file for OCR instead of text"
+            )
         if model.structured_mode != "json_schema":
             run.warnings.append(
                 f"model {model.id} has no strict structured outputs; using "
@@ -192,26 +228,42 @@ class HimeraExtractionService:
     ) -> List[ChunkRecords]:
         if run.stopped:
             return []
-        whole = rng.first == 1 and rng.last == prepared.page_count
-        data = prepared.data if whole else extract_pages(prepared.data, rng)
-        messages = [
-            {
-                "role": "system",
-                "content": self._system(RECORDS_SYSTEM, RECORDS_SCHEMA, run),
-            },
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": records_user_prompt(
-                            rng.first, rng.last, prepared.page_count
-                        ),
-                    },
-                    pdf_file_part(data, filename),
-                ],
-            },
-        ]
+        system = {
+            "role": "system",
+            "content": self._system(RECORDS_SYSTEM, RECORDS_SCHEMA, run),
+        }
+        text_mode = run.engine == TEXT_ENGINE
+        if text_mode:
+            text = text_with_markers(run.page_texts, rng)
+            messages = [
+                system,
+                {
+                    "role": "user",
+                    "content": records_text_prompt(
+                        rng.first, rng.last, prepared.page_count, text
+                    ),
+                },
+            ]
+            estimated = len(text) // 2 + _SYSTEM_PROMPT_TOKENS
+        else:
+            whole = rng.first == 1 and rng.last == prepared.page_count
+            data = prepared.data if whole else extract_pages(prepared.data, rng)
+            messages = [
+                system,
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": records_user_prompt(
+                                rng.first, rng.last, prepared.page_count
+                            ),
+                        },
+                        pdf_file_part(data, filename),
+                    ],
+                },
+            ]
+            estimated = rng.pages * TOKENS_PER_PAGE_ESTIMATE + _SYSTEM_PROMPT_TOKENS
         extra_cost = (
             rng.pages * self._settings.ocr_usd_per_page
             if run.engine == "mistral-ocr"
@@ -223,9 +275,8 @@ class HimeraExtractionService:
             "himera_records",
             RECORDS_SCHEMA,
             LlmRecordsOutput,
-            estimated_prompt_tokens=rng.pages * TOKENS_PER_PAGE_ESTIMATE
-            + _SYSTEM_PROMPT_TOKENS,
-            pdf_engine=run.engine,
+            estimated_prompt_tokens=estimated,
+            pdf_engine=None if text_mode else run.engine,
             extra_cost_estimate_usd=extra_cost,
             what=f"records {rng}",
         )
@@ -257,6 +308,8 @@ class HimeraExtractionService:
             return []
         output = outcome.parsed
         assert isinstance(output, LlmRecordsOutput)
+        if text_mode:
+            output = _to_relative_pages(output, rng)
         if not output.records:
             run.warnings.append(f"records {rng}: model returned no records")
         return [ChunkRecords(rng, output)]
@@ -382,6 +435,8 @@ class HimeraExtractionService:
     # ------------------------------------------------------------ helpers
 
     def _resolve_engine(self, prepared: PreparedPdf, model: ModelInfo) -> str:
+        if self._settings.input_mode != "pdf" and prepared.has_text_layer:
+            return TEXT_ENGINE
         engine = self._settings.pdf_engine
         if engine == "auto":
             engine = "pdf-text" if prepared.has_text_layer else "mistral-ocr"

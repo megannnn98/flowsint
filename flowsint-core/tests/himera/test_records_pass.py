@@ -23,7 +23,7 @@ from .fakes import (
     synthetic_pdf,
 )
 
-WHOLE = HimeraSettings(pages_per_chunk=0, max_cost_usd=1.0)
+WHOLE = HimeraSettings(pages_per_chunk=0, max_cost_usd=1.0, input_mode="pdf")
 
 
 def summary(result):
@@ -255,7 +255,9 @@ async def test_real_client_over_mock_transport():
         )
 
     client = OpenRouterClient("sk-test", transport=httpx.MockTransport(handler))
-    service = HimeraExtractionService(client, WHOLE)
+    service = HimeraExtractionService(
+        client, replace(WHOLE, model="google/gemini-2.5-flash")
+    )
     result = await service.extract(synthetic_pdf())
     assert summary(result) == EXPECTED
     assert result.usage.cost_usd == pytest.approx(0.009)

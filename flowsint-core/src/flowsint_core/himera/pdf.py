@@ -7,6 +7,7 @@ never interpreted. Semantic extraction is done by the LLM.
 
 import hashlib
 import io
+import re
 from dataclasses import dataclass
 from typing import List, Tuple
 
@@ -112,3 +113,23 @@ def split_range(page_range: PageRange) -> Tuple[PageRange, PageRange]:
         raise ValueError("Cannot split a single-page range")
     middle = page_range.first + page_range.pages // 2 - 1
     return PageRange(page_range.first, middle), PageRange(middle + 1, page_range.last)
+
+
+def page_texts(data: bytes) -> List[str]:
+    """Text of every page with the column layout kept ("field   value" stays on
+    one line), runs of spaces shortened to save tokens. Technical extraction
+    only: the text is not interpreted here."""
+    reader = PdfReader(io.BytesIO(data))
+    out = []
+    for page in reader.pages:
+        text = page.extract_text(extraction_mode="layout") or ""
+        lines = [re.sub(r" {3,}", "   ", line.strip()) for line in text.splitlines()]
+        out.append("\n".join(line for line in lines if line))
+    return out
+
+
+def text_with_markers(pages: List[str], page_range: PageRange) -> str:
+    return "\n\n".join(
+        f"=== PAGE {n} ===\n{pages[n - 1]}"
+        for n in range(page_range.first, page_range.last + 1)
+    )

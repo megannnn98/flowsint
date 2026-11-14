@@ -158,8 +158,9 @@ The import uses the same key as the Flowsint chat:
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `HIMERA_MODEL` | `google/gemini-2.5-flash` | OpenRouter model id |
-| `HIMERA_PDF_ENGINE` | `auto` | `auto` = `pdf-text` for PDFs with a text layer, `mistral-ocr` for scans; or force `pdf-text` / `mistral-ocr` / `native` |
+| `HIMERA_MODEL` | `deepseek/deepseek-v3.2` | OpenRouter model id |
+| `HIMERA_INPUT` | `auto` | `text` = send locally extracted text (pypdf, column layout kept) with `=== PAGE N ===` markers — any text model, report page numbers read from the markers; `pdf` = send the PDF file to OpenRouter's parser/OCR; `auto` = `text` when the PDF has a text layer, `pdf` (OCR) otherwise |
+| `HIMERA_PDF_ENGINE` (pdf mode) | `auto` | `auto` = `pdf-text` for PDFs with a text layer, `mistral-ocr` for scans; or force `pdf-text` / `mistral-ocr` / `native` |
 | `HIMERA_MAX_COST_USD` | `0.50` | hard cap for one document (all calls) |
 | `HIMERA_OCR_USD_PER_PAGE` | `0.002` | OCR price used in the pre-call estimate |
 | `HIMERA_PAGES_PER_CHUNK` | `4` | page range size for the records pass (`0` = whole PDF in one call) |
@@ -185,9 +186,15 @@ Before the first call the service reads `GET /api/v1/models` and checks the mode
 * **Context / output** — a 23-page report is ~35k prompt tokens; with the
   default chunking each call stays well below 16k output tokens.
 
-Reasonable choices: `google/gemini-2.5-flash` (cheap, file input, structured
-outputs), `openai/gpt-4.1-mini`, `anthropic/claude-sonnet-4.5` (more careful
-with the subject/namesake distinction, more expensive).
+Reasonable choices: `deepseek/deepseek-v3.2` (default; text mode, cheapest
+output tokens — the answer is ~2-3x longer than the input, so output price
+dominates), `google/gemini-2.5-flash` (also reads PDFs natively, needed for
+scans), `anthropic/claude-sonnet-4.5` (more careful with the subject/namesake
+distinction, more expensive).
+
+Text mode is the default for PDFs with a text layer: the page markers give the
+model exact report page numbers, so records on range boundaries are attributed
+to the right page, and no file parser is involved.
 
 Data policy: the report contains personal data. Configure the OpenRouter
 account's data policy (no training / zero data retention providers) before use,
@@ -198,9 +205,10 @@ and only upload reports you are allowed to process.
 1. **Prepare** (`himera/pdf.py`, pypdf): reject non-PDF/encrypted files, count
    pages, measure the text layer (characters per page, not content), compute the
    SHA-256, plan page ranges.
-2. **Records pass** (`extraction.py`): for every range, send the sub-PDF as a
-   `file` content part to `POST /api/v1/chat/completions` with the `file-parser`
-   plugin (`pdf.engine`) and the `himera_records` schema.
+2. **Records pass** (`extraction.py`): for every range (in parallel), send to
+   `POST /api/v1/chat/completions` with the `himera_records` schema either the
+   pages' text with `=== PAGE N ===` markers (text mode), or the sub-PDF as a
+   `file` content part with the `file-parser` plugin (pdf mode).
 3. **Merge records** (`records.py`): convert range-relative pages to report
    pages and merge copies from overlapping ranges (see §6).
 4. **Entities pass**: send record JSON (no PDF) in batches with the subject

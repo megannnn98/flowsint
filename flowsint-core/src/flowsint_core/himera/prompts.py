@@ -17,12 +17,12 @@ Rules:
 2. Two consecutive records with the same heading (even with identical values) are TWO records. Never merge them.
 3. A record may continue on the next page without repeating the heading: it is still ONE record, page_end is the
    page where it ends.
-4. Pages are numbered from 1 within the file you received. ordinal_on_start_page = 1-based position of the record
-   among records that START on page_start (a continuation from a previous page does not count).
-5. starts_before_range = true if the first thing on the first page of this file is the continuation of a record
+4. Page numbers: use the numbering explained in the user message. ordinal_on_start_page = 1-based position of
+   the record among records that START on page_start (a continuation from a previous page does not count).
+5. starts_before_range = true if the first thing on the first page you received is the continuation of a record
    whose heading is on an earlier page you did not receive. Output that fragment as a record with the heading
    "<continuation>" and the fields you see.
-6. continues_after_range = true if the record is cut by the end of this file and may continue after it.
+6. continues_after_range = true if the record is cut by the end of what you received and may continue after it.
 7. Copy field names and values EXACTLY as printed (keep case, odd characters, Cyrillic/Latin mix, spaces in
    numbers, broken quotes). Do not correct, translate, normalise or complete anything. Skip empty values.
    For tables (income) use field names like "Место работы", "Сумма", "Дата актуальности" per row.
@@ -30,9 +30,20 @@ Rules:
    only) or otherwise states it is a name-only match.
 9. source_name: the dataset name from the heading without period/code; source_period: the year/period from the
    heading if printed, else null.
-10. report_id: the id after "Отчет №" if visible in this file, else null. truncation_notice = true if the footer says
+10. report_id: the id after "Отчет №" if visible in what you received, else null. truncation_notice = true if the footer says
    the report may be truncated.
 Return JSON only."""
+
+
+def records_text_prompt(
+    first_page: int, last_page: int, total_pages: int, text: str
+) -> str:
+    return (
+        f"Below is the text of pages {first_page}-{last_page} of a {total_pages}-page report, "
+        "extracted with the column layout kept. Each page starts with a line "
+        "'=== PAGE N ===' where N is the report page: use these N as page_start/page_end. "
+        "Extract all records.\n\n" + text
+    )
 
 
 def records_user_prompt(first_page: int, last_page: int, total_pages: int) -> str:
