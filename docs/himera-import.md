@@ -420,3 +420,30 @@ rights on the investigation, the preview needs *read*):
 
   Only counts and metrics are printed; the full result goes to `--out`, which
   must stay out of the repository.
+
+## 13. Measured results (2026-11-14, `google/gemini-2.5-flash`, engine `pdf-text`)
+
+Synthetic report (4 pages, fictional data, gold file), sequential version:
+record precision/recall 1.0/1.0, entity precision/recall 0.70/0.84 (mostly
+normalisation differences: `Ё`→`Е`, addresses not unified, extra organisation
+ИНН/ОГРН identifiers missing from the gold), confirmed subject relationships
+precision/recall 0.92/1.0, 0 subject links to namesake values, 1 subject node,
+unverified share 7 % (the look-alike e-mail), cost $0.034.
+
+Reference Himera report (23 pages, real data, counts only):
+
+| Version | Time | Cost | Records | Entities (+unverified) | Confirmed / ambiguous links |
+|---|---|---|---|---|---|
+| sequential, 6-page ranges | ~7 min | $0.243 | 63 (2 duplicates on overlap pages) | 86 (+3) | 131 / 43 |
+| parallel, 4-page ranges (final) | 59 s | $0.237 | 61 | 100 (+2) | 118 / 59 |
+
+In all runs: 23/23 pages covered, one subject node, namesake records kept as
+separate candidates (every link from them is `candidate`), labels/scores as
+`source_claim`, the truncation footer detected.
+
+Known limits seen on the real report: in the garbled name-match section at the
+end (broken CSV quoting inside values) the model sometimes takes a field line
+(`Карта тройка …`, `Огранизация …`) for a record heading, so the section is
+split into more records than printed; their links stay `candidate` because the
+person identity is unknown. A record cut by a range end that the next range
+does not report again keeps a "may continue" warning.
