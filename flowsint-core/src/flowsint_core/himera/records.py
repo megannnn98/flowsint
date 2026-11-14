@@ -1,0 +1,167 @@
+"""
+Deterministic merge of records returned for overlapping page ranges.
+
+Record identity is positional and stable: ``p<page_start>-<ordinal>`` where the
+ordinal is the record's position among records starting on that page. Two copies
+of one record (from neighbouring, overlapping ranges) share that key; identical
+looking records at different positions do not, so real duplicates survive.
+"""
+
+import re
+from dataclasses import dataclass, field
+from typing import Dict, List, Optional, Tuple
+
+from .pdf import PageRange
+from .schemas import FieldValue, LlmRecordsOutput, SourceRecord
+
+CONTINUATION_HEADING = "<continuation>"
+
+
+@dataclass
+class ChunkRecords:
+    page_range: PageRange
+    output: LlmRecordsOutput
+
+
+@dataclass
+class MergeResult:
+    records: List[SourceRecord]
+    report_id: Optional[str]
+    truncation_notice: bool
+    warnings: List[str] = field(default_factory=list)
+
+
+def _norm_heading(heading: str) -> str:
+    return re.sub(r"[^0-9a-zа-яё]+", "", heading.casefold())
+
+
+def _record_id(page_start: int, ordinal: int, suffix: str = "") -> str:
+    return f"p{page_start:02d}-{ordinal:02d}{suffix}"
+
+
+def _abs_page(rel: int, page_range: PageRange, warnings: List[str], what: str) -> int:
+    if rel < 1 or rel > page_range.pages:
+        warnings.append(
+            f"{what}: page {rel} outside range {page_range} (relative), clamped"
+        )
+        rel = min(max(rel, 1), page_range.pages)
+    return page_range.first + rel - 1
+
+
+def _add_fields(target: SourceRecord, extra: List[FieldValue]) -> None:
+    seen = {(f.name, f.value) for f in target.fields}
+    for f in extra:
+        if (f.name, f.value) not in seen:
+            target.fields.append(f)
+            seen.add((f.name, f.value))
+
+
+def merge_chunk_records(chunks: List[ChunkRecords], page_count: int) -> MergeResult:
+    merged: Dict[str, SourceRecord] = {}
+    keys: Dict[Tuple[int, int, str], str] = {}
+    warnings: List[str] = []
+    report_id: Optional[str] = None
+    truncation = False
+
+    for chunk in chunks:
+        rng = chunk.page_range
+        label = str(rng)
+        report_id = report_id or chunk.output.report_id
+        truncation = truncation or chunk.output.truncation_notice
+        for idx, rec in enumerate(chunk.output.records):
+            what = f"range {label} record {idx + 1}"
+            start = _abs_page(rec.page_start, rng, warnings, what)
+            end = max(start, _abs_page(rec.page_end, rng, warnings, what))
+            open_ended = rec.continues_after_range and end < page_count
+
+            if rec.starts_before_range or rec.source_heading == CONTINUATION_HEADING:
+                target = next(
+                    (
+                        r
+                        for r in reversed(list(merged.values()))
+                        if r.open_ended and r.page_end >= rng.first - 1
+                    ),
+                    None,
+                )
+                if target is None:
+                    # Already seen whole in the previous (overlapping) range.
+                    target = next(
+                        (
+                            r
+                            for r in reversed(list(merged.values()))
+                            if r.page_start < rng.first <= r.page_end
+                        ),
+                        None,
+                    )
+                if target is not None:
+                    _add_fields(target, rec.fields)
+                    target.page_end = max(target.page_end, end)
+                    target.open_ended = open_ended
+                    if rec.raw_text and rec.raw_text not in target.raw_text:
+                        target.raw_text = f"{target.raw_text}\n{rec.raw_text}".strip()
+                    target.chunks.append(label)
+                    continue
+                if rng.first > 1:
+                    warnings.append(
+                        f"{what}: continuation without a known start on page {start}"
+                    )
+
+            key = (start, rec.ordinal_on_start_page, _norm_heading(rec.source_heading))
+            candidate = SourceRecord(
+                record_id="",
+                section=rec.section,
+                source_name=rec.source_name,
+                source_heading=rec.source_heading,
+                source_period=rec.source_period,
+                page_start=start,
+                page_end=end,
+                ordinal_on_start_page=rec.ordinal_on_start_page,
+                fields=list(rec.fields),
+                raw_text=rec.raw_text,
+                name_match_only=rec.name_match_only,
+                open_ended=open_ended,
+                chunks=[label],
+            )
+
+            existing_id = keys.get(key)
+            if existing_id is not None:
+                existing = merged[existing_id]
+                better = (existing.open_ended and not candidate.open_ended) or (
+                    existing.open_ended == candidate.open_ended
+                    and len(candidate.fields) > len(existing.fields)
+                )
+                chunks_seen = existing.chunks + [label]
+                if better:
+                    candidate.record_id = existing_id
+                    candidate.chunks = chunks_seen
+                    merged[existing_id] = candidate
+                else:
+                    existing.chunks = chunks_seen
+                continue
+
+            record_id = _record_id(start, rec.ordinal_on_start_page)
+            if record_id in merged:
+                warnings.append(
+                    f"{what}: position {record_id} already holds a record with another "
+                    "heading; kept both"
+                )
+                suffix = 2
+                while (
+                    _record_id(start, rec.ordinal_on_start_page, f"-{suffix}") in merged
+                ):
+                    suffix += 1
+                record_id = _record_id(start, rec.ordinal_on_start_page, f"-{suffix}")
+            candidate.record_id = record_id
+            merged[record_id] = candidate
+            keys[key] = record_id
+
+    records = sorted(
+        merged.values(),
+        key=lambda r: (r.page_start, r.ordinal_on_start_page, r.record_id),
+    )
+    for r in records:
+        if r.open_ended:
+            warnings.append(
+                f"record {r.record_id} may continue beyond page {r.page_end}"
+            )
+    return MergeResult(records, report_id, truncation, warnings)
