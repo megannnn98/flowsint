@@ -48,6 +48,25 @@ def _abs_page(rel: int, page_range: PageRange, warnings: List[str], what: str) -
     return page_range.first + rel - 1
 
 
+def _words(heading: str) -> set:
+    return set(re.findall(r"[0-9a-zа-яё]+", heading.casefold()))
+
+
+def similar_headings(a: str, b: str) -> bool:
+    """Same heading read differently (wrapped lines, a dropped word): one
+    contains the other, or most words are shared."""
+    na, nb = _norm_heading(a), _norm_heading(b)
+    if not na or not nb:
+        return False
+    if min(len(na), len(nb)) >= 6 and (na in nb or nb in na):
+        return True
+    wa, wb = _words(a), _words(b)
+    # Periods/codes must agree: "ЖИТЕЛИ РОССИИ 2010 03" is not "… 2010 07".
+    if {w for w in wa if w.isdigit()} != {w for w in wb if w.isdigit()}:
+        return False
+    return bool(wa and wb) and len(wa & wb) / len(wa | wb) >= 0.6
+
+
 def _add_fields(target: SourceRecord, extra: List[FieldValue]) -> None:
     seen = {(f.name, f.value) for f in target.fields}
     for f in extra:
@@ -72,13 +91,25 @@ def merge_chunk_records(chunks: List[ChunkRecords], page_count: int) -> MergeRes
         # Occurrence of a heading among records starting on a page, counted by
         # us from the answer order: models miscount ordinals on overlap pages.
         occurrences: Dict[Tuple[int, str], int] = {}
+        matched: set = set()  # merged keys already matched by this range
         for idx, rec in enumerate(chunk.output.records):
             what = f"range {label} record {idx + 1}"
             start = _abs_page(rec.page_start, rng, warnings, what)
             end = max(start, _abs_page(rec.page_end, rng, warnings, what))
             open_ended = rec.continues_after_range and end < page_count
 
-            if rec.starts_before_range or rec.source_heading == CONTINUATION_HEADING:
+            is_tail = (
+                rec.starts_before_range or rec.source_heading == CONTINUATION_HEADING
+            )
+            if is_tail and idx > 0:
+                # Only the very start of the range can be the tail of an earlier
+                # record; seen on the real report: later records wrongly flagged.
+                warnings.append(
+                    f"{what}: marked as continuation but is not the first record; "
+                    "kept as a separate record"
+                )
+                is_tail = False
+            if is_tail:
                 # The tail belongs to a record that started before this range
                 # (records starting on the first page are seen whole here).
                 target = next(
@@ -108,6 +139,8 @@ def merge_chunk_records(chunks: List[ChunkRecords], page_count: int) -> MergeRes
                         f"{what}: continuation without a known start on page {start}"
                     )
 
+            if rec.source_heading == CONTINUATION_HEADING:
+                rec = rec.model_copy(update={"source_heading": "(без заголовка)"})
             heading = _norm_heading(rec.source_heading)
             occurrence = occurrences.get((start, heading), 0) + 1
             occurrences[(start, heading)] = occurrence
@@ -129,7 +162,26 @@ def merge_chunk_records(chunks: List[ChunkRecords], page_count: int) -> MergeRes
             )
             existing = merged.get(key)
             if existing is None:
+                # Same record from an overlapping range whose heading was read
+                # slightly differently.
+                fuzzy = next(
+                    (
+                        k
+                        for k, r in merged.items()
+                        if k[0] == start
+                        and k not in matched
+                        and label not in r.chunks
+                        and similar_headings(r.source_heading, rec.source_heading)
+                    ),
+                    None,
+                )
+                if fuzzy is not None:
+                    key, existing = fuzzy, merged[fuzzy]
+            if existing is not None:
+                matched.add(key)
+            if existing is None:
                 merged[key] = candidate
+                matched.add(key)
                 order[id(candidate)] = (chunk_no, idx)
                 continue
             better = (existing.open_ended and not candidate.open_ended) or (

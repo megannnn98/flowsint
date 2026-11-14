@@ -384,3 +384,91 @@ async def test_api_error_in_one_range_cancels_the_others():
     fake = FakeOpenRouter({"himera_records": failing}, delay_s=0.05)
     with pytest.raises(OpenRouterHTTPError):
         await HimeraExtractionService(fake, settings).extract(synthetic_pdf())
+
+
+def _rec(heading, start, end, ordinal, fields, **kw):
+    return {
+        "section": "dataset_record",
+        "source_heading": heading,
+        "page_start": start,
+        "page_end": end,
+        "ordinal_on_start_page": ordinal,
+        "fields": [{"name": n, "value": v} for n, v in fields],
+        **kw,
+    }
+
+
+def _merge(*chunks, pages):
+    from flowsint_core.himera.pdf import PageRange
+    from flowsint_core.himera.records import ChunkRecords, merge_chunk_records
+    from flowsint_core.himera.schemas import LlmRecordsOutput
+
+    return merge_chunk_records(
+        [
+            ChunkRecords(PageRange(a, b), LlmRecordsOutput(records=r))
+            for (a, b), r in chunks
+        ],
+        pages,
+    )
+
+
+def test_wrapped_heading_read_differently_on_overlap_page_is_one_record():
+    """Real report p.13: 'РФ КРЕДИТ УЧЕТНЫЙ…' in one range, 'КРЕДИТ УЧЕТНЫЙ…' in the next."""
+    merged = _merge(
+        (
+            (1, 2),
+            [
+                _rec(
+                    "РФ КРЕДИТ УЧЕТНЫЙ КОНТИНГЕНТ 2016 09",
+                    2,
+                    2,
+                    1,
+                    [("a", "1")],
+                    continues_after_range=True,
+                )
+            ],
+        ),
+        (
+            (2, 3),
+            [
+                _rec(
+                    "КРЕДИТ УЧЕТНЫЙ КОНТИНГЕНТ 2016 09",
+                    1,
+                    2,
+                    1,
+                    [("a", "1"), ("b", "2")],
+                )
+            ],
+        ),
+        pages=3,
+    )
+    assert [
+        (r.record_id, r.page_start, r.page_end, r.open_ended) for r in merged.records
+    ] == [("p02-01", 2, 3, False)]
+
+
+def test_similar_headings_with_other_periods_stay_apart():
+    from flowsint_core.himera.records import similar_headings
+
+    assert similar_headings("РФ КРЕДИТ УЧЕТНЫЙ 2016", "КРЕДИТ УЧЕТНЫЙ 2016")
+    assert not similar_headings("ЖИТЕЛИ РОССИИ 2010 03", "ЖИТЕЛИ РОССИИ 2010 07")
+
+
+def test_only_first_record_of_a_range_can_be_a_tail():
+    """Real report pp.22-23: later records flagged as continuation were glued to p.21."""
+    merged = _merge(
+        ((1, 2), [_rec("A", 1, 2, 1, [("x", "1")], continues_after_range=True)]),
+        (
+            (2, 3),
+            [
+                _rec("<continuation>", 1, 1, 1, [("y", "2")], starts_before_range=True),
+                _rec("B", 2, 2, 1, [("z", "3")], starts_before_range=True),
+                _rec("C", 2, 2, 2, [("w", "4")], starts_before_range=True),
+            ],
+        ),
+        pages=3,
+    )
+    by = {r.source_heading: r for r in merged.records}
+    assert sorted(by) == ["A", "B", "C"]
+    assert [f.name for f in by["A"].fields] == ["x", "y"]
+    assert by["B"].page_start == 3 and by["C"].page_start == 3
