@@ -154,9 +154,10 @@ async def test_batches_give_the_same_result():
     one, _ = await run()
     many, fake = await run(settings=replace(SETTINGS, records_per_batch=3))
     assert len(fake.calls_for("himera_entities")) == 4
-    key = lambda res: sorted(
-        e.entity_id for e in res.entities + res.unverified_entities
-    )  # noqa: E731
+
+    def key(res):
+        return sorted(e.entity_id for e in res.entities + res.unverified_entities)
+
     assert key(one) == key(many)
     assert sorted(r.rel_id for r in one.relationships) == sorted(
         r.rel_id for r in many.relationships

@@ -24,9 +24,11 @@ from .dns_record import DNSRecord
 from .document import Document
 from .domain import Domain
 from .email import Email
+from .event import Event
 from .file import File
 from .flowsint_base import FlowsintType
 from .gravatar import Gravatar
+from .identifier import Identifier
 from .individual import Individual
 from .ip import Ip
 from .leak import Leak
@@ -42,6 +44,7 @@ from .risk_profile import RiskProfile
 from .script import Script
 from .session import Session
 from .social_account import SocialAccount
+from .source_record import SourceRecord
 from .ssl_certificate import SSLCertificate
 from .technology import Technology
 from .username import Username
@@ -71,8 +74,10 @@ __all__ = [
     "Document",
     "Domain",
     "Email",
+    "Event",
     "File",
     "Gravatar",
+    "Identifier",
     "Individual",
     "Ip",
     "Leak",
@@ -87,6 +92,7 @@ __all__ = [
     "Script",
     "Session",
     "SocialAccount",
+    "SourceRecord",
     "SSLCertificate",
     "Technology",
     "Username",

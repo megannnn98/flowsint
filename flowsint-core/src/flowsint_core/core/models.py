@@ -11,6 +11,7 @@ from sqlalchemy import (
     Float,
     ForeignKey,
     Index,
+    Integer,
     LargeBinary,
     String,
     Text,
@@ -419,4 +420,46 @@ class EnricherTemplate(Base):
         Index("idx_enricher_templates_name", "name"),
         Index("idx_enricher_templates_category", "category"),
         Index("idx_enricher_templates_is_public", "is_public"),
+    )
+
+
+class HimeraImport(Base):
+    """One Himera Search PDF analysed for a sketch (result kept until imported)."""
+
+    __tablename__ = "himera_imports"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    sketch_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid,
+        ForeignKey("sketches.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
+    owner_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid,
+        ForeignKey("profiles.id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
+    filename = mapped_column(Text, nullable=True)
+    pdf_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    # processing | completed | failed
+    status: Mapped[str] = mapped_column(
+        String(20), nullable=False, default="processing"
+    )
+    error = mapped_column(Text, nullable=True)
+    model = mapped_column(Text, nullable=True)
+    pdf_engine = mapped_column(Text, nullable=True)
+    prompt_tokens = mapped_column(Integer, nullable=True)
+    completion_tokens = mapped_column(Integer, nullable=True)
+    cost_usd = mapped_column(Float, nullable=True)
+    result = mapped_column(JSON, nullable=True)
+    import_summary = mapped_column(JSON, nullable=True)
+    imported_at = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    __table_args__ = (
+        Index("idx_himera_imports_sketch_sha", "sketch_id", "pdf_sha256"),
+        Index("idx_himera_imports_owner_id", "owner_id"),
     )

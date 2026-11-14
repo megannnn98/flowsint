@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Upload, FileText } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ImportPreview } from './import-preview'
+import { HimeraImportPanel } from './himera-import'
 import { sketchService } from '@/api/sketch-service'
 import { toast } from 'sonner'
 import { useGraphSettingsStore } from '@/stores/graph-settings-store'
@@ -29,6 +30,8 @@ export function ImportSheet({ sketchId }: ImportSheetProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisResult, setAnalysisResult] = useState<any>(null)
+  const [mode, setMode] = useState<'file' | 'himera'>('file')
+  const [himeraHasResult, setHimeraHasResult] = useState(false)
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -97,10 +100,12 @@ export function ImportSheet({ sketchId }: ImportSheetProps) {
     setFile(null)
     setAnalysisResult(null)
     setIsAnalyzing(false)
+    setHimeraHasResult(false)
   }, [])
 
   const handleClose = useCallback(() => {
     handleReset()
+    setMode('file')
     onOpenChange(false)
   }, [handleReset, onOpenChange])
 
@@ -114,7 +119,7 @@ export function ImportSheet({ sketchId }: ImportSheetProps) {
         side="right"
         className={cn(
           'flex flex-col h-full overflow-hidden py-2', // full height, vertical layout
-          analysisResult ? 'sm:max-w-[85vw]' : 'sm:max-w-2xl'
+          analysisResult || himeraHasResult ? 'sm:max-w-[85vw]' : 'sm:max-w-2xl'
         )}
       >
         {/* Header stays fixed */}
@@ -125,7 +130,35 @@ export function ImportSheet({ sketchId }: ImportSheetProps) {
           </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col grow overflow-hidden p-6">
-          {!file && !analysisResult && (
+          {!file && !analysisResult && !himeraHasResult && (
+            <div className="flex gap-2 mb-4 shrink-0">
+              <Button
+                variant={mode === 'file' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setMode('file')}
+              >
+                {t('TXT / JSON file')}
+              </Button>
+              <Button
+                variant={mode === 'himera' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setMode('himera')}
+              >
+                {t('Himera Search PDF')}
+              </Button>
+            </div>
+          )}
+          {mode === 'himera' && (
+            <div className="flex flex-col grow overflow-hidden">
+              <HimeraImportPanel
+                sketchId={sketchId}
+                onSuccess={handleClose}
+                onCancel={handleReset}
+                onResultChange={setHimeraHasResult}
+              />
+            </div>
+          )}
+          {mode === 'file' && !file && !analysisResult && (
             <div
               className={cn(
                 'border-2 border-dashed rounded-lg p-12 text-center flex items-center justify-center transition-colors grow overflow-auto',
@@ -164,14 +197,14 @@ export function ImportSheet({ sketchId }: ImportSheetProps) {
             </div>
           )}
 
-          {isAnalyzing && (
+          {mode === 'file' && isAnalyzing && (
             <div className="flex flex-col items-center justify-center gap-4 py-12">
               <Loader />
               <p className="text-sm text-muted-foreground">{t('Analyzing file...')}</p>
             </div>
           )}
 
-          {file && !isAnalyzing && !analysisResult && (
+          {mode === 'file' && file && !isAnalyzing && !analysisResult && (
             <div className="flex items-center gap-4 p-4 border rounded-lg">
               {getFileIcon()}
               <div className="flex-1">
@@ -187,7 +220,7 @@ export function ImportSheet({ sketchId }: ImportSheetProps) {
           )}
 
           {/* Scrollable Import Preview */}
-          {analysisResult && file && (
+          {mode === 'file' && analysisResult && file && (
             <div className="flex flex-col grow overflow-hidden">
               <ImportPreview
                 analysisResult={analysisResult}
