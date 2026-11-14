@@ -439,6 +439,13 @@ class FlowOrchestrator(Enricher):
                     completed_steps += 1
                     if not enricher_inputs:
                         error_msg = "No inputs available"
+                        # Without this the chain stops silently and the flow still reports success.
+                        Logger.warn(
+                            self.sketch_id,
+                            {
+                                "message": f"Enricher {enricher_name} skipped: previous step returned no results."
+                            },
+                        )
                         step_result["error"] = error_msg
                         log_entry["status"] = "error"
                         log_entry["error"] = error_msg

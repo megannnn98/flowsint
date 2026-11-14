@@ -102,9 +102,9 @@ export default function ContextMenu({
       return matchesName || matchesDescription
     }) || []
 
-  const handleFlowClick = (e: React.MouseEvent, flowId: string) => {
+  const handleFlowClick = (e: React.MouseEvent, flowId: string, flowName?: string) => {
     e.stopPropagation()
-    launchFlow([node.id], flowId, sketchId)
+    launchFlow([node.id], flowId, sketchId, flowName)
     setMenu(null)
   }
 
@@ -299,7 +299,7 @@ export default function ContextMenu({
                     <button
                       key={flow.id}
                       className="w-full flex items-center gap-2 p-2 rounded-md hover:bg-muted text-left transition-colors"
-                      onClick={(e) => handleFlowClick(e, flow.id)}
+                      onClick={(e) => handleFlowClick(e, flow.id, flow.name)}
                     >
                       <FileCode2 className="h-4 w-4 text-muted-foreground shrink-0" />
                       <div className="flex-1 min-w-0">
@@ -311,7 +311,7 @@ export default function ContextMenu({
                               <BadgeCheck className="h-3 w-3 text-green-400" />
                             )}{' '}
                           </span>{' '}
-                          {flow.name || '(Unnamed flow)'}
+                          {flow.name || t('(Unnamed flow)')}
                         </p>
                         {flow.description && (
                           <p className="text-xs text-muted-foreground truncate">

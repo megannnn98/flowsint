@@ -5,6 +5,8 @@ from .protocol import LLMProvider
 
 _SUPPORTED_PROVIDERS = ("mistral", "openai", "openrouter")
 
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+
 _DEFAULT_API_KEY_ENV = {
     "mistral": "MISTRAL_API_KEY",
     "openai": "OPENAI_API_KEY",
@@ -54,7 +56,7 @@ def create_llm_provider(
         from .providers.openai import OpenAIProvider
 
         kwargs.setdefault("model", "openai/gpt-4o-mini")
-        return OpenAIProvider(base_url="https://openrouter.ai/api/v1", **kwargs)
+        return OpenAIProvider(base_url=OPENROUTER_BASE_URL, **kwargs)
 
     # Unreachable due to the check above, but satisfies type checkers
     raise ValueError(f"Unknown provider: {provider}")

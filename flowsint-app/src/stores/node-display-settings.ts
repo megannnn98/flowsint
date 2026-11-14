@@ -37,6 +37,9 @@ export type ItemType =
   | 'message'
   | 'reputationscore'
   | 'riskprofile'
+  | 'identifier'
+  | 'event'
+  | 'sourcerecord'
   | 'script'
   | 'session'
   | 'webtracker'
@@ -79,6 +82,9 @@ export const ITEM_TYPES: ItemType[] = [
   'message',
   'reputationscore',
   'riskprofile',
+  'identifier',
+  'event',
+  'sourcerecord',
   'script',
   'session',
   'webtracker',
@@ -123,6 +129,9 @@ export const TYPE_TO_ICON: Record<string, keyof typeof LucideIcons> = {
   message: 'MessageSquare',
   reputationscore: 'Star',
   riskprofile: 'AlertTriangle',
+  identifier: 'Hash',
+  event: 'CalendarClock',
+  sourcerecord: 'FileText',
   script: 'FileCode',
   session: 'Clock',
   webtracker: 'Target',
@@ -167,6 +176,9 @@ const DEFAULT_COLORS: Record<ItemType, string> = {
   message: '#897FC9', // violet lavande
   reputationscore: '#6FA8DC', // bleu clair
   riskprofile: '#D97474', // rouge doux
+  identifier: '#7FA3C9',
+  event: '#C99A6F',
+  sourcerecord: '#9AA5B1',
   script: '#A36FA3', // violet doux
   session: '#A8BF50', // lime atténué
   webtracker: '#C7BF50', // jaune doux

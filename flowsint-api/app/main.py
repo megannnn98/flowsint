@@ -13,6 +13,7 @@ from app.api.routes import (
     enrichers,
     events,
     flows,
+    himera,
     investigations,
     keys,
     scan,
@@ -48,6 +49,7 @@ async def health():
 
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(sketches.router, prefix="/api/sketches", tags=["sketches"])
+app.include_router(himera.router, prefix="/api/sketches", tags=["himera-import"])
 app.include_router(
     investigations.router, prefix="/api/investigations", tags=["investigations"]
 )

@@ -115,7 +115,8 @@ const LaunchEnricherOrFlowPanel = memo(
           }
         } else {
           // For flows, use id
-          launchFlow(values, (selectedEnricher as Flow).id, sketch_id)
+          const flow = selectedEnricher as Flow
+          launchFlow(values, flow.id, sketch_id, flow.name)
         }
         handleCloseModal()
       }
