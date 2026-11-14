@@ -11,10 +11,12 @@ import re
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
+from . import normalizers as N
 from .schemas import (
     EntityType,
     ExtractedEntity,
     ExtractedRelationship,
+    FieldValue,
     LlmEntity,
     LlmRelationship,
     Mention,
@@ -57,6 +59,7 @@ class _Checked:
     issues: List[str]
     subject_link: SubjectLink
     page: int
+    attributes: List[FieldValue]
 
 
 def _stable_id(prefix: str, *parts: str) -> str:
@@ -73,13 +76,80 @@ def is_placeholder(value: str) -> bool:
     return stripped in _PLACEHOLDERS or set(stripped) <= {"*", "x", "х"}
 
 
-def normalize_entity(entity: LlmEntity) -> Tuple[str, Verification, List[str]]:
-    """Type-specific normalisation and format checks (see stage 5)."""
-    return (
-        _collapse(entity.normalized_value or entity.raw_value),
-        Verification.VALIDATED,
-        [],
-    )
+_DATE_ATTRIBUTES = {"birth_date", "date", "issue_date"}
+
+
+def _record_text(record: SourceRecord) -> str:
+    fields = " ".join(f"{f.name} {f.value}" for f in record.fields)
+    return f"{record.source_heading} {fields} {record.raw_text}"
+
+
+def normalize_entity(
+    entity: LlmEntity, record: SourceRecord
+) -> Tuple[str, Verification, List[str], List[FieldValue]]:
+    """Format checks, technical normalisation and grounding in the record text."""
+    issues: List[str] = []
+    valid = True
+    attributes = [FieldValue(name=a.name, value=a.value) for a in entity.attributes]
+    attr = {a.name: a.value for a in attributes}
+    raw = entity.raw_value
+    suggestion = entity.normalized_value
+
+    t = entity.type
+    if t == EntityType.EMAIL:
+        checked = N.check_email(raw)
+    elif t == EntityType.PHONE:
+        checked = N.check_phone(raw)
+    elif t == EntityType.IDENTIFIER:
+        checked = N.check_identifier(raw, attr.get("scheme"))
+    elif t == EntityType.USERNAME:
+        checked = N.check_username(suggestion or raw)
+    elif t == EntityType.SOCIAL_ACCOUNT:
+        checked = N.check_social(raw)
+        if checked.value.startswith("https://"):
+            platform = N.platform_of(checked.value)
+            if platform and "platform" not in attr:
+                attributes.append(FieldValue(name="platform", value=platform))
+            uid = N.vk_user_id(checked.value)
+            if uid and "user_id" not in attr:
+                attributes.append(FieldValue(name="user_id", value=uid))
+    elif t == EntityType.INDIVIDUAL:
+        checked = N.Checked(N.collapse(suggestion or raw).upper())
+    else:
+        checked = N.Checked(N.collapse(suggestion or raw))
+    issues.extend(checked.issues)
+    valid = checked.valid
+    if (
+        suggestion
+        and t in (EntityType.EMAIL, EntityType.PHONE, EntityType.IDENTIFIER)
+        and N.collapse(suggestion).casefold() != checked.value.casefold()
+    ):
+        issues.append(f"model normalisation '{suggestion}' differs from format check")
+
+    if t == EntityType.ORGANIZATION:
+        for key, scheme in (("inn", "inn"), ("ogrn", "ogrn")):
+            if attr.get(key):
+                sub = N.check_identifier(attr[key], scheme)
+                if not sub.valid:
+                    issues.append(f"{key}: {', '.join(sub.issues)}")
+
+    for a in attributes:
+        if a.name in _DATE_ATTRIBUTES and a.value.strip():
+            d = N.check_date(a.value)
+            if d.valid:
+                a.value = d.value
+            else:
+                issues.extend(d.issues)
+
+    text = _record_text(record)
+    if not N.text_contains(text, raw):
+        valid = False
+        issues.append("value not found in the cited source record")
+    elif entity.evidence and not N.text_contains(text, entity.evidence):
+        issues.append("evidence is not a verbatim fragment of the record")
+
+    verification = Verification.VALIDATED if valid else Verification.UNVERIFIED
+    return checked.value, verification, issues, attributes
 
 
 def _check_entity(
@@ -88,7 +158,7 @@ def _check_entity(
     if is_placeholder(entity.raw_value):
         rejected.append(_reject_entity(entity, "empty or placeholder value"))
         return None
-    normalized, verification, issues = normalize_entity(entity)
+    normalized, verification, issues, attributes = normalize_entity(entity, record)
     page = entity.page
     if not record.page_start <= page <= record.page_end:
         issues.append(
@@ -103,7 +173,9 @@ def _check_entity(
     ):
         subject_link = SubjectLink.UNKNOWN
         issues.append("name-only match cannot be the report subject")
-    return _Checked(entity, normalized, verification, issues, subject_link, page)
+    return _Checked(
+        entity, normalized, verification, issues, subject_link, page, attributes
+    )
 
 
 def _reject_entity(entity: LlmEntity, reason: str) -> RejectedItem:
@@ -122,11 +194,11 @@ def _dedup_key(item: _Checked) -> Tuple[str, ...]:
     e = item.llm
     if item.verification == Verification.UNVERIFIED:
         # Unverified values never merge with anything.
-        return ("unverified", e.type.value, e.raw_value, e.record_id, e.entity_id)
+        return ("unverified", e.type.value, e.raw_value, e.record_id)
     if e.type == EntityType.INDIVIDUAL:
         if item.subject_link == SubjectLink.SUBJECT:
             return ("Individual", "subject")
-        birth = _attr(e, "birth_date")
+        birth = _attr(item.attributes, "birth_date")
         if birth:
             return ("Individual", item.normalized.casefold(), birth)
         # Without a birth date namesakes stay separate, one per record.
@@ -134,8 +206,8 @@ def _dedup_key(item: _Checked) -> Tuple[str, ...]:
     return (e.type.value, item.normalized.casefold())
 
 
-def _attr(entity: LlmEntity, name: str) -> Optional[str]:
-    for a in entity.attributes:
+def _attr(attributes: List[FieldValue], name: str) -> Optional[str]:
+    for a in attributes:
         if a.name == name and a.value.strip():
             return a.value.strip()
     return None
@@ -188,7 +260,7 @@ def _merge_group(key: Tuple[str, ...], items: List[_Checked]) -> ExtractedEntity
     issues: List[str] = []
     for item in items:
         issues.extend(i for i in item.issues if i not in issues)
-        for a in item.llm.attributes:
+        for a in item.attributes:
             value = a.value.strip()
             if not value:
                 continue
